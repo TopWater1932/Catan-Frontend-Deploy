@@ -1,17 +1,14 @@
-*,
-::before,
-::after {
-  padding: 0px;
-  margin: 0px;
-  box-sizing: border-box;
-}
-
-body {
+.game-background {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
   background-color: rgb(255, 153, 0);
-  font-family: "Gill Sans",sans-serif;
+  font-family: sans-serif;
 }
 
-#root {
+.app-content {
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
   grid-template-rows: 0.5fr 3fr 0.9fr 0.3fr;

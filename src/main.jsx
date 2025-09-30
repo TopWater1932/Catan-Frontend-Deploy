@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import './index.css'
+import './styles/index.css'
 import Game from './Game.jsx'
 import LandingPage from './landing-page.jsx'
 import OptionsPage from './options-page.jsx'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import './player.css'
+import './styles/player.css'
 import createCardArray from './utils/func-createCardArray.jsx'
 
 

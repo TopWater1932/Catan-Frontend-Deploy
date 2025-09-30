@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef } from 'react'
-import './Game.css'
+import './styles/Game.css'
 import Player from './player.jsx'
 import CloseButton from './close-btn.jsx'
 import LRLAIndicators from './LR-LA-indicator.jsx'
@@ -42,41 +42,44 @@ function Game() {
   // fetchBackend() // Future fetch function
 
   return (
-    <>
-        <LRLAIndicators missionState={missions}/>
-        {playerIDs.map((id,i) => 
-            <Player
-              id={id}
-              playerName={playerNames[i]}
-              color={playerColors[i]}
-              missionState={missions}
-              resourceState={resources}
-              devCardState={devCards}
-              vpState={vps}
-            />
-          )
-        }
-        
-        <Board />
-        
+    <div className='game-background'>
+      <div className='app-content'>
 
-        <PlayerInfo
-          id={playerIDs[0]}
-          playerName={playerNames[0]}
-          missionState={missions}
-          resourceState={resources}
-          devCardState={devCards}
-          vpState={vps}
-          remainingStructures={structures}
-        />
-        <ActionButtons
-          ids={playerIDs}
-          turn={turn}
-          turnSetter={setTurn}
-        />
-        <CloseButton />
-    </>
-  )
+          <LRLAIndicators missionState={missions}/>
+          {playerIDs.map((id,i) => 
+              <Player
+                id={id}
+                playerName={playerNames[i]}
+                color={playerColors[i]}
+                missionState={missions}
+                resourceState={resources}
+                devCardState={devCards}
+                vpState={vps}
+              />
+            )
+          }
+          
+          <Board />
+          
+
+          <PlayerInfo
+            id={playerIDs[0]}
+            playerName={playerNames[0]}
+            missionState={missions}
+            resourceState={resources}
+            devCardState={devCards}
+            vpState={vps}
+            remainingStructures={structures}
+          />
+          <ActionButtons
+            ids={playerIDs}
+            turn={turn}
+            turnSetter={setTurn}
+          />
+          <CloseButton />
+      </div>
+    </div>
+  );
 }
 
-export default Game
+export default Game;

@@ -1,6 +1,6 @@
 import { useState , useLayoutEffect, useRef} from 'react'
 import Structures from './structures.jsx'
-import './board.css'
+import './styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
 import handleWindowResize from './utils/event-handler/func-handleWindowResize.jsx'
 import initialiseTileGrid from './utils/func-initialiseTileGrid.jsx'

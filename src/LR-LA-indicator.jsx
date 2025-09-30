@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import './LR-LA-indicator.css'
+import './styles/LR-LA-indicator.css'
 
 
 

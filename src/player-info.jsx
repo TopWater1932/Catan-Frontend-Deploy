@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useEffect } from 'react'
-import './player-info.css'
+import './styles/player-info.css'
 
 
 

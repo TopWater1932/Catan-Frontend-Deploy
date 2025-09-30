@@ -1,5 +1,5 @@
 import closeBtn from "./assets/close-btn.svg"
-import "./close-btn.css"
+import "./styles/close-btn.css"
 
 function CloseButton() {
   
