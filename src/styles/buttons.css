@@ -1,0 +1,24 @@
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.button {
+  width: 9em;
+  font-size: medium;
+  background-color:rgb(64, 16, 16);
+}
+
+.button:hover {
+  border: 1px solid orangered;
+  box-shadow: 0px 0px 3px 3px orangered;
+  width: 10em;
+}
+
+.button:active {
+  border: 1px solid rgb(255, 130, 84);
+  box-shadow: 0px 0px 3px 3px rgb(255, 130, 84);
+}

@@ -1,0 +1,7 @@
+#board-area {
+    border: 1px solid black;
+}
+
+#base {
+    background-image: radial-gradient(circle at center, transparent 1%, rgb(243, 209, 97) 1%);
+}
