@@ -9,7 +9,7 @@ function Modal({ isVisible, setIsVisible, modalClassTypes, content }) {
     return createPortal(
         <>
             
-            <div className="modal-background" onKeyDown={(e) => handleKeyDown(e)}></div>
+            <div className="modal-background" onClick={() => setIsVisible(false)}></div>
             <div className={`modal ${modalClassTypes}`}>
                 <img className="cancel" src={closeBtn} onClick={() => setIsVisible(false)} alt="Cancel" />
                 
