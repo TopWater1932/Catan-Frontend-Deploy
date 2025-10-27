@@ -1,5 +1,6 @@
-import { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useState, useLayoutEffect, useRef } from 'react'
 import './styles/Game.css'
+import { GlobalContext } from './GlobalContext.jsx'
 import Player from './player.jsx'
 import CloseButton from './close-btn.jsx'
 import LRLAIndicators from './LR-LA-indicator.jsx'
@@ -22,7 +23,7 @@ function Game() {
   const [resources,setResources] = useState(initialResources);
   
   let initialDevCards = {};
-  playerIDs.map(id => initialDevCards[id] = {"knight":0,"victoryPoint":0,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0});
+  playerIDs.map(id => initialDevCards[id] = {"knight":1,"victoryPoint":1,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0});
   const [devCards,setDevCards] = useState(initialDevCards);
 
   let initialStructures = {};
@@ -37,6 +38,7 @@ function Game() {
   const [largestArmy,setLargestArmy] = useState('Unclaimed');
   let missions = {longestRoad,largestArmy};
 
+
   
 
   // fetchBackend() // Future fetch function
@@ -44,8 +46,23 @@ function Game() {
   return (
     <div className='game-background'>
       <div className='app-content'>
+        <GlobalContext.Provider
+          value={{
+            playerIDs,
+            playerNames,
+            playerColors,
+            'turnState':[turn,setTurn],
+            'resourcesState':[resources,setResources],
+            'devCardsState':[devCards,setDevCards],
+            'structuresState':[structures,setStructures],
+            'VPsState':[vps,setVPs],
+            'LRState':[longestRoad,setLongestRoad],
+            'LAState':[largestArmy,setLargestArmy]
+          }}
+        >
 
           <LRLAIndicators missionState={missions}/>
+          
           {playerIDs.map((id,i) => 
               <Player
                 id={id}
@@ -71,12 +88,16 @@ function Game() {
             vpState={vps}
             remainingStructures={structures}
           />
+
           <ActionButtons
             ids={playerIDs}
             turn={turn}
             turnSetter={setTurn}
           />
+
           <CloseButton />
+
+        </GlobalContext.Provider>
       </div>
     </div>
   );
