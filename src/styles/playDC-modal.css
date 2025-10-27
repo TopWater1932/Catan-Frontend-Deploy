@@ -18,3 +18,13 @@
   width: 4em;
   font-size: small;
 }
+
+
+.modal .DC-options .button:disabled {
+  background-color: grey;
+}
+
+.modal .DC-options .button:disabled:hover {
+  box-shadow: none;
+  border: solid 1px grey;
+}

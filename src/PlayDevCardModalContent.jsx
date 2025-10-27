@@ -24,10 +24,9 @@ function PlayDevCardModalContent({ setDCModalIsVisible }) {
             {names.map((name,i) => 
                     <div className='playDC-row'>
                         <p className='dev-card-label'><span className='bold'>{`${dcNames[i]}: `}</span><span>{`${devCards[turn][name]}`}</span></p>
-                        <button className='button' type="button" onClick={(e) => handleUseClick(i,e)}>Use</button>
+                        <button className='button' type="button" onClick={(e) => handleUseClick(i,e)} disabled={devCards[turn][name]>0 ? false : true}>Use</button>
                     </div>
             )}
-            
         </div>
 )}
 
