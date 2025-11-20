@@ -56,6 +56,10 @@ class Game:
     
         return tileList
     
+    def setupNodes(self):
+        
+        pass
+    
     def nextTurn(self):
         self.current_turn = (self.current_turn + 1) % len(self.players)
 
