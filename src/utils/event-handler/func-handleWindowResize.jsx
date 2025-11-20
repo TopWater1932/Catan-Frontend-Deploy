@@ -5,16 +5,15 @@ function handleWindowResize(initWidth,initHeight,boardAreaRef,stageSize,setStage
     const containerHeight = boardAreaRef.current.offsetHeight;
 
     
-    const widthScale = containerWidth / initWidth;
-    const heightScale = containerHeight / initHeight;
+    const scale = Math.min(containerWidth / initWidth,containerHeight / initHeight);
     
-    const newStageWidth = initWidth*widthScale;
-    const newStageHeight = initHeight*heightScale;
+    const newStageWidth = initWidth*scale;
+    const newStageHeight = initHeight*scale;
 
 
     
 
-    setStageSize({width: newStageWidth,height: newStageHeight,scaleX: widthScale,scaleY: heightScale})
+    setStageSize({width: newStageWidth,height: newStageHeight,scaleX: scale,scaleY: scale})
 
 };
 

@@ -28,8 +28,13 @@
   box-shadow: 0px 0px 3px 3px rgb(255, 130, 84);
 }
 
-.playDC-modal {
-  height: 50%;
-  width: 20%;
+.options-modal {
+  padding: 25px;
+  min-width: 16em;
+}
+
+.trade-modal {
+  height: 60%;
+  width: 60%;
   min-width: 16em;
 }

@@ -19,7 +19,7 @@ function ActionButtons() {
       <Modal
         isVisible={dcModalIsVisible}
         setIsVisible={setDCModalIsVisible}
-        modalClassTypes='playDC-modal'
+        modalClassTypes='options-modal'
         content={
           <PlayDevCardModalContent setDCModalIsVisible={setDCModalIsVisible}/>
         }
@@ -28,7 +28,7 @@ function ActionButtons() {
       <Modal
         isVisible={endModalIsVisible}
         setIsVisible={setEndModalIsVisible}
-        modalClassTypes='endTurn-modal'
+        modalClassTypes='end-modal'
         content={
           <EndTurnModalContent setEndModalIsVisible={setEndModalIsVisible}/>
         }
@@ -46,7 +46,7 @@ function ActionButtons() {
       <Modal
         isVisible={buyModalIsVisible}
         setIsVisible={setBuyModalIsVisible}
-        modalClassTypes='buy-modal'
+        modalClassTypes='options-modal'
         content={
           <BuyModalContent setBuyModalIsVisible={setBuyModalIsVisible}/>
         }

@@ -16,7 +16,7 @@ img:active {
   box-shadow: 0px 0px 3px 3px rgb(249, 118, 118);
 }
 
-.exit-modal, .endTurn-modal {
+.end-modal {
   gap: 20px;
   height: 30%;
   width: 30%;
@@ -27,12 +27,12 @@ img:active {
   font-size: 1.5em;
 }
 
-.options {
+.exit-options {
   display: flex;
   gap: 20px;
 }
 
-.modal .options .button {
+.modal .exit-options .button {
   width: 7em;
   font-size: small;
 }

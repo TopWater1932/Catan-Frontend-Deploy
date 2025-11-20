@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { GlobalContext } from "./GlobalContext.jsx";
-import './styles/playDC-modal.css'
+import './styles/options-modal.css'
 
 function PlayDevCardModalContent({ setDCModalIsVisible }) {
 
@@ -20,9 +20,9 @@ function PlayDevCardModalContent({ setDCModalIsVisible }) {
     }
     
     return (
-        <div className='DC-options'>
+        <div className='options'>
             {names.map((name,i) => 
-                    <div className='playDC-row'>
+                    <div className='option-row'>
                         <p className='dev-card-label'><span className='bold'>{`${dcNames[i]}: `}</span><span>{`${devCards[turn][name]}`}</span></p>
                         <button className='button' type="button" onClick={(e) => handleUseClick(i,e)} disabled={devCards[turn][name]>0 ? false : true}>Use</button>
                     </div>

@@ -16,7 +16,7 @@ function EndTurnModalContent({ setEndModalIsVisible }) {
     return (
         <>
             <p className="exit-msg">Are you ready to end your turn?</p>
-            <div className="options">
+            <div className="exit-options">
                 <button className="button" onClick={(e) => handleClick(e)}>Yes</button>
                 <button className="button" onClick={() => setEndModalIsVisible(false)}>Go Back</button>
             </div>

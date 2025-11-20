@@ -19,7 +19,7 @@ function Game() {
   const [turn,setTurn] = useState(playerIDs[0]);
 
   let initialResources = {};
-  playerIDs.map(id => initialResources[id] = {"wood":1,"brick":2,"wheat":0,"sheep":0,"ore":0});
+  playerIDs.map(id => initialResources[id] = {"wood":1,"brick":1,"wheat":1,"sheep":1,"ore":1});
   const [resources,setResources] = useState(initialResources);
   
   let initialDevCards = {};
@@ -27,7 +27,7 @@ function Game() {
   const [devCards,setDevCards] = useState(initialDevCards);
 
   let initialStructures = {};
-  playerIDs.map(id => initialStructures[id] = {"roads":0,"settlements":0,"cities":0});
+  playerIDs.map(id => initialStructures[id] = {"roads":15,"settlements":5,"cities":4});
   const [structures,setStructures] = useState(initialStructures);
 
   let initialVPs = {};
@@ -57,7 +57,14 @@ function Game() {
             'structuresState':[structures,setStructures],
             'VPsState':[vps,setVPs],
             'LRState':[longestRoad,setLongestRoad],
-            'LAState':[largestArmy,setLargestArmy]
+            'LAState':[largestArmy,setLargestArmy],
+            'resIcons':{
+              'woodIcon':'🪵',
+              'brickIcon':'🧱',
+              'wheatIcon':'🌾' ,
+              'sheepIcon':'🐑',
+              'oreIcon':'🪨'
+            }
           }}
         >
 
@@ -79,15 +86,7 @@ function Game() {
           <Board />
           
 
-          <PlayerInfo
-            id={playerIDs[0]}
-            playerName={playerNames[0]}
-            missionState={missions}
-            resourceState={resources}
-            devCardState={devCards}
-            vpState={vps}
-            remainingStructures={structures}
-          />
+          <PlayerInfo />
 
           <ActionButtons
             ids={playerIDs}
