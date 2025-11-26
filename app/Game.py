@@ -56,9 +56,49 @@ class Game:
     
         return tileList
     
-    def setupNodes(self):
+    def setupNodes(self,nodeRows,rowNumberOffsets): # Assumes symmetrical hexagonal board with odd number of rows that increases and decreases in width 1 tile at a time.
         
-        pass
+        nodeDict = {}
+        nodeList = []
+        nodeCounter = 1
+
+        for n,row in enumerate(nodeRows[:len(nodeRows)//2]):  # Top half of board only
+            for i in range(row):
+                if i == row-1:                                                                                              # Last node in row
+                    node = Node(id=nodeCounter, row=n, neighborNodes=[nodeCounter+rowNumberOffsets[n]])
+                elif (i+1) % 2 != 0:                                                                                        # Odd number nodes in each row
+                    node = Node(id=nodeCounter, row=n, neighborNodes=[nodeCounter+1, nodeCounter+rowNumberOffsets[n]])
+                elif (i+1) % 2 == 0:                                                                                        # Even number nodes in each row
+                    node = Node(id=nodeCounter, row=n, neighborNodes=[nodeCounter+1])
+                
+                nodeDict[f'ID{nodeCounter}'] = node
+                nodeCounter += 1
+
+        rowsInTopHalf = len(nodeRows)//2
+        for n,row in enumerate(nodeRows[len(nodeRows)//2:]):  # Bottom half of board only
+            for i in range(row):
+                rowIndex = n + rowsInTopHalf
+                if i == row-1:                                                                                              # Last node in row
+                    node = Node(id=nodeCounter, row=rowIndex, neighborNodes=[nodeCounter-rowNumberOffsets[rowIndex]])
+                elif (i+1) % 2 != 0:                                                                                        # Odd number nodes in each row
+                    node = Node(id=nodeCounter, row=rowIndex, neighborNodes=[nodeCounter+1, nodeCounter-rowNumberOffsets[rowIndex]])
+                elif (i+1) % 2 == 0:                                                                                        # Even number nodes in each row
+                    node = Node(id=nodeCounter, row=rowIndex, neighborNodes=[nodeCounter+1])
+                
+                nodeDict[f'ID{nodeCounter}'] = node
+                nodeCounter += 1
+
+        for node in nodeDict.values():                                                                                               # Clean up neighbor references that are out of bounds
+            for nb in node.neighbors:
+                nodeKey = f'ID{nb}'
+                neighborNode = nodeDict.get(nodeKey)
+
+                if node.id not in neighborNode.neighbors:
+                    neighborNode.neighbors.append(node.id)
+            
+            nodeList.append(node)
+
+        return nodeList
     
     def nextTurn(self):
         self.current_turn = (self.current_turn + 1) % len(self.players)
@@ -77,5 +117,12 @@ available_numbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
 
 tiles = game.setupTiles(available_tiles=available_tiles, available_numbers=available_numbers)
 
-for tile in tiles:
-    print(tile.terrain_type, tile.number_token)
+nodeRows = [7,9,11,11,9,7] # Index corresponds to row number, 0-indexed. Each integer is the number of nodes in each row.
+rowNumberOffsets = [8,10,11,11,10,8] # Difference in node IDs between connected nodes in adjacent rows.
+nodes = game.setupNodes(nodeRows=nodeRows, rowNumberOffsets=rowNumberOffsets)
+
+for node in nodes:
+    print("Node ID:", node.id, "Row:", node.row, "Neighbors:", node.neighbors)
+
+# for tile in tiles:
+#     print(tile.terrain_type, tile.number_token)
