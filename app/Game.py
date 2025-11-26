@@ -56,36 +56,53 @@ class Game:
     
         return tileList
     
-    def setupNodes(self,nodeRows,rowNumberOffsets): # Assumes symmetrical hexagonal board with odd number of rows that increases and decreases in width 1 tile at a time.
+    def setupNodesPaths(self,nodeRows,rowNumberOffsets): # Assumes symmetrical hexagonal board with odd number of rows that increases and decreases in width 1 tile at a time.
         
         nodeDict = {}
         nodeList = []
+        pathList = []
         nodeCounter = 1
 
         for n,row in enumerate(nodeRows[:len(nodeRows)//2]):  # Top half of board only
             for i in range(row):
                 if i == row-1:                                                                                              # Last node in row
-                    node = Node(id=nodeCounter, row=n, neighborNodes=[nodeCounter+rowNumberOffsets[n]])
+                    neighbors = [nodeCounter+rowNumberOffsets[n]]
                 elif (i+1) % 2 != 0:                                                                                        # Odd number nodes in each row
-                    node = Node(id=nodeCounter, row=n, neighborNodes=[nodeCounter+1, nodeCounter+rowNumberOffsets[n]])
+                    neighbors = [nodeCounter+1, nodeCounter+rowNumberOffsets[n]]
                 elif (i+1) % 2 == 0:                                                                                        # Even number nodes in each row
-                    node = Node(id=nodeCounter, row=n, neighborNodes=[nodeCounter+1])
+                    neighbors = [nodeCounter+1]
                 
+                node = Node(id=nodeCounter, row=n, neighborNodes=neighbors)
                 nodeDict[f'ID{nodeCounter}'] = node
+
+                for neighborNum in node.neighbors:
+                    path = Path(id=f'{node.id}_{neighborNum}', connectedNodes=[node.id, neighborNum])
+                    pathList.append(path)
+
                 nodeCounter += 1
+                
 
         rowsInTopHalf = len(nodeRows)//2
         for n,row in enumerate(nodeRows[len(nodeRows)//2:]):  # Bottom half of board only
             for i in range(row):
                 rowIndex = n + rowsInTopHalf
                 if i == row-1:                                                                                              # Last node in row
-                    node = Node(id=nodeCounter, row=rowIndex, neighborNodes=[nodeCounter-rowNumberOffsets[rowIndex]])
+                    neighbors = [nodeCounter-rowNumberOffsets[rowIndex]]
                 elif (i+1) % 2 != 0:                                                                                        # Odd number nodes in each row
-                    node = Node(id=nodeCounter, row=rowIndex, neighborNodes=[nodeCounter+1, nodeCounter-rowNumberOffsets[rowIndex]])
+                    neighbors = [nodeCounter+1, nodeCounter-rowNumberOffsets[rowIndex]]
                 elif (i+1) % 2 == 0:                                                                                        # Even number nodes in each row
-                    node = Node(id=nodeCounter, row=rowIndex, neighborNodes=[nodeCounter+1])
+                    neighbors = [nodeCounter+1]
                 
+                node = Node(id=nodeCounter, row=rowIndex, neighborNodes=neighbors)
                 nodeDict[f'ID{nodeCounter}'] = node
+
+                for neighborNum in node.neighbors:
+                    if node.row == 3 and neighborNum < nodeCounter:  # Avoid duplicating vertical paths between the two board halves
+                        continue
+                    else:
+                        path = Path(id=f'{node.id}_{neighborNum}', connectedNodes=[node.id, neighborNum])
+                    pathList.append(path)
+
                 nodeCounter += 1
 
         for node in nodeDict.values():                                                                                               # Clean up neighbor references that are out of bounds
@@ -95,11 +112,12 @@ class Game:
 
                 if node.id not in neighborNode.neighbors:
                     neighborNode.neighbors.append(node.id)
-            
+
             nodeList.append(node)
 
-        return nodeList
-    
+        return {'nodes':nodeList, 'paths':pathList}
+
+
     def nextTurn(self):
         self.current_turn = (self.current_turn + 1) % len(self.players)
 
@@ -119,10 +137,19 @@ tiles = game.setupTiles(available_tiles=available_tiles, available_numbers=avail
 
 nodeRows = [7,9,11,11,9,7] # Index corresponds to row number, 0-indexed. Each integer is the number of nodes in each row.
 rowNumberOffsets = [8,10,11,11,10,8] # Difference in node IDs between connected nodes in adjacent rows.
-nodes = game.setupNodes(nodeRows=nodeRows, rowNumberOffsets=rowNumberOffsets)
+nodes, paths = game.setupNodesPaths(nodeRows=nodeRows, rowNumberOffsets=rowNumberOffsets).values()
+
+
+############# Print for checking initialised board setup #############
 
 for node in nodes:
     print("Node ID:", node.id, "Row:", node.row, "Neighbors:", node.neighbors)
+print("Total Nodes:", len(nodes))
+
+for path in paths:
+    print("Path ID:", path.id, "connectedNodes:", path.connectedNodes)
+print("Total Paths:", len(paths))
+
 
 # for tile in tiles:
 #     print(tile.terrain_type, tile.number_token)
