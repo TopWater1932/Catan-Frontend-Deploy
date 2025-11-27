@@ -6,18 +6,15 @@ import './styles/player-info.css'
 
 function PlayerInfo() {
   
-  const {turnState, resourcesState, structuresState, devCardsState, VPsState, resIcons} = useContext(GlobalContext)
-  const [turn] = turnState;
-  const [resources] = resourcesState;
-  const [structures] = structuresState;
-  const [devCards] = devCardsState;
-  const [vps] = VPsState;
+  const {players,turn,resIcons} = useContext(GlobalContext);
+  const {resources,structures,devCards,vps} = players[turn];
+
   const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;
   
-  let {wood,brick,wheat,sheep,ore} = resources[turn];
-  let {roads,settlements,cities} = structures[turn];
-  let {knightsPlayed} = devCards[turn];
-  let vp = vps[turn];
+  let {wood,brick,wheat,sheep,ore} = resources;
+  let {roads,settlements,cities} = structures;
+  let {knightsPlayed} = devCards;
+
   
   return (
     <div id="player-info" className="panel-background">
@@ -26,7 +23,7 @@ function PlayerInfo() {
 
           <tr>
             <td><span className="res-icon">{woodIcon}| </span>{wood}</td>
-            <td><span className="bold">Victory Points: </span>{vp}</td>
+            <td><span className="bold">Victory Points: </span>{vps}</td>
           </tr>
           
           <tr>

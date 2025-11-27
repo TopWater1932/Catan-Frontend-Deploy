@@ -1,16 +1,20 @@
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useContext } from 'react'
+import { GlobalContext } from "./GlobalContext.jsx";
 import './styles/player.css'
 import createCardArray from './utils/func-createCardArray.jsx'
 
 
+function MainPlayerInfo({id}) {
 
+  const {players,missions,turn} = useContext(GlobalContext)
 
-function Player({id,color,missionState,playerName,resourceState,devCardState,vpState}) {
+  const {name,color,activeTurn,resources,devCards,structures,vps} = players[id];
+  const {longestRoad,largestArmy} = missions;
+  let {knightsPlayed} = devCards;
 
   
-  let cardArray = createCardArray(id,resourceState,devCardState);
-  let {knight,victoryPoint,roadBuilding,yearOfPlenty,monopoly,knightsPlayed} = devCardState[id];
+  let cardArray = createCardArray(id,resources,devCards);
+
 
   return (
       <div id={id} className="player">
@@ -27,16 +31,16 @@ function Player({id,color,missionState,playerName,resourceState,devCardState,vpS
           <div className="player-name">
             <span className="player-color" aria-hidden="true" style={{color}}>&#x25CF;</span>
             <h3 className="panel-background">
-              {playerName + " "}
-              {missionState.longestRoad===playerName? '🛣️' : ''}
-              {missionState.largestArmy===playerName? '🗡️' : ''}
+              {name + " "}
+              {longestRoad===name? '🛣️' : ''}
+              {largestArmy===name? '🗡️' : ''}
             </h3>
           </div>
         </div>
         
         {id!=="mp" && (
           <ul className="panel-background list">
-            <li><span className="bold">Victory Points: </span>{vpState[id]}</li>
+            <li><span className="bold">Victory Points: </span>{vps}</li>
             <li><span className="bold">Knights Played: </span>{knightsPlayed}</li>
           </ul>
       )}
@@ -46,4 +50,4 @@ function Player({id,color,missionState,playerName,resourceState,devCardState,vpS
   )
 }
 
-export default Player
+export default MainPlayerInfo

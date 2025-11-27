@@ -1,14 +1,14 @@
-function createCardArray(id,resourceState,devCardState) {
+function createCardArray(resources,devCards) {
 
     let resNum = 0;
     let devNum = 0;
 
-    for (let resource in resourceState[id]) {
-        resNum += resourceState[id][resource];
+    for (let resource in resources) {
+        resNum += resources[resource];
     }
 
-    for (let devCard in devCardState[id]) {
-        devNum += devCardState[id][devCard];
+    for (let devCard in devCards) {
+        devNum += devCards[devCard];
     }
     
     let resCardsArr = new Array(resNum).fill("R");

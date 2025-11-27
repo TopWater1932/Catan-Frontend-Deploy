@@ -1,17 +1,17 @@
 import { useContext } from "react"
 import { GlobalContext } from "./GlobalContext.jsx";
-import PlayerInfo from "./player-info.jsx";
+import PlayerInfo from "./PlayerInfo.jsx";
 import './styles/options-modal.css'
 
 
 
 function BuyModalContent({ setBuyModalIsVisible }) {
     
-    const {turnState, resourcesState, structuresState, resIcons} = useContext(GlobalContext)
-    const [turn] = turnState;
-    const [resources,setResources] = resourcesState;
+    const {players,setPlayers,turn,resIcons} = useContext(GlobalContext);
+    const {resources,structures,devCards,vps} = players[turn];
     const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;
 
+    console.log(players)
 
     const resRequirements = {
         'Road': { 'brick': 1, 'wood': 1 },
@@ -28,9 +28,9 @@ function BuyModalContent({ setBuyModalIsVisible }) {
         'DevelopmentCard': `${oreIcon} ${resRequirements.DevelopmentCard.ore}, ${wheatIcon} ${resRequirements.DevelopmentCard.wheat}, ${sheepIcon} ${resRequirements.DevelopmentCard.sheep}`
     };
     
-    function hasEnoughResources(resRequirements, playerResources, structure) {
+    function hasEnoughResources(resRequirements, resources, structure) {
         for (const res in resRequirements[structure]) {
-            if (playerResources[res] < resRequirements[structure][res]) {
+            if (resources[res] < resRequirements[structure][res]) {
                 return false;
             }
         }
@@ -38,23 +38,25 @@ function BuyModalContent({ setBuyModalIsVisible }) {
         
     }
 
-    const handleUseClick = (e,structure) => {
-        
-        let updatedResourceQuantity;
+    const handleUseClick = (e, structure) => {
+        setPlayers(prevPlayers => {
+            const newResources = { ...prevPlayers[turn].resources };
 
-        for (const res in resRequirements[structure]) {
-            
-            updatedResourceQuantity = resources[turn][res] - resRequirements[structure][res];
+            for (const res in resRequirements[structure]) {
+                newResources[res] = newResources[res] - resRequirements[structure][res];
+            }
 
-            setResources(prevResources => ({
-                ...prevResources,
-                [turn]: {...prevResources[turn],
-                    [res]: updatedResourceQuantity}
-            }));
-        };
+            return {
+                ...prevPlayers,
+                [turn]: {
+                    ...prevPlayers[turn],
+                    resources: newResources
+                }
+            };
+        });
 
         setBuyModalIsVisible(false);
-    }
+    };
 
     return (
 
@@ -65,7 +67,7 @@ function BuyModalContent({ setBuyModalIsVisible }) {
                             <span className='bold'>{`${structure}: `}</span><br/>
                             <span>{`${resRequirementLabels[structure]}`}</span>
                         </p>
-                        <button className='button' type="button" onClick={(e) => handleUseClick(e,structure)} disabled={!hasEnoughResources(resRequirements,resources[turn],structure)}>Use</button>
+                        <button className='button' type="button" onClick={(e) => handleUseClick(e,structure)} disabled={!hasEnoughResources(resRequirements,resources,structure)}>Use</button>
                     </div>
             )}
 

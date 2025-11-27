@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import {Layer,RegularPolygon,Line,Circle,Rect,Text} from 'react-konva'
-import ValidPlacementLayers from './valid-placements.jsx'
+import ValidPlacementLayers from './ValidPlacements.jsx'
 import initialiseVertexGrid from './utils/func-initialiseVertexGrid.jsx'
 import assignVertices from './utils/func-assignVertices.jsx'
 import generateVertexIDs from './utils/func-generateVertexIDs.jsx'

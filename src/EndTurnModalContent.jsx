@@ -4,8 +4,7 @@ import './styles/close-btn.css';
 
 function EndTurnModalContent({ setEndModalIsVisible }) {
     
-    const { turnState } = useContext(GlobalContext);
-    const [turn,setTurn] = turnState;
+    const { turn, setTurn } = useContext(GlobalContext);
 
     const handleClick = () => {
         

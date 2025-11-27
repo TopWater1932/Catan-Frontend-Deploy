@@ -1,9 +1,11 @@
 import { useState , useLayoutEffect, useRef} from 'react'
-import Structures from './structures.jsx'
+import Structures from './Structures.jsx'
 import './styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
 import handleWindowResize from './utils/event-handler/func-handleWindowResize.jsx'
 import initialiseTileGrid from './utils/func-initialiseTileGrid.jsx'
+
+import Tile from './classes/Tile.jsx'
 
 
 function Board() {
@@ -25,14 +27,6 @@ function Board() {
   },[])
 
 
-  // Tiles initialisation
-  const boardHexSize = 3;
-  const tileRadius = 69;
-  const tileGridX = 306;
-  const tileGridY = 127;
-  const tileGrid = initialiseTileGrid(tileGridX,tileGridY,tileRadius,boardHexSize);
-  const [robberTile,setRobberTile] = useState('J')
-
   const resourceColors = {
     'or':'rgba(78, 78, 78, 1)',
     'wo':'rgba(97, 36, 0, 1)',
@@ -41,23 +35,28 @@ function Board() {
     'wh':'rgba(255, 230, 0, 1)',
     'de': 'rgba(218, 188, 89, 1)'
   };
-
+  
   const tileID = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S']; // Example array retrieved from backend
   const tileNumberArray = [10,2,9,12,6,4,10,9,11,0,3,8,8,3,4,5,5,6,11]; // Example array retrieved from backend
   const tileResourceArray = ['or','sh','wo','wh','br','sh','br','wh','wo','de','wo','or','wo','or','wh','sh','br','wh','sh']; // Example array retrieved from backend
   
-  const tilesMasterArray = tileGrid.map((coord,i) => ({
-    id: tileID[i],
-    ...coord,
-    resource: tileResourceArray[i],
-    number: tileNumberArray[i]
-  }));
-  
-  // Create object to hold tile info
-  const tilesMasterObj = {};
-  for (const tile of tilesMasterArray) {
-    tilesMasterObj[tile.id] = {...tile}
-  };
+  // Tiles initialisation
+  const boardHexSize = 3;
+  const tileRadius = 69;
+  const tileGridX = 306;
+  const tileGridY = 127;
+  const tileGrid = initialiseTileGrid(tileGridX,tileGridY,tileRadius,boardHexSize);
+  const [robberTile,setRobberTile] = useState(tileID[9]); // Initial robber tile ID
+
+  const tilesMasterArray = tileGrid.map((coord,i) => (
+    new Tile(
+      tileID[i],
+      tileResourceArray[i],
+      tileNumberArray[i],
+      coord.x,
+      coord.y
+    )
+  ));
   
 
   return (
@@ -124,8 +123,8 @@ function Board() {
 
           <Wedge
             key='robber'
-            x={tilesMasterObj[robberTile].x}
-            y={tilesMasterObj[robberTile].y}
+            x={tilesMasterArray.find(tile => tile.id == robberTile).x}
+            y={tilesMasterArray.find(tile => tile.id == robberTile).y}
             radius={40}
             angle={60}
             fill="grey"
