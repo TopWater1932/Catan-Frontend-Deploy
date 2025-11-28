@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import './styles/Game.css'
 import { GlobalContext } from './GlobalContext.jsx'
 import Player from './classes/Player.jsx'
@@ -8,35 +8,21 @@ import LRLAIndicators from './LR-LA-indicator.jsx'
 import PlayerInfo from './PlayerInfo.jsx'
 import ActionButtons from './ActionButtons.jsx'
 import Board from './Board.jsx'
-import fetchBackend from './utils/func-fetchBackend.jsx'
+import useFetch from './utils/fetch/useFetch.jsx'
 
 
 function Game() {
+  
+  const { data, loading, error } = useFetch('http://127.0.0.1:8000/initialise');
+
+  const {tiles,nodes,paths,initialPlayers,turnID} = data;
+  
   
   const playerIDs = ["mp","p1","p2","p3"];
   const playerNames = ["Main Player","Player 1","Player 2","Player 3"]
   const playerColors = ["red","blue","green","white"]
 
-  
-
-  const [turn,setTurn] = useState(playerIDs[0]);
-
-  let initialResources = {};
-  playerIDs.map(id => initialResources[id] = {"wood":1,"brick":1,"wheat":1,"sheep":1,"ore":1});
-  const [resources,setResources] = useState(initialResources);
-  
-  let initialDevCards = {};
-  playerIDs.map(id => initialDevCards[id] = {"knight":1,"victoryPoint":1,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0});
-  const [devCards,setDevCards] = useState(initialDevCards);
-
-  let initialStructures = {};
-  playerIDs.map(id => initialStructures[id] = {"roads":15,"settlements":5,"cities":4});
-  const [structures,setStructures] = useState(initialStructures);
-
-  let initialVPs = {};
-  playerIDs.map(id => initialVPs[id] = 0);
-  const [vps,setVPs] = useState(initialVPs);
-
+  const [turn,setTurn] = useState(turnID);
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
   const [largestArmy,setLargestArmy] = useState('Unclaimed');
   let missions = {longestRoad,largestArmy};
@@ -74,6 +60,7 @@ function Game() {
             playerIDs,
             playerNames,
             playerColors,
+            tiles,nodes,paths
             'resIcons':{
               'woodIcon':'🪵',
               'brickIcon':'🧱',
