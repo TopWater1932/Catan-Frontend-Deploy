@@ -25,4 +25,6 @@ dist-ssr
 
 .venv
 __pycache__
+.vitenode_modules
+app/__pycache__
 .vite
