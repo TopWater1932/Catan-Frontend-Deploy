@@ -8,9 +8,9 @@ export default class Tile {
         this.y = y;
     }
 
-    toggleRobber() {
-        this.robber = !this.robber;
-        console.log(this.robber)
-    }
+    // toggleRobber() {
+    //     this.robber = !this.robber;
+    //     console.log(this.robber)
+    // }
 }
 
