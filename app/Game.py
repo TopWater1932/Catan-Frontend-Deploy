@@ -55,8 +55,8 @@ class Game:
             'tiles':tiles,
             'nodes':nodes,
             'paths':paths,
-            'players':playerList,
-            'turn': playerList[self.current_turn].id
+            'initialPlayers':playerList,
+            'turnID': playerList[self.current_turn].id
         }
 
     def setupTiles(self, available_tiles, available_numbers):
