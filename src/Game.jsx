@@ -14,9 +14,8 @@ import useFetch from './utils/fetch/useFetch.jsx'
 function Game() {
   
   const { data, loading, error } = useFetch('http://127.0.0.1:8000/initialise');
-
   const {tiles,nodes,paths,initialPlayers,turnID} = data;
-  
+
   
   const playerIDs = ["mp","p1","p2","p3"];
   const playerNames = ["Main Player","Player 1","Player 2","Player 3"]
@@ -25,26 +24,24 @@ function Game() {
   const [turn,setTurn] = useState(turnID);
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
   const [largestArmy,setLargestArmy] = useState('Unclaimed');
-  let missions = {longestRoad,largestArmy};
+  const missions = {longestRoad,setLongestRoad,largestArmy,setLargestArmy};
 
-  const initialPlayers = {};
-  playerIDs.map((id,i) => (
-    initialPlayers[id] = new Player(
-      id,
-      playerNames[i],
-      playerColors[i],
-      false,
-      {"wood":1,"brick":1,"wheat":1,"sheep":1,"ore":1},
-      {"knight":1,"victoryPoint":1,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0},
-      {"roads":15,"settlements":5,"cities":4},
-      0
+  const initialPlayerState = {};
+  initialPlayers.map((player) => (
+    initialPlayerState[player.id] = new Player(
+      player.id,
+      player.name,
+      player.color,
+      player.id === turnID? true:false,
+      player.resources,
+      player.devCards,
+      player.structures,
+      player.vps
     )
   ));
-  const [players,setPlayers] = useState(initialPlayers);
-  // console.log(playersArray)
-  
 
-  // fetchBackend() // Future fetch function
+  const [players,setPlayers] = useState(initialPlayerState);
+
 
   return (
     <div className='game-background'>
@@ -60,7 +57,7 @@ function Game() {
             playerIDs,
             playerNames,
             playerColors,
-            tiles,nodes,paths
+            tiles,nodes,paths,
             'resIcons':{
               'woodIcon':'🪵',
               'brickIcon':'🧱',
