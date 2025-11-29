@@ -1,7 +1,8 @@
 from enum import Enum
 
 class Tile:
-    def __init__(self, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
+    def __init__(self, id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
+        self.id = id
         self.x = x
         self.y = y
         self.terrain_type = terrain_type
@@ -22,10 +23,10 @@ class Tile:
 
 
 class TerrainType(Enum):
-    HILLS = "Hills"
-    FOREST = "Forest"
-    MOUNTAINS = "Mountains"
-    FIELDS = "Fields"
-    PASTURE = "Pasture"
-    DESERT = "Desert"
+    HILLS = "BRICK"
+    FOREST = "LUMBER"
+    MOUNTAINS = "ORE"
+    FIELDS = "GRAIN"
+    PASTURE = "WOOL"
+    DESERT = None
     
