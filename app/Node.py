@@ -1,4 +1,6 @@
 class Node:
-    def __init__(self, occupiedBy=None, isBuildable=False, buildingType=None, leftPath=None, rightPath=None, verticalPath=None):
+    def __init__(self, id, occupiedBy=None, isBuildable=False, buildingType=None, paths=[]):
         self.next = None
+        self.id = id
+        self.paths = []
         
