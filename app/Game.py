@@ -6,7 +6,7 @@ from Player import Player
 from Tile import TerrainType
 
 import random
-#CREATE IDS FOR ALL GAME COMPONENTS
+
 class Game:
     def __init__(self, board, players, current_turn=0, longest_road_holder=None, largest_army_holder=None):
         self.board = board
@@ -73,10 +73,22 @@ class Game:
         return tileList
     
     def setupNodes(self, board_hex_height: int, board_hex_width : int, initial_offset: int):
+        '''
+        Helper function to setup nodes in a matric format based on the board dimensions
+        
+        PARAMETERS
+        - board_hex_height(int): total height of board in hexes
+        - board_hex_width(int): total width of board in hexes
+        - initial_offset(int): initial node offset to center the board and create buffer nodes 
+
+        RETURNS
+        node_matrix: 3D list representing the board's nodes with buffers as None
+     '''
         node_matrix = []
         board_node_height = board_hex_height + 1
         board_node_width = board_hex_width * 2 + 1
         offset = initial_offset
+        #TODO create function to validate board dimensinos and calculate initial offset
         row_num = 0
         if(board_node_height % 2 != 0):
             raise ValueError("Board node height should be an even number")
@@ -104,7 +116,6 @@ class Game:
         RETURNS
         list representing the row of nodes
         '''
-
         offset = initial_offset
         node_row = []
         for x in range(row_length):
@@ -131,6 +142,13 @@ class Game:
         return node_row
 
     def setup_paths(self, node_matrix:list):
+        '''
+        Helper function to setup paths between nodes in the node matrix
+        PARAMETERS
+        - node_matrix: 2D list representing the board's nodes with buffers as None
+        RETURNS
+        list of all paths created
+        '''
         path_list = []
        
         for y in range(len(node_matrix)):
@@ -155,7 +173,6 @@ class Game:
                 #connect the nodes to it's vertical associate in the row below
                 if ((x + offset) % 2 == 0) and y != len(node_matrix) - 1:
                     #check if the node below is a buffer
-        
                     if (node_matrix[y+1][x]) is None:
                         continue
 
@@ -169,6 +186,16 @@ class Game:
         return path_list
 
     def save_and_create_path(self, node1, node2) -> Path:
+        '''
+        Helper function to create path object containing two nodes and then save the path to each node's path list
+
+        PARAMETERS
+        - node1: first node object
+        - nodde2: seccond node object
+
+        RETURNS
+        newly created path object 
+        '''
         id = f"P{node1.id}{node2.id}"
         path = Path(id=id, connectedNodes=(node1, node2))
         node1.paths.append(path)
@@ -177,6 +204,39 @@ class Game:
         return path
         
 
+    def findAssociatedNodes(self, all_nodes):
+        pass
+        "TODO: implement this function"
+
+    def findAllHexNodes(self, all_nodes, all_hexes):
+        "TODO: find ratio of nodes to hexes"
+        current_hex = 0
+        for y, row in enumerate(all_nodes):
+            x = 0
+            while x < len(all_nodes[0]):
+                current_node = all_nodes[y][x]
+                if current_node is None:
+                    x += 1
+                    continue 
+                #check if associated nodes go out of bounds
+                elif y + 1 >= len(all_nodes) or x + 2 >= len(all_nodes[0]):
+                    x += 1
+                    continue
+                else:
+                    associated_nodes = []
+                    for i in range(2):
+                        for j in range(3):
+                            node_to_add = all_nodes[y+i][x+j]
+                            associated_nodes.append(node_to_add)
+                    if not None in associated_nodes:
+                        all_hexes[current_hex].associated_nodes = associated_nodes
+                        current_hex += 1
+                        x += 2
+                    else:
+                        x += 1
+        return all_hexes
+
+    
     def nextTurn(self):
             self.current_turn = (self.current_turn + 1) % len(self.players)
 
@@ -198,3 +258,10 @@ for node_row in nodes:
 print("------------------------------------------------------------------")
 paths = game.setup_paths(nodes)
 print(f"Total Paths: {len(paths)}")
+
+hexes = game.findAllHexNodes(nodes, tiles)
+
+for hex in hexes:
+    print(f"Hex ID: {hex.id} has associated nodes: {[node.id for node in hex.associated_nodes]}")
+
+
