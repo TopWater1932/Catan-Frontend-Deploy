@@ -18,7 +18,8 @@ class Game:
     def setup(self):
         '''Set up the initial game state, including board configuration and player order.'''
 
-        # Board presets
+        board = Board()
+        # Add tiles, nodes, paths as needed
         available_tiles = {
             "wood": 4,
             "brick": 3,
@@ -28,13 +29,7 @@ class Game:
             "desert": 1 
         }
         available_numbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
-        nodeRows = [7,9,11,11,9,7] # Index corresponds to row number, 0-indexed. Each integer is the number of nodes in each row.
-        rowNumberOffsets = [8,10,11,11,10,8] # Difference in node IDs between connected nodes in adjacent rows.
-
-        # Setup board
-        tiles = self.setupTiles(available_tiles=available_tiles, available_numbers=available_numbers)
-        nodes, paths = self.setupNodesPaths(nodeRows=nodeRows, rowNumberOffsets=rowNumberOffsets).values()
-        # board = Board(tiles=tiles, nodes=nodes, paths=paths)
+        
 
         # Setup players
         playerList = []
@@ -52,9 +47,6 @@ class Game:
             playerList.append(player)
         
         return {
-            'tiles':tiles,
-            'nodes':nodes,
-            'paths':paths,
             'initialPlayers':playerList,
             'turnID': playerList[self.current_turn].id
         }
@@ -82,67 +74,6 @@ class Game:
                 del available_tiles[terrain]
     
         return tileList
-    
-    def setupNodesPaths(self,nodeRows,rowNumberOffsets): # Assumes symmetrical hexagonal board with odd number of rows that increases and decreases in width 1 tile at a time.
-        
-        nodeDict = {}
-        nodeList = []
-        pathList = []
-        nodeCounter = 1
-
-        for n,row in enumerate(nodeRows[:len(nodeRows)//2]):  # Top half of board only
-            for i in range(row):
-                if i == row-1:                                                                                              # Last node in row
-                    neighbors = [nodeCounter+rowNumberOffsets[n]]
-                elif (i+1) % 2 != 0:                                                                                        # Odd number nodes in each row
-                    neighbors = [nodeCounter+1, nodeCounter+rowNumberOffsets[n]]
-                elif (i+1) % 2 == 0:                                                                                        # Even number nodes in each row
-                    neighbors = [nodeCounter+1]
-                
-                node = Node(id=nodeCounter, row=n, neighborNodes=neighbors)
-                nodeDict[f'ID{nodeCounter}'] = node
-
-                for neighborNum in node.neighbors:
-                    path = Path(id=f'{node.id}_{neighborNum}', connectedNodes=[node.id, neighborNum])
-                    pathList.append(path)
-
-                nodeCounter += 1
-                
-
-        rowsInTopHalf = len(nodeRows)//2
-        for n,row in enumerate(nodeRows[len(nodeRows)//2:]):  # Bottom half of board only
-            for i in range(row):
-                rowIndex = n + rowsInTopHalf
-                if i == row-1:                                                                                              # Last node in row
-                    neighbors = [nodeCounter-rowNumberOffsets[rowIndex]]
-                elif (i+1) % 2 != 0:                                                                                        # Odd number nodes in each row
-                    neighbors = [nodeCounter+1, nodeCounter-rowNumberOffsets[rowIndex]]
-                elif (i+1) % 2 == 0:                                                                                        # Even number nodes in each row
-                    neighbors = [nodeCounter+1]
-                
-                node = Node(id=nodeCounter, row=rowIndex, neighborNodes=neighbors)
-                nodeDict[f'ID{nodeCounter}'] = node
-
-                for neighborNum in node.neighbors:
-                    if node.row == 3 and neighborNum < nodeCounter:  # Avoid duplicating vertical paths between the two board halves
-                        continue
-                    else:
-                        path = Path(id=f'{node.id}_{neighborNum}', connectedNodes=[node.id, neighborNum])
-                    pathList.append(path)
-
-                nodeCounter += 1
-
-        for node in nodeDict.values():                                                                                               # Clean up neighbor references that are out of bounds
-            for nb in node.neighbors:
-                nodeKey = f'ID{nb}'
-                neighborNode = nodeDict.get(nodeKey)
-
-                if node.id not in neighborNode.neighbors:
-                    neighborNode.neighbors.append(node.id)
-
-            nodeList.append(node)
-
-        return {'nodes':nodeList, 'paths':pathList}
 
     def nextTurn(self,playerList):
         self.current_turn = (self.current_turn + 1) % len(playerList)
@@ -150,17 +81,18 @@ class Game:
 
 # ############# Print for checking initialised board setup #############
 
-# for node in nodes:
-#     print("Node ID:", node.id, "Row:", node.row, "Neighbors:", node.neighbors)
-# print("Total Nodes:", len(nodes))
+game = Game(None, [Player("Alice", "red")])
+available_tiles = {
+            "Forest": 4,
+            "Hills": 3,
+            "Mountains": 3,
+            "Fields": 4,
+            "Pasture": 4,
+            "Desert": 1 
+        }
+available_numbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
 
-# for path in paths:
-#     print("Path ID:", path.id, "connectedNodes:", path.connectedNodes)
-# print("Total Paths:", len(paths))
+tiles = game.setupTiles(available_tiles=available_tiles, available_numbers=available_numbers)
 
-
-# for tile in tiles:
-#     print(tile.terrain_type, tile.number_token)
-
-game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
-initialisePackage = game.setup()
+for tile in tiles:
+    print(tile.terrain_type, tile.number_token)

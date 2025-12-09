@@ -1,8 +1,6 @@
 class Node:
-    def __init__(self, id, row, occupiedBy=None, isBuildable=True, buildingType=None, neighborNodes=[]):
+    def __init__(self, id, occupiedBy=None, isBuildable=True, buildingType=None, leftPath=None, rightPath=None, verticalPath=None):
         self.id = id
-        self.row = row
-        self.neighbors = neighborNodes
 
     def build(self, player, buildingType):
         if self.isBuildable is True:
@@ -11,8 +9,3 @@ class Node:
             self.isBuildable = False
             return True
         return False
-    
-    
-    
-
-
