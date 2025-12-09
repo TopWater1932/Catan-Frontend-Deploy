@@ -14,7 +14,17 @@ import useFetch from './utils/fetch/useFetch.jsx'
 function Game() {
   
   const { data, loading, error } = useFetch('http://127.0.0.1:8000/initialise');
+  
+    if (!data && loading) {
+      return <div>Loading...</div>;
+    }
+
+    if (error) {
+      return <div>{error.message}</div>;
+    }
+
   const {tiles,nodes,paths,initialPlayers,turnID} = data;
+
 
   
   const playerIDs = ["mp","p1","p2","p3"];

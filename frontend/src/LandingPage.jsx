@@ -1,4 +1,8 @@
+
+
 function LandingPage() {
+
+
 
     return (
         <div className='lp-background'>
