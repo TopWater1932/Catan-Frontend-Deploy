@@ -11,7 +11,7 @@ function CloseButton() {
 
   return (
     <>
-      <img id="close" src={closeBtn} onClick={() => setExitModalIsVisible(true)} alt="Close button" />
+      <img id="close" className="cancel" src={closeBtn} onClick={() => setExitModalIsVisible(true)} alt="Close button" />
 
       <Modal
         isVisible={exitModalIsVisible}

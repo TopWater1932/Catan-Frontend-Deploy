@@ -4,7 +4,10 @@ import Modal from './Modal.jsx'
 import PlayDevCardModalContent from './PlayDevCardModalContent.jsx'
 import EndTurnModalContent from './EndTurnModalContent.jsx'
 import TradeModalContent from './TradeModalContent.jsx'
+import MaritimeTradeModalContent from './MaritimeTradeModalContent.jsx'
 import BuyModalContent from './BuyModalContent.jsx'
+
+import { TradeContext } from './TradeContext.jsx'
 
 function ActionButtons() {
   
@@ -12,6 +15,10 @@ function ActionButtons() {
   const [tradeModalIsVisible,setTradeModalIsVisible] = useState(false)
   const [buyModalIsVisible,setBuyModalIsVisible] = useState(false)
   const [endModalIsVisible,setEndModalIsVisible] = useState(false)
+
+  // Trade Modals
+  const [marTradeModalIsVisible,setMarTradeModalIsVisible] = useState(false)
+  const [playerTradeModalIsVisible,setPlayerTradeModalIsVisible] = useState(false)
 
 
   return (
@@ -34,14 +41,41 @@ function ActionButtons() {
         }
       />
       
-      <Modal
-        isVisible={tradeModalIsVisible}
-        setIsVisible={setTradeModalIsVisible}
-        modalClassTypes='trade-modal'
-        content={
-          <TradeModalContent setTradeModalIsVisible={setTradeModalIsVisible}/>
-        }
-      />
+      <TradeContext.Provider
+        value={{
+            tradeModalIsVisible, setTradeModalIsVisible,
+            marTradeModalIsVisible,setMarTradeModalIsVisible,
+            playerTradeModalIsVisible, setPlayerTradeModalIsVisible
+          }}
+      >
+        <Modal
+          isVisible={tradeModalIsVisible}
+          setIsVisible={setTradeModalIsVisible}
+          modalClassTypes='options-modal'
+          content={
+            <TradeModalContent />
+          }
+        />
+
+        <Modal
+          isVisible={marTradeModalIsVisible}
+          setIsVisible={setMarTradeModalIsVisible}
+          modalClassTypes='options-modal'
+          content={
+            <MaritimeTradeModalContent />
+          }
+        />
+
+        {/* <Modal
+          isVisible={playerTradeModalIsVisible}
+          setIsVisible={setPlayerTradeModalIsVisible}
+          modalClassTypes='options-modal'
+          content={
+            <MaritimeTradeModalContent />
+          }
+        /> */}
+
+      </TradeContext.Provider>
 
       <Modal
         isVisible={buyModalIsVisible}

@@ -13,23 +13,37 @@ import useFetch from './utils/fetch/useFetch.jsx'
 
 function Game() {
   
-  const { data, loading, error } = useFetch('http://127.0.0.1:8000/initialise');
+  // const { data, loading, error } = useFetch('http://127.0.0.1:8000/initialise');
   
-    if (!data && loading) {
-      return <div>Loading...</div>;
-    }
+  //   if (!data && loading) {
+  //     return <div>Loading...</div>;
+  //   }
 
-    if (error) {
-      return <div>{error.message}</div>;
-    }
+  //   if (error) {
+  //     return <div>{error.message}</div>;
+  //   }
 
-  const {tiles,nodes,paths,initialPlayers,turnID} = data;
-
-
+  // const {tiles,nodes,paths,initialPlayers,turnID} = data;
   
   const playerIDs = ["mp","p1","p2","p3"];
   const playerNames = ["Main Player","Player 1","Player 2","Player 3"]
   const playerColors = ["red","blue","green","white"]
+
+  // Temporary
+  const turnID = 'p1'
+  const initialPlayers = []
+  for (let i=0; i<4; i++ ) {
+    initialPlayers.push({
+      'id':`p${i+1}`,
+      'name':`Name${i+1}`,
+      'color':playerColors[i],
+      'resources':{"wood":4,"brick":0,"wheat":2,"sheep":2,"ore":3},
+      'devCards':{"knight":0,"victoryPoint":0,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0},
+      'structures':{"roads":15,"settlements":5,"cities":4},
+      'vps':0,
+      'ports':[] // ADD 4-1 PORT FOR ALL PLAYERS BY DEFAULT
+    })
+  }
 
   const [turn,setTurn] = useState(turnID);
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
@@ -67,7 +81,7 @@ function Game() {
             playerIDs,
             playerNames,
             playerColors,
-            tiles,nodes,paths,
+            // tiles,nodes,paths,
             'resIcons':{
               'woodIcon':'🪵',
               'brickIcon':'🧱',
