@@ -1,0 +1,14 @@
+#indicators {
+  display: flex;
+  flex-direction: column;
+}
+
+.indicator-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mission-icon {
+  font-size: xx-large;
+}

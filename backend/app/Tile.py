@@ -1,12 +1,16 @@
 from enum import Enum
 
 class Tile:
-    def __init__(self, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
+    def __init__(self,id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
+        self.id = id
         self.x = x
         self.y = y
         self.terrain_type = terrain_type
         self.resource = resource
         self.number_token = number_token
+
+        if self.terrain_type == TerrainType.DESERT.value:
+            self.has_robber = True
 
 
     def findAssociatedNodes(self, all_nodes):
@@ -22,10 +26,10 @@ class Tile:
 
 
 class TerrainType(Enum):
-    HILLS = "Hills"
-    FOREST = "Forest"
-    MOUNTAINS = "Mountains"
-    FIELDS = "Fields"
-    PASTURE = "Pasture"
-    DESERT = "Desert"
+    BRICK = "brick"
+    WOOD = "wood"
+    ORE = "ore"
+    WHEAT = "wheat"
+    SHEEP = "sheep"
+    DESERT = "desert"
     
