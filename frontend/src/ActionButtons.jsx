@@ -5,6 +5,7 @@ import PlayDevCardModalContent from './PlayDevCardModalContent.jsx'
 import EndTurnModalContent from './EndTurnModalContent.jsx'
 import TradeModalContent from './TradeModalContent.jsx'
 import MaritimeTradeModalContent from './MaritimeTradeModalContent.jsx'
+import PlayerTradeModalContent from './PlayerTradeModalContent.jsx'
 import BuyModalContent from './BuyModalContent.jsx'
 
 import { TradeContext } from './TradeContext.jsx'
@@ -19,6 +20,8 @@ function ActionButtons() {
   // Trade Modals
   const [marTradeModalIsVisible,setMarTradeModalIsVisible] = useState(false)
   const [playerTradeModalIsVisible,setPlayerTradeModalIsVisible] = useState(false)
+
+  
 
 
   return (
@@ -66,14 +69,15 @@ function ActionButtons() {
           }
         />
 
-        {/* <Modal
+        <Modal
           isVisible={playerTradeModalIsVisible}
           setIsVisible={setPlayerTradeModalIsVisible}
           modalClassTypes='options-modal'
           content={
-            <MaritimeTradeModalContent />
+            <PlayerTradeModalContent />
           }
-        /> */}
+
+        />
 
       </TradeContext.Provider>
 

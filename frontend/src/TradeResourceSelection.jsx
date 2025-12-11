@@ -12,13 +12,17 @@ function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle
     const {resources} = players[turn];
 
     const receiveArray = Object.keys(resources);
-
+    
     const [receiveSelection,setReceiveSelection] = useState(receiveArray[0]);
     const [giveSelection,setGiveSelection] = useState(giveArray[0]);
+    
+    const initState = {};
+    receiveArray.forEach(res => {
+        initState[res] = 0;
+    });
 
-
-
-  
+    const [giveAmount,setGiveAmount] = useState(initState);
+    const [receiveAmount,setReceiveAmount] = useState(initState);
 
 
 
@@ -33,16 +37,18 @@ function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle
                     <h3 className="trade-header">{giveTitle}</h3>
 
                     <div className="panel-background">
-                        {giveArray.map((res, i) => (
+                        {giveArray.map((res) => (
 
                             <label className="trade-row">
                                 {`${capsResourceName(res)}`}
                                 <input
                                     type={dialogueType}
-                                    name={'give-resources'}
-                                    value={res}
-                                    checked={res === giveSelection? true : false}
-                                    onChange={(e) => setGiveSelection(e.target.value)}
+                                    name={dialogueType === 'radio' ? 'give-resources' : `give-player-${res}`}
+                                    value={dialogueType === 'radio'? res : giveAmount[res]}
+                                    onChange={(e) => {dialogueType === 'radio' ? setGiveSelection(e.target.value) : setGiveAmount({...giveAmount,[res]: e.target.value})}}
+                                    checked={res === giveSelection ? true : false}
+                                    min={0}
+                                    max={resources[res]}
                                 />
                             </label>
                         ))}
@@ -59,16 +65,18 @@ function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle
                     <h3 className="trade-header">{receiveTitle}</h3>
 
                     <div className="panel-background">
-                        {receiveArray.map((res, i) => (
+                        {receiveArray.map((res) => (
 
                             <label className="trade-row">
                                 {`${capsResourceName(res)}`}
                                 <input
                                     type={dialogueType}
-                                    name={'receive-resources'}
-                                    value={res}
-                                    checked={res === receiveSelection? true : false}
-                                    onChange={(e) => setReceiveSelection(e.target.value)}
+                                    name={dialogueType === 'radio' ? 'receive-resources' : `receive-player-${res}`}
+                                    value={dialogueType === 'radio'? res : receiveAmount[res]}
+                                    onChange={(e) => {dialogueType === 'radio' ? setReceiveSelection(e.target.value) : setReceiveAmount({...receiveAmount,[res]: e.target.value})}}
+                                    checked={res === receiveSelection ? true : false}
+                                    min={0}
+                                    max={10}
                                 />
                             </label>
                         ))}
