@@ -1,0 +1,32 @@
+import { useContext } from "react"
+import { GlobalContext } from "./GlobalContext.jsx";
+import './styles/options-modal.css'
+
+function PlayDevCardModalContent({ setDCModalIsVisible }) {
+
+  const {players,turn} = useContext(GlobalContext);
+  const {devCards} = players[turn];
+
+    const names = Object.keys(devCards).slice(0,5);
+    const dcNames = names.map((key) => {
+        let capitalised = key.charAt(0).toUpperCase() + key.slice(1);
+        return capitalised.split(/(?=[A-Z])/).join(" ");
+    });
+
+    const handleUseClick = (selectionIndex,e) => {
+        
+        setDCModalIsVisible(false);
+    }
+    
+    return (
+        <div className='options'>
+            {names.map((name,i) => 
+                    <div className='option-row'>
+                        <p className='dev-card-label'><span className='bold'>{`${dcNames[i]}: `}</span><span>{`${devCards[name]}`}</span></p>
+                        <button className='button' type="button" onClick={(e) => handleUseClick(i,e)} disabled={devCards[name]>0 ? false : true}>Use</button>
+                    </div>
+            )}
+        </div>
+)}
+
+export default PlayDevCardModalContent;
