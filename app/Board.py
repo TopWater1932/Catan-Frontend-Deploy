@@ -16,7 +16,4 @@ class Board:
         return True
     def addPath(self, path):
         self.paths.append(path)
-        return True
-    
-
-        
+        return True    

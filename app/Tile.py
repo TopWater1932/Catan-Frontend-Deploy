@@ -8,18 +8,18 @@ class Tile:
         self.terrain_type = terrain_type
         self.resource = resource
         self.number_token = number_token
-
-
-    def findAssociatedNodes(self, all_nodes):
-        pass
-        "TODO: implement this function"
-
-    def setAssociatedNodes(self, associated_nodes):
-        self.associated_nodes = associated_nodes
-        "TODO: implement this function"
+        self.associated_nodes = []
 
     def giveResoucetoPlayers(self):
-        pass
+        for node in self.associated_nodes:
+            if node.occupiedBy != None:
+                if node.buildingType == "SETTLEMENT":
+                    amount = 1
+                elif node.buildingType == "CITY":
+                    amount = 2
+                player = node.occupiedBy
+                player.giveResource(self.resource, amount)
+
 
 
 class TerrainType(Enum):

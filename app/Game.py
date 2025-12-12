@@ -41,11 +41,15 @@ class Game:
         }
 
         Tiles = BoardSetUp.setupTiles(available_tiles=available_tiles, available_numbers=available_numbers, resource_dictionary=resource_dictionary)
-        #Add Nodes
-        return Tiles
-        
+        Nodes = BoardSetUp.setupNodes(board_hex_height=5, board_hex_width=5, initial_offset=2)
+        Paths = BoardSetUp.setup_paths(Nodes)
 
-        #create dictorionaries that store stup information about the tiles, nodes, and paths
+        BoardSetUp.findAllHexNodes(Nodes, Tiles)
+
+        #Add Nodes
+        return Tiles, Nodes, Paths
+
+        #create dictorionaries that store setup information about the tiles, nodes, and paths
 
     
     
@@ -54,8 +58,7 @@ class Game:
 
 game = Game(None, [Player("Alice", "red")])
 
-tiles = game.setup()
-nodes = BoardSetUp.setupNodes(5, 5, 2)
+tiles, nodes, paths = game.setup()
 for tile in tiles:
     print(f"ID: {tile.id}, RESOURCE {tile.resource}, Tile Type: {tile.terrain_type}, NUMBER: {tile.number_token}")
 for node_row in nodes:
@@ -68,12 +71,9 @@ for node_row in nodes:
 
     print("")
 print("------------------------------------------------------------------")
-paths = BoardSetUp.setup_paths(nodes)
 print(f"Total Paths: {len(paths)}")
 
-hexes = BoardSetUp.findAllHexNodes(nodes, tiles)
-
-for hex in hexes:
+for hex in tiles:
     print(f"Hex ID: {hex.id} has associated nodes: {[node.id for node in hex.associated_nodes]}")
 
 
