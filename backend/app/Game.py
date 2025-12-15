@@ -54,30 +54,34 @@ class Game:
 
         updated_board = Board(tiles=Tiles, nodes=Nodes, paths=Paths)
 
-        self.board = updated_board 
+        self.board = updated_board
         return Tiles, Nodes, Paths
     
     def nextTurn(self):
             self.current_turn = (self.current_turn + 1) % len(self.players)
 
-game = Game(None, [Player("Alice", "red")])
+game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+
 
 tiles, nodes, paths = game.setup()
-for tile in tiles:
-    print(f"ID: {tile.id}, RESOURCE {tile.resource}, Tile Type: {tile.terrain_type}, NUMBER: {tile.number_token}")
-for node_row in nodes:
-    print("------------------------------------------------------------------")
-    for node in node_row:
-        if node is None:
-            print("Buf", end=" | ")
-        else:
-            print(f"{node.id}", end = " | ")
+node = paths[1]
 
-    print("")
-print("------------------------------------------------------------------")
-print(f"Total Paths: {len(paths)}")
+for prop_name, prop_value in vars(node).items():
+    print(f"{prop_name}: {type(prop_value)}")
 
-for hex in tiles:
-    print(f"Hex ID: {hex.id} has associated nodes: {[node.id for node in hex.associated_nodes]}")
+# for tile in tiles:
+#     print(f"ID: {tile.id}, RESOURCE {tile.resource}, Tile Type: {tile.terrain_type}, NUMBER: {tile.number_token}")
+# for node_row in nodes:
+#     print("------------------------------------------------------------------")
+#     for node in node_row:
+#         if node is None:
+#             print("Buf", end=" | ")
+#         else:
+#             print(f"{node.id}", end = " | ")
 
+#     print("")
+# print("------------------------------------------------------------------")
+# print(f"{paths[0].connectedNodes}")
 
+# for hex in tiles:
+#     print(f"Hex ID: {hex.id} has associated nodes: {[node.id for node in hex.associated_nodes]}")
