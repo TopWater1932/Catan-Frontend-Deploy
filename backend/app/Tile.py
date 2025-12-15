@@ -1,35 +1,32 @@
 from enum import Enum
 
 class Tile:
-    def __init__(self,id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
+    def __init__(self, id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
         self.id = id
         self.x = x
         self.y = y
         self.terrain_type = terrain_type
         self.resource = resource
         self.number_token = number_token
-
-        if self.terrain_type == TerrainType.DESERT.value:
-            self.has_robber = True
-
-
-    def findAssociatedNodes(self, all_nodes):
-        pass
-        "TODO: implement this function"
-
-    def setAssociatedNodes(self, associated_nodes):
-        self.associated_nodes = associated_nodes
-        "TODO: implement this function"
+        self.associated_nodes = []
 
     def giveResoucetoPlayers(self):
-        pass
+        for node in self.associated_nodes:
+            if node.occupiedBy != None:
+                if node.buildingType == "SETTLEMENT":
+                    amount = 1
+                elif node.buildingType == "CITY":
+                    amount = 2
+                player = node.occupiedBy
+                player.giveResource(self.resource, amount)
+
 
 
 class TerrainType(Enum):
-    BRICK = "brick"
-    WOOD = "wood"
-    ORE = "ore"
-    WHEAT = "wheat"
-    SHEEP = "sheep"
-    DESERT = "desert"
+    HILLS = "BRICK"
+    FOREST = "LUMBER"
+    MOUNTAINS = "ORE"
+    FIELDS = "GRAIN"
+    PASTURE = "WOOL"
+    DESERT = None
     

@@ -32,8 +32,9 @@ async def initialise():
     # Create a new game instance and intialise it. Only do it once, otherwise provide the same info.
     if initialised == False:
         game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
-        initialisePackage = game.setup()
-
+        game.setup()
+        initialisePackage = game.board
         initialised = True
 
+    #note this current sends the Board Object which contains tiles, nodes and paths
     return initialisePackage

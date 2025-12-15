@@ -15,6 +15,13 @@ class Player:
 
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
+    
+    def giveResource(self, resource_type, amount):
+        if resource_type in self.resource_cards:
+            self.resource_cards[resource_type] += amount
+        else:
+            print("[ERROR] Resource type not recognized.")
+
 
     
 class Colour(Enum):
