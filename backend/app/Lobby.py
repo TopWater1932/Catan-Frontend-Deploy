@@ -1,4 +1,5 @@
 import asyncio
+import jsonpickle as jp
 
 class Lobby:
     def __init__(self,name):
@@ -49,6 +50,8 @@ class Lobby:
 
     # Send board state
     async def update_board_state(self,board):
+        json = jp.encode(board)
+
         for player in self.connections:
             await player.send_json({
                 'actionType':'updateBoardState',

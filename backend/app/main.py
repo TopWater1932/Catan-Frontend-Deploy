@@ -4,7 +4,6 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect,HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from Lobby import Lobby
-from data_classes.data_classes import LobbyName, Board,Tile,Node,Path
 # from utils.triage_action import admin_action
 
 
@@ -35,6 +34,8 @@ app.add_middleware(
 # Hashmap containing all lobbies
 lobbies = {}
 
+class LobbyName(BaseModel):
+    name: str
 
 
 # Initial post when using "Create Lobby" button on options page
@@ -101,12 +102,10 @@ async def wsEndpoint(websocket: WebSocket):
                     # Create a new game instance and intialise it. Only do it once, otherwise provide the same info.
                     if initialised == False:
                         game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
-
-                        tiles, nodes, paths = game.setup()
-                        board = Board(tiles=tiles,nodes=nodes,paths=paths)
-
+                        game.setup()
+                        intialisedPackage = game.board
+                        await lobby.update_board_state(intialisedPackage)
                         initialised = True
-                        await lobby.update_board_state(board.dict())
 
             
             # Insert logic on what to do with data when received

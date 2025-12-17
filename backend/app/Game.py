@@ -60,14 +60,14 @@ class Game:
     def nextTurn(self):
             self.current_turn = (self.current_turn + 1) % len(self.players)
 
-game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+# game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
 
 
-tiles, nodes, paths = game.setup()
-node = paths[1]
+# tiles, nodes, paths = game.setup()
+# node = paths[1]
 
-for prop_name, prop_value in vars(node).items():
-    print(f"{prop_name}: {type(prop_value)}")
+# for prop_name, prop_value in vars(node).items():
+#     print(f"{prop_name}: {type(prop_value)}")
 
 # for tile in tiles:
 #     print(f"ID: {tile.id}, RESOURCE {tile.resource}, Tile Type: {tile.terrain_type}, NUMBER: {tile.number_token}")
