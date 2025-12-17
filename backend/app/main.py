@@ -24,6 +24,10 @@ app.add_middleware(
 # async def handleInitInputs():
 #     # Process initialization inputs here
 #     return {"message": "Initialisation inputs received."}
+# @app.post("/init-inputs")
+# async def handleInitInputs():
+#     # Process initialization inputs here
+#     return {"message": "Initialisation inputs received."}
 
 
 
