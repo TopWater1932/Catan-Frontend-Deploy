@@ -26,7 +26,7 @@ class BoardSetUp:
                 num = random.choice(available_numbers)
                 available_numbers.remove(num)
             resource = resource_dictionary.get(terrain)
-            tile = Tile(id=str(i), x=0, y=0, terrain_type=terrain, resource=resource, number_token=num) #currently does not record x, y coordinates
+            tile = Tile(id=f'T{i}', x=0, y=0, terrain_type=terrain, resource=resource, number_token=num) #currently does not record x, y coordinates
             tileList.append(tile)
             available_tiles[terrain] -= 1
             if(available_tiles[terrain] == 0):

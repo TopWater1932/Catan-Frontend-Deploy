@@ -6,6 +6,7 @@ class Lobby:
         self.name=name
         self.maxPlayers=4
         self.connections = []
+        self.game = False
 
     # Add new websocket connection to the connections list for this lobby
     async def addToLobby(self,ws):
@@ -48,12 +49,18 @@ class Lobby:
                 del lobbies[self.name]
                 print(f'Lobby {self.name} removed from lobby list.')
 
-    # Send board state
-    async def update_board_state(self,board):
-        json = jp.encode(board)
+    # Serialize python object to JSON and send
+    async def send_gamestate(self,data,to,**kwargs):
+        json_package = jp.encode(data)
 
-        for player in self.connections:
-            await player.send_json({
-                'actionType':'updateBoardState',
-                'data':board
-            })
+        if to == 'all':
+            for player in self.connections:
+                await player.send_json(json_package)
+
+        elif to == 'me':
+            await kwargs['me'].send_json(json_package)
+
+        elif to == 'others':
+            for player in self.connections:
+                if player is not kwargs['me']:
+                    await player.send_json(json_package)

@@ -10,8 +10,9 @@ from Lobby import Lobby
 app = FastAPI()
 
 origins = [
-    "http://localhost:5173",  # Allow your Vite development server
+    "http://localhost:5173",  # Allow Vite development server
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -19,20 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# @app.post("/init-inputs")
-# async def handleInitInputs():
-#     # Process initialization inputs here
-#     return {"message": "Initialisation inputs received."}
-# @app.post("/init-inputs")
-# async def handleInitInputs():
-#     # Process initialization inputs here
-#     return {"message": "Initialisation inputs received."}
-
-
-
-# ********************** WebSocket Lobby **********************
-
 
 
 # Hashmap containing all lobbies
@@ -62,11 +49,6 @@ def createLobby(data: LobbyName):
     return {'msg':message,'lobbyList':lobbyList}
 
 
-
-# class JoinLobbyData(BaseModel):
-#     lob_name: str
-#     player_id: str
-#     player_name: str
 
 # Create websocket connection, add it to a lobby and triage ongoing requests from frontend.
 @app.websocket('/ws/')
@@ -101,22 +83,20 @@ async def wsEndpoint(websocket: WebSocket):
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':
                 if data['actionType'] == 'initialise':
-                    initialised = False
 
                     # Create a new game instance and intialise it. Only do it once, otherwise provide the same info.
-                    if initialised == False:
+                    if lobby.game == False:
                         game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+                        lobby.game = game
                         game.setup()
                         intialisedPackage = game.board
-                        await lobby.update_board_state(intialisedPackage)
-                        initialised = True
+                        print(lobby.game)
+                        await lobby.send_gamestate(intialisedPackage,'all')
+                    else:
+                        await websocket.send_gamestate(game,'me',me=websocket)
 
             
             # Insert logic on what to do with data when received
 
     except WebSocketDisconnect:
         await lobby.disconnected(websocket,lobbies,name)
-
-
-
-    

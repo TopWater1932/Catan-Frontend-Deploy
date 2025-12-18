@@ -3,6 +3,10 @@ class Node:
         # self.next = None
         self.id = id
         self.paths = []
+
+    def __getstate__(self):
+        self.paths = [path.id for path in self.paths]
+        return self.__dict__
         
     def updateNeighbors(self):
         for path in self.paths:
