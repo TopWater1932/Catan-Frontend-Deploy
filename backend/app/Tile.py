@@ -10,6 +10,10 @@ class Tile:
         self.number_token = number_token
         self.associated_nodes = []
 
+    def __getstate__(self):
+        self.associated_nodes = [node.id for node in self.associated_nodes]
+        return self.__dict__
+
     def giveResoucetoPlayers(self):
         for node in self.associated_nodes:
             if node.occupiedBy != None:

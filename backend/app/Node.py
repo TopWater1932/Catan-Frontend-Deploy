@@ -1,8 +1,12 @@
 class Node:
     def __init__(self, id, occupiedBy=None, isBuildable=True, buildingType=None, paths=[]):
-        self.next = None
+        # self.next = None
         self.id = id
         self.paths = []
+
+    def __getstate__(self):
+        self.paths = [path.id for path in self.paths]
+        return self.__dict__
         
     def updateNeighbors(self):
         for path in self.paths:
