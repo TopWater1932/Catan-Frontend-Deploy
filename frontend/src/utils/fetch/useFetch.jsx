@@ -24,7 +24,7 @@ function useFetch(url) {
         }
 
         fetchAPI();
-        console.log(data);
+        
     }, [url]);
     return { data, loading, error };
 }

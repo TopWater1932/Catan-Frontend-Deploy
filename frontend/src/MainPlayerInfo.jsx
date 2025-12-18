@@ -13,7 +13,7 @@ function MainPlayerInfo({id}) {
   let {knightsPlayed} = devCards;
 
   
-  let cardArray = createCardArray(id,resources,devCards);
+  let cardArray = createCardArray(resources,devCards);
 
 
   return (
