@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from Lobby import Lobby
 # from utils.triage_action import admin_action
 
+import json
+
 
 app = FastAPI()
 
@@ -45,8 +47,7 @@ def createLobby(data: LobbyName):
     message = f"Lobby '{name}' has been created. You may now join."
     lobbyList = list(lobbies.keys())
 
-
-    return {'msg':message,'lobbyList':lobbyList}
+    return json.dumps({'msg':message,'lobbyList':lobbyList})
 
 
 

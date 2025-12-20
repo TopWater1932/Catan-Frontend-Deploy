@@ -1,7 +1,7 @@
 .options-content {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto 3fr 3fr auto;
+  grid-template-rows: auto 2fr 1fr 1fr auto;
   gap: 1rem;
   align-items: stretch;
   background-color: rgb(255, 239, 147);
@@ -20,11 +20,9 @@
   text-decoration: underline;
 }
 
-
-
 .options-content a {
   grid-column: 1;
-  grid-row: 4;
+  grid-row: 5;
   justify-self: start;
   align-self: end;
   text-align: center;
@@ -34,17 +32,25 @@
 
 #play-now {
   grid-column: 2 / 4;
-  grid-row: 4;
+  grid-row: 5;
   font-size: larger;
   justify-self: center;
   align-self: end;
+}
+
+.opt-panel-button {
+  width: 100%;
+}
+
+.opt-panel-button:hover {
+  width: 100%;
 }
 
 /* ---------- Panels positioning ---------- */
 
 .setup-panel {
   grid-column: 1 / 3;
-  grid-row: 2 / 4;
+  grid-row: 2 / 5;
   padding: 1.5rem;
 }
 
@@ -124,13 +130,15 @@
 
 .server-messages {
   grid-column: 3 / 5;
-  grid-row: 3 / 4;
+  grid-row: 4;
   align-self: end;
+  height: 100%;
 
   background-color: white;
   color: black;
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 10px;
   outline: 1px solid black;
   font-style: italic;
+  font-size: 0.9rem;
 }

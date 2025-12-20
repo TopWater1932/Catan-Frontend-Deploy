@@ -1,13 +1,15 @@
 import { useContext } from "react"
-import { GlobalContext } from "./GlobalContext.jsx";
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { GameContext } from "../../context/GameContext.jsx";
 import PlayerInfo from "./PlayerInfo.jsx";
-import './styles/options-modal.css'
+import '../../styles/options-modal.css'
 
 
 
 function BuyModalContent({ setBuyModalIsVisible }) {
     
-    const {players,setPlayers,turn,resIcons} = useContext(GlobalContext);
+    const {players,setPlayers,turn} = useContext(WebsocketContext);
+    const {resIcons} = useContext(GameContext);
     const {resources,structures,devCards,vps} = players[turn];
     const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;
 

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './styles/buttons.css'
+import '../../styles/buttons.css'
 import Modal from './Modal.jsx'
 import PlayDevCardModalContent from './PlayDevCardModalContent.jsx'
 import EndTurnModalContent from './EndTurnModalContent.jsx'
@@ -8,7 +8,7 @@ import MaritimeTradeModalContent from './MaritimeTradeModalContent.jsx'
 import PlayerTradeModalContent from './PlayerTradeModalContent.jsx'
 import BuyModalContent from './BuyModalContent.jsx'
 
-import { TradeContext } from './TradeContext.jsx'
+import { TradeContext } from '../../context/TradeContext.jsx'
 
 function ActionButtons() {
   

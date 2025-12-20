@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { createPortal } from "react-dom"
-import closeBtn from "./assets/close-btn.svg"
-import './styles/modal.css'
+import closeBtn from "../../assets/close-btn.svg"
+import '../../styles/modal.css'
 
 import { ModalContext } from "./ModalContext.jsx";
 

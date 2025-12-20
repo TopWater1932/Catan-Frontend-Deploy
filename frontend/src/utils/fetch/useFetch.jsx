@@ -1,32 +1,41 @@
-import { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 
-function useFetch(url) {
+function useFetch(url,method,info,setServerMsgs) {
     const [data,setData] = useState(null);
-    const [loading,setLoading] = useState(true);
+    const [loading,setLoading] = useState(false);
     const [error,setError] = useState(null);
 
-    useEffect(() => {
-        const fetchAPI = async () => {
-            try {
-                const response = await fetch(url);
+    const fetchCallback = useCallback(async () => {
+        try {
+            setLoading(true)
+            let response;
+            if (method === "GET") {
+                response = await fetch(url);
+            } else {
+                response = await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(info)
+                });
+            }
+
+            const json = await response.json();
 
             if (!response.ok) {
-                throw new Error(`Something went wrong when retrieving the data. Server status code: ${response.status}`);
+                throw new Error(`Server error: ${json.detail} Server status code: ${response.status}`);
             }
-
-                const json = await response.json();
-                setData(json);
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
+            const jsObj = JSON.parse(json)
+            setData(jsObj);
+            setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+        } catch (error) {
+            setError(error);
+            setServerMsgs(prevMsgs => [...prevMsgs,error.message])
+        } finally {
+            setLoading(false);
         }
-
-        fetchAPI();
-        
-    }, [url]);
-    return { data, loading, error };
+    }, [url,method,info]);
+    
+    return [ data, loading, error, fetchCallback ];
 }
 
 export default useFetch

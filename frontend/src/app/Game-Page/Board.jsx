@@ -1,11 +1,11 @@
 import { useState , useLayoutEffect, useRef} from 'react'
 import Structures from './Structures.jsx'
-import './styles/board.css'
+import '../../styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
-import handleWindowResize from './utils/event-handler/func-handleWindowResize.jsx'
-import initialiseTileGrid from './utils/func-initialiseTileGrid.jsx'
+import handleWindowResize from '../../utils/event-handler/func-handleWindowResize.jsx'
+import initialiseTileGrid from '../../utils/func-initialiseTileGrid.jsx'
 
-import Tile from './classes/Tile.jsx'
+import Tile from '../../classes/Tile.jsx'
 
 
 function Board() {

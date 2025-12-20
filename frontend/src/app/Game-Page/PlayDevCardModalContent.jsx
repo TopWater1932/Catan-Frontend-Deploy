@@ -1,11 +1,11 @@
 import { useContext } from "react"
-import { GlobalContext } from "./GlobalContext.jsx";
-import capsResourceName from './utils/func-capsResourceNames.jsx'
-import './styles/options-modal.css'
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import capsResourceName from '../../utils/func-capsResourceNames.jsx'
+import '../../styles/options-modal.css'
 
 function PlayDevCardModalContent({ setDCModalIsVisible }) {
 
-  const {players,turn} = useContext(GlobalContext);
+  const {players,turn} = useContext(WebsocketContext);
   const {devCards} = players[turn];
 
     const names = Object.keys(devCards).slice(0,5);

@@ -1,10 +1,10 @@
 import { useContext } from "react"
-import { GlobalContext } from "./GlobalContext.jsx";
-import './styles/close-btn.css';
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import '../../styles/close-btn.css';
 
 function EndTurnModalContent({ setEndModalIsVisible }) {
     
-    const { turn, setTurn } = useContext(GlobalContext);
+    const { turn, setTurn } = useContext(WebsocketContext);
 
     const handleClick = () => {
         
