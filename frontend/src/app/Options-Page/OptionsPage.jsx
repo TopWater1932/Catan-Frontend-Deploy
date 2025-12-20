@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom';
 import useFetch from '../../utils/fetch/useFetch'
 import ServerMsgsWindow from './ServerMsgsWindow.jsx'
 import '../../styles/Options-Page.css'
+import { WebsocketContext } from '../../context/WebsocketContext.jsx'
 
-function OptionsPage() {
+function OptionsPage({setSocketURL}) {
+
+    const {playerName,setPlayerName} = useContext(WebsocketContext)
 
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
-    const [playerName,setPlayerName] = useState('')
     const [playerColor,setPlayerColor] = useState('')
 
     const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
@@ -18,14 +20,6 @@ function OptionsPage() {
     const [createLobMsg, createLobLoading, createLobError, createLobbyFetch] = useFetch(createLobbyURL,"POST",createLobbyBody,setServerMsgs)
 
 
-    const joinLobbyURL = `ws://127.0.0.1:8000/ws/?lobby_name=${createLobbyName}`
-    const joinLobbyBody = {
-        'actionCategory':'admin',
-        'actionType':'join',
-        'name':playerName
-    }
-    const [joinLobMsg, joinLobLoading, joinLobError, joinLobbyFetch] = useFetch(joinLobbyURL,"GET",'',setServerMsgs)
-
     const handleCreateLobby = (e) => {
         e.preventDefault()
         createLobbyFetch()
@@ -33,8 +27,8 @@ function OptionsPage() {
 
     const handleJoinLobby = (e) => {
         e.preventDefault()
-        console.log('test')
-        joinLobbyFetch()
+        setPlayerName(e.target.value)
+        setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
     }
 
 

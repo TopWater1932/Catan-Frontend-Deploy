@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './styles/index.css'
 import Game from './app/Game-Page/Game.jsx'
 import LandingPage from './app/Landing-Page/LandingPage.jsx'
@@ -6,8 +6,11 @@ import OptionsPage from './app/Options-Page/OptionsPage.jsx'
 import Player from './classes/Player.jsx'
 import { WebsocketContext } from './context/WebsocketContext.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import useWebSocket from 'react-use-websocket';
 
 function App() {
+
+  const [playerName,setPlayerName] = useState('')
 
   const playerIDs = ["mp","p1","p2","p3"];
   const playerNames = ["Main Player","Player 1","Player 2","Player 3"]
@@ -50,9 +53,30 @@ function App() {
 
   const [players,setPlayers] = useState(initialPlayerState);
 
+  const [socketURL,setSocketURL] = useState(null)
+  
+  const joinLobbyBody = {
+    'actionCategory':'admin',
+    'actionType':'join',
+    'name':playerName
+  }
+  const {sendJsonMessage,lastJsonMessage,readyState} = useWebSocket(socketURL,
+    {
+      onOpen: () => {
+        sendJsonMessage(joinLobbyBody)
+        console.log('success')
+      }
+    }
+  )
+
+  useEffect(() => {
+    // Add ref to prevent run on first redner. Add logic to append lastJsonMessage on change to server messages.
+  }, [lastJsonMessage]);
+
   return (
     <WebsocketContext.Provider
       value={{
+        playerName,setPlayerName,
         players, setPlayers,
         missions,
         turn, setTurn,
@@ -65,7 +89,7 @@ function App() {
         <Routes>
 
           <Route path="/" element={<LandingPage />} />
-          <Route path="/setup" element={<OptionsPage />} />
+          <Route path="/setup" element={<OptionsPage setSocketURL={setSocketURL} />} />
           <Route path="/game" element={<Game />} />
 
         </Routes>

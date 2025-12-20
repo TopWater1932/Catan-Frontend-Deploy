@@ -11,7 +11,7 @@ function useCustomWebsocket(url,method,info,setServerMsgs) {
     }
         
     
-    return [ data, loading, error, fetchCallback ];
+    return [ data, loading, error, wsCallback ];
 }
 
 export default useCustomWebsocket
