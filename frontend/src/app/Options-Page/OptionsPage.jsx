@@ -5,15 +5,12 @@ import ServerMsgsWindow from './ServerMsgsWindow.jsx'
 import '../../styles/Options-Page.css'
 import { WebsocketContext } from '../../context/WebsocketContext.jsx'
 
-function OptionsPage({setSocketURL}) {
+function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor}) {
 
     const {playerName,setPlayerName} = useContext(WebsocketContext)
 
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
-    const [playerColor,setPlayerColor] = useState('')
-
-    const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
 
     const createLobbyURL = 'http://127.0.0.1:8000/lobbies'
     const createLobbyBody = {'name':createLobbyName}
@@ -27,7 +24,6 @@ function OptionsPage({setSocketURL}) {
 
     const handleJoinLobby = (e) => {
         e.preventDefault()
-        setPlayerName(e.target.value)
         setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
     }
 

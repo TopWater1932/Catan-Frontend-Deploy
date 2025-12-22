@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import './styles/index.css'
 import Game from './app/Game-Page/Game.jsx'
 import LandingPage from './app/Landing-Page/LandingPage.jsx'
@@ -52,26 +52,55 @@ function App() {
   ));
 
   const [players,setPlayers] = useState(initialPlayerState);
-
+  const [playerColor,setPlayerColor] = useState('')
+  
   const [socketURL,setSocketURL] = useState(null)
+  const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
+  // const isMounting = useRef(true);
+  // const 
   
   const joinLobbyBody = {
     'actionCategory':'admin',
     'actionType':'join',
     'name':playerName
   }
-  const {sendJsonMessage,lastJsonMessage,readyState} = useWebSocket(socketURL,
+
+  const onMessageCallback = (messageEvent) => {
+
+    const jsObj = JSON.parse(messageEvent.data)
+    
+    if (jsObj.actionCategory === 'admin') {
+        if (jsObj.actionType === 'message') {
+            setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+        }
+    }
+  }
+
+  const {sendJsonMessage,readyState} = useWebSocket(socketURL,
     {
       onOpen: () => {
         sendJsonMessage(joinLobbyBody)
-        console.log('success')
-      }
+      },
+
+      onMessage: onMessageCallback
     }
   )
+  
+    // const appendServerMsg = useCallback((setServerMsg) => {
+    //     const jsObj = JSON.parse(lastJsonMessage)
+    //     setServerMsg(prevMsgList => [...prevMsgList,jsObj.msg])
+    //   }, [lastJsonMessage])
 
-  useEffect(() => {
-    // Add ref to prevent run on first redner. Add logic to append lastJsonMessage on change to server messages.
-  }, [lastJsonMessage]);
+  // useEffect(() => {
+  //   if (isMounting.current === true) {
+  //     isMounting.current === false
+  //     return
+  //   }
+
+
+
+  //   // Add ref to prevent run on first redner. Add logic to append lastJsonMessage on change to server messages.
+  // }, [lastJsonMessage]);
 
   return (
     <WebsocketContext.Provider
@@ -89,7 +118,13 @@ function App() {
         <Routes>
 
           <Route path="/" element={<LandingPage />} />
-          <Route path="/setup" element={<OptionsPage setSocketURL={setSocketURL} />} />
+          <Route path="/setup" element={<OptionsPage
+            setSocketURL={setSocketURL}
+            serverMsgs={serverMsgs}
+            setServerMsgs={setServerMsgs}
+            playerColor={playerColor}
+            setPlayerColor={setPlayerColor}
+          />} />
           <Route path="/game" element={<Game />} />
 
         </Routes>
