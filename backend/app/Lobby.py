@@ -12,8 +12,9 @@ class Lobby:
     async def addToLobby(self,ws):
         self.connections.append(ws)
 
-        message = "Connection successfully added to lobby. Please provide player info."
+        message = "Connection successfully added to lobby."
         await ws.send_json({
+                'actionCategory':'admin',
                 'actionType':'message',
                 'msg':message
             })
@@ -33,6 +34,7 @@ class Lobby:
     async def broadcast(self,message):
         for player in self.connections:
             await player.send_json({
+                'actionCategory':'admin',
                 'actionType':'message',
                 'msg':message
             })

@@ -1,12 +1,13 @@
 from Game import Game
 # from Player import Player
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect,HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect,HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from Lobby import Lobby
 # from utils.triage_action import admin_action
 
 import json
+import requests
 
 
 app = FastAPI()
@@ -33,7 +34,7 @@ class LobbyName(BaseModel):
 
 # Initial post when using "Create Lobby" button on options page
 @app.post("/lobbies")
-def createLobby(data: LobbyName):
+def createLobby(data: LobbyName, background_tasks:BackgroundTasks):
     name = data.name
 
     if name in lobbies:
@@ -43,11 +44,18 @@ def createLobby(data: LobbyName):
         raise HTTPException(status_code=400, detail="Too many active lobbies. Please try again later.")
 
     lobbies[name] = Lobby(name)
+    timeStale = 240
 
-    message = f"Lobby '{name}' has been created. You may now join."
+    message = f"Lobby '{name}' has been created. You may now join. Lobby will close in {timeStale/60}mins if nobody has joined."
     lobbyList = list(lobbies.keys())
 
-    return json.dumps({'msg':message,'lobbyList':lobbyList})
+    background_tasks.add_task(lobbies[name].lobby_timer,lobbies,timeStale)
+
+    return json.dumps({
+        'actionCategory':'admin',
+        'actionType':'msg',
+        'msg':message,
+    })
 
 
 
@@ -65,6 +73,7 @@ async def wsEndpoint(websocket: WebSocket):
         else:
             message = f'{lobby_name} is not an existing lobby.'
             await websocket.send_json({
+                'actionCategory':'admin',
                 'actionType':'message',
                 'msg':message
             })
@@ -91,7 +100,6 @@ async def wsEndpoint(websocket: WebSocket):
                         lobby.game = game
                         game.setup()
                         intialisedPackage = game.board
-                        print(lobby.game)
                         await lobby.send_gamestate(intialisedPackage,'all')
                     else:
                         await websocket.send_gamestate(game,'me',me=websocket)
