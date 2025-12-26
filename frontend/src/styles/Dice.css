@@ -1,0 +1,9 @@
+.dice-face-lg.rolling {
+  animation: diceWiggle 0.12s infinite linear;
+}
+
+@keyframes diceWiggle {
+  0% { transform: rotate(-6deg) scale(1.02); }
+  50% { transform: rotate(6deg) scale(0.98); }
+  100% { transform: rotate(-6deg) scale(1.02); }
+}

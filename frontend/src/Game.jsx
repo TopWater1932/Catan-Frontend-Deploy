@@ -9,6 +9,8 @@ import PlayerInfo from './PlayerInfo.jsx'
 import ActionButtons from './ActionButtons.jsx'
 import Board from './Board.jsx'
 import useFetch from './utils/fetch/useFetch.jsx'
+import Dice from "./Dice.jsx"
+
 
 
 function Game() {
@@ -102,6 +104,10 @@ function Game() {
           }
           
           <Board />
+
+          <div id="dice-area">
+            <Dice />
+          </div>
           
           <PlayerInfo />
 
