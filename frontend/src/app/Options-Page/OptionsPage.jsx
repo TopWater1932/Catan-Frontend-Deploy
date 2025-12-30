@@ -7,14 +7,23 @@ import { WebsocketContext } from '../../context/WebsocketContext.jsx'
 
 function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor}) {
 
-    const {playerName,setPlayerName} = useContext(WebsocketContext)
+    const {
+        playerName, setPlayerName,
+        sendJsonMessage
+    } = useContext(WebsocketContext)
 
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
+    const [readyToStart,setReadyToStart] = useState(false)
 
     const createLobbyURL = 'http://127.0.0.1:8000/lobbies'
     const createLobbyBody = {'name':createLobbyName}
-    const [createLobMsg, createLobLoading, createLobError, createLobbyFetch] = useFetch(createLobbyURL,"POST",createLobbyBody,setServerMsgs)
+    const [
+        createLobMsg,
+        createLobLoading,
+        createLobError,
+        createLobbyFetch
+    ] = useFetch(createLobbyURL,"POST",createLobbyBody,setServerMsgs)
 
 
     const handleCreateLobby = (e) => {
@@ -27,8 +36,16 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
         setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
     }
 
-
     const handleStart = () => {
+        if (!readyToStart) {
+            setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
+            return
+        }
+        const initialiseBody = {
+            'actionCategory':'game',
+            'actionType':'initialise'
+        }
+        sendJsonMessage(initialiseBody)
         console.log('fj')
     }
 
@@ -96,7 +113,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <ServerMsgsWindow messages={serverMsgs}/>
 
                 <Link className="button" to="/">Back</Link>
-                <Link className="button" id='play-now' to="/game" onClick={handleStart}>PLAY NOW</Link>
+                <Link className={readyToStart ? "button" : "button link-disabled"} id='play-now' to={readyToStart ? "/game" : "#"} onClick={handleStart}>PLAY NOW</Link>
             </div>
         </div>
     )

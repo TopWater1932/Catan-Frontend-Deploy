@@ -1,5 +1,5 @@
 from Game import Game
-# from Player import Player
+from Player import Player
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect,HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -58,6 +58,7 @@ def createLobby(data: LobbyName, background_tasks:BackgroundTasks):
     })
 
 
+connNum = 0
 
 # Create websocket connection, add it to a lobby and triage ongoing requests from frontend.
 @app.websocket('/ws/')
@@ -65,11 +66,13 @@ async def wsEndpoint(websocket: WebSocket):
     await websocket.accept()
     lobby_name = websocket.query_params.get("lobby_name")
 
+    global connNum
     try:
         if lobby_name in lobbies.keys():
             lobby = lobbies[lobby_name]
-            await lobby.addToLobby(websocket)
-            name = 'Anonymous Villager'
+            playerID = f'p{connNum}'
+            await lobby.addToLobby(websocket,playerID)
+            connNum += 1
         else:
             message = f'{lobby_name} is not an existing lobby.'
             await websocket.send_json({
@@ -87,8 +90,12 @@ async def wsEndpoint(websocket: WebSocket):
             # Undertake websocket admin actions.
             if data['actionCategory'] == 'admin':
                 if data['actionType'] == 'join':
-                    name = data['name']
-                    await lobby.broadcast(f'{name} has joined the game.')
+                    playerObj = lobby.connections[playerID][1]
+                    playerObj.name = data['name']
+                    playerObj.colour = data['color']
+
+                    playerList = lobby.getPlayerList()
+                    await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerList)
 
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':
@@ -97,12 +104,12 @@ async def wsEndpoint(websocket: WebSocket):
                     # Create a new game instance and intialise it. Only do it once, otherwise provide the same info.
                     if lobby.game == False:
                         game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
-                        lobby.game = game
                         game.setup()
+                        lobby.game = game
                         intialisedPackage = game.board
-                        await lobby.send_gamestate(intialisedPackage,'all')
+                        await lobby.send_gamestate(intialisedPackage,'all','initialise')
                     else:
-                        await websocket.send_gamestate(game,'me',me=websocket)
+                        await websocket.send_gamestate(game,'me','initialise',me=websocket)
 
             
             # Insert logic on what to do with data when received

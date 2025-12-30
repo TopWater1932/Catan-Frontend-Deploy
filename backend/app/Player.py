@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Player:
-    def __init__(self,id, name, colour, resource_cards={}, development_cards={}, buildings={}, victory_points=0):
+    def __init__(self,id, name='', colour='', resource_cards={}, development_cards={}, buildings={}, victory_points=0):
         self.id = id
         self.name = name
         self.colour = colour

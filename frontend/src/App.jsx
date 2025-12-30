@@ -53,27 +53,44 @@ function App() {
 
   const [players,setPlayers] = useState(initialPlayerState);
   const [playerColor,setPlayerColor] = useState('')
+  const [playerList, setPlayerList] = useState([])
   
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   // const isMounting = useRef(true);
   // const 
   
-  const joinLobbyBody = {
-    'actionCategory':'admin',
-    'actionType':'join',
-    'name':playerName
-  }
-
+  
   const onMessageCallback = (messageEvent) => {
-
+    
     const jsObj = JSON.parse(messageEvent.data)
     
     if (jsObj.actionCategory === 'admin') {
-        if (jsObj.actionType === 'message') {
-            setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+      if (jsObj.actionType === 'message') {
+        setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+      }
+        if (jsObj.actionType === 'connected') {
+          setPlayerList(jsObj.playerList)
         }
-    }
+        if (jsObj.actionType === 'join') {
+          setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+          setPlayerList(jsObj.data)
+        }
+        if (jsObj.actionType === 'disconnected') {
+          setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+        }
+      } else if (jsObj.actionCategory === 'game') {
+        if (jsObj.actionType === 'initialise') {
+          setServerMsgs(prevMsgs => [...prevMsgs,jsObj ?'Received gamestate':'Empty'])
+        }
+      }
+  }
+  
+  const joinLobbyBody = {
+    'actionCategory':'admin',
+    'actionType':'join',
+    'name':playerName,
+    'color':playerColor
   }
 
   const {sendJsonMessage,readyState} = useWebSocket(socketURL,
@@ -105,6 +122,7 @@ function App() {
   return (
     <WebsocketContext.Provider
       value={{
+        sendJsonMessage,
         playerName,setPlayerName,
         players, setPlayers,
         missions,
