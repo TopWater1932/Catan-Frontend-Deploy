@@ -1,9 +1,118 @@
+.dice-launcher {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+.dice-launch-btn {
+  pointer-events: auto;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 2px solid rgb(50, 50, 50);
+  background: rgb(255, 239, 147);
+  color: rgb(50, 50, 50);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dice-launch-btn:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+/* Modal overlay */
+.dice-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+}
+
+.dice-modal {
+  background: rgb(255, 239, 147);
+  color: rgb(50, 50, 50);
+  border-radius: 14px;
+  padding: 22px 20px;
+  min-width: 360px;
+  outline: 1px solid black;
+  display: grid;
+  gap: 14px;
+  place-items: center;
+}
+
+.dice-modal-title {
+  font-weight: 800;
+}
+
+.dice-row {
+  display: flex;
+  gap: 16px;
+}
+
+/* Dice faces */
+.dice-face-lg {
+  width: 120px;
+  height: 120px;
+  border: 2px solid rgb(50, 50, 50);
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+
+.pip-grid {
+  width: 86px;
+  height: 86px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pip {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgb(50, 50, 50);
+  opacity: 0;
+  justify-self: center;
+  align-self: center;
+}
+
+.pip-on {
+  opacity: 1;
+}
+
+/* Text */
+.dice-total {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dice-hint {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+/* Wiggle animation */
 .dice-face-lg.rolling {
   animation: diceWiggle 0.12s infinite linear;
 }
 
 @keyframes diceWiggle {
-  0% { transform: rotate(-6deg) scale(1.02); }
-  50% { transform: rotate(6deg) scale(0.98); }
-  100% { transform: rotate(-6deg) scale(1.02); }
+  0% {
+    transform: rotate(-6deg) scale(1.02);
+  }
+  50% {
+    transform: rotate(6deg) scale(0.98);
+  }
+  100% {
+    transform: rotate(-6deg) scale(1.02);
+  }
 }
