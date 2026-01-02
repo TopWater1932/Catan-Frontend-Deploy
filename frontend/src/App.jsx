@@ -57,19 +57,18 @@ function App() {
   
   const [displayDice,setDisplayDice] = useState(true)
 
+  const [tiles,setTiles] = useState([]);
+  const [paths,setPaths] = useState([]);
+  const [nodes,setNodes] = useState([]);
+
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
   
-  
   const onMessageCallback = (messageEvent) => {
     const jsObj = JSON.parse(messageEvent.data)
-
-    console.log(jsObj)
-    console.log(typeof jsObj)
-    console.log(jsObj.actionCategory)
-    console.log(jsObj.actionType)
     
+    // Admin related messages
     if (jsObj.actionCategory === 'admin') {
       if (jsObj.actionType === 'message') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
@@ -84,12 +83,39 @@ function App() {
       if (jsObj.actionType === 'disconnected') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
       }
+
+
+    // Game related messages
     } else if (jsObj.actionCategory === 'game') {
-      if (jsObj.actionType === 'initialised') {
-        setLobbyInitialised(true)
+        if (jsObj.actionType === 'initialised') {
+          let tempTiles = []
+          let tempPaths = []
+          let tempNodes = []
+          
+          jsObj.data.board.tiles.forEach(tile => {
+            console.log(tile["py/state"])
+            tempTiles.push(tile["py/state"])
+          });
+          
+          jsObj.data.board.paths.forEach(path => {
+            tempPaths.push(path["py/state"])
+          });
+          
+          jsObj.data.board.nodes.forEach(node => {
+            if (node) {
+              tempNodes.push(node["py/state"])
+            }
+          });
+
+          setPaths(tempPaths)
+          setNodes(tempNodes)
+          setTiles(tempTiles)
+          
+          
+          setLobbyInitialised(true)
+        }
       }
     }
-  }
   
   const joinLobbyBody = {
     'actionCategory':'admin',
@@ -120,7 +146,10 @@ function App() {
         turn, setTurn,
         playerIDs,
         playerNames,
-        playerColors
+        playerColors,
+        tiles, setTiles,
+        paths, setPaths,
+        nodes, setNodes
       }}
     >
       <BrowserRouter>

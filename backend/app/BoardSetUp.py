@@ -22,11 +22,13 @@ class BoardSetUp:
 
             if(terrain == "DESERT"):
                 num = None
+                robber = True
             else:
                 num = random.choice(available_numbers)
                 available_numbers.remove(num)
+                robber = False
             resource = resource_dictionary.get(terrain)
-            tile = Tile(id=f'T{i}', x=0, y=0, terrain_type=terrain, resource=resource, number_token=num) #currently does not record x, y coordinates
+            tile = Tile(id=f'T{i}', x=0, y=0, terrain_type=terrain, resource=resource, number_token=num, has_robber=robber) #currently does not record x, y coordinates
             tileList.append(tile)
             available_tiles[terrain] -= 1
             if(available_tiles[terrain] == 0):

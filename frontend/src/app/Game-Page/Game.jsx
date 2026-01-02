@@ -16,7 +16,6 @@ function Game() {
   
   const { players, missions, displayDice,lobbyInitialised } = useContext(WebsocketContext);
 
-  console.log(`Lobby initialised status in Game.jsx: ${lobbyInitialised}`)
 
   if (!lobbyInitialised) {
     return (

@@ -11,6 +11,12 @@ class Lobby:
         self.connCounter = 0
 
     def getPlayerList(self):
+        playerList = []
+        for conn in self.connections.values():
+            playerList.append(conn[1])
+        return playerList
+
+    def getPlayerNameList(self):
         playerNameList = []
         for conn in self.connections.values():
             playerNameList.append({'name':conn[1].name,'color':conn[1].colour})
@@ -24,7 +30,7 @@ class Lobby:
             self.connections[playerID] = [ws,newPlayer]
 
             message = "You were successfully added to lobby."
-            playerNameList = self.getPlayerList()
+            playerNameList = self.getPlayerNameList()
             await ws.send_json({
                     'actionCategory':'admin',
                     'actionType':'connected',

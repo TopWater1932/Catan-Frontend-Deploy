@@ -1,5 +1,5 @@
 export default class Tile {
-    constructor(id,resource,number,x,y) {
+    constructor(id,resource,number,robber,x,y) {
         this.id = id;
         this.resource = resource;
         this.number = number;

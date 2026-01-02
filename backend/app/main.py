@@ -91,8 +91,8 @@ async def wsEndpoint(websocket: WebSocket):
                     playerObj.name = data['name']
                     playerObj.colour = data['color']
 
-                    playerList = lobby.getPlayerList()
-                    await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerList)
+                    playerNameList = lobby.getPlayerNameList()
+                    await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerNameList)
 
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':
@@ -100,16 +100,18 @@ async def wsEndpoint(websocket: WebSocket):
 
                     # Create a new game instance and intialise it. Only do it once, otherwise provide the same info.
                     if lobby.game == False:
-                        game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+                        playerList = lobby.getPlayerList()
+                        game = Game(None, playerList)
                         game.setup()
                         lobby.game = game
-                        intialisedPackage = game.board
+                        intialisedPackage = game
                         await lobby.send_gamestate(intialisedPackage,'all','initialised')
                     else:
+                        intialisedPackage = lobby.game
                         await lobby.send_gamestate(intialisedPackage,'me','initialised',me=websocket)
 
             
             # Insert logic on what to do with data when received
 
     except WebSocketDisconnect:
-        await lobby.disconnected(websocket,lobbies,playerObj.name)
+        await lobby.disconnected(lobbies,playerObj.id,playerObj.name)

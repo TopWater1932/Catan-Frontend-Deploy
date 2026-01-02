@@ -13,13 +13,13 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
         sendJsonMessage,
         lobbyInitialised
     } = useContext(WebsocketContext)
-
-    // const firstMount = useRef(true);
     
     const navigate = useNavigate();
-    if (lobbyInitialised) {
-        navigate('/game');
-    }
+    useEffect(() => {
+        if (lobbyInitialised) {
+            navigate('/game');
+        }
+    }, [lobbyInitialised, navigate]);
 
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
@@ -46,10 +46,10 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     }
 
     const handleStart = () => {
-        if (playerList.length < 3) {
-            setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
-            return
-        }
+        // if (playerList.length < 3) {
+        //     setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
+        //     return
+        // }
 
         const initialiseBody = {
             'actionCategory':'game',
