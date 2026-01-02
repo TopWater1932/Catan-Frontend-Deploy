@@ -145,6 +145,7 @@ function App() {
             setServerMsgs={setServerMsgs}
             playerColor={playerColor}
             setPlayerColor={setPlayerColor}
+            playerList={playerList}
           />} />
           <Route path="/game" element={<Game />} />
 

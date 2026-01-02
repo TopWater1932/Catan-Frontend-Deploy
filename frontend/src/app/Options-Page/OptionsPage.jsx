@@ -5,7 +5,7 @@ import ServerMsgsWindow from './ServerMsgsWindow.jsx'
 import '../../styles/Options-Page.css'
 import { WebsocketContext } from '../../context/WebsocketContext.jsx'
 
-function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor}) {
+function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor,playerList}) {
 
     const {
         playerName, setPlayerName,
@@ -14,7 +14,6 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
 
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
-    const [readyToStart,setReadyToStart] = useState(false)
 
     const createLobbyURL = 'http://127.0.0.1:8000/lobbies'
     const createLobbyBody = {'name':createLobbyName}
@@ -37,10 +36,11 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     }
 
     const handleStart = () => {
-        if (!readyToStart) {
+        if (playerList.length < 3) {
             setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
             return
         }
+        
         const initialiseBody = {
             'actionCategory':'game',
             'actionType':'initialise'
@@ -113,7 +113,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <ServerMsgsWindow messages={serverMsgs}/>
 
                 <Link className="button" to="/">Back</Link>
-                <Link className={readyToStart ? "button" : "button link-disabled"} id='play-now' to={readyToStart ? "/game" : "#"} onClick={handleStart}>PLAY NOW</Link>
+                <Link className={playerList.length >= 3 ? "button" : "button link-disabled"} id='play-now' to={playerList.length >= 3 ? "/game" : "#"} onClick={handleStart}>PLAY NOW</Link>
             </div>
         </div>
     )

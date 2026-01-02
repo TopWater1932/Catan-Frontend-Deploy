@@ -58,21 +58,18 @@ def createLobby(data: LobbyName, background_tasks:BackgroundTasks):
     })
 
 
-connNum = 0
-
 # Create websocket connection, add it to a lobby and triage ongoing requests from frontend.
 @app.websocket('/ws/')
 async def wsEndpoint(websocket: WebSocket):
     await websocket.accept()
     lobby_name = websocket.query_params.get("lobby_name")
 
-    global connNum
     try:
         if lobby_name in lobbies.keys():
             lobby = lobbies[lobby_name]
-            playerID = f'p{connNum}'
+            playerID = f'p{lobby.connCounter}'
             await lobby.addToLobby(websocket,playerID)
-            connNum += 1
+            lobby.connCounter += 1
         else:
             message = f'{lobby_name} is not an existing lobby.'
             await websocket.send_json({

@@ -8,6 +8,7 @@ class Lobby:
         self.maxPlayers=4
         self.connections = {}
         self.game = False
+        self.connCounter = 0
 
     def getPlayerList(self):
         playerNameList = []
