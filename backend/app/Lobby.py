@@ -76,21 +76,21 @@ class Lobby:
     # Serialize python object to JSON and send
     async def send_gamestate(self,data,to,actionType,**kwargs):
         json_data = {
-            'actionCategory': 'game',
-            'actionType': actionType,
-            'data': data
+            'actionCategory':'game',
+            'actionType':actionType,
+            'data':data
         }
 
         json_package = jp.encode(json_data)
 
         if to == 'all':
-            for player in self.connections:
-                await player.send_json(json_package)
+            for player in self.connections.values():
+                await player[0].send_text(json_package)
 
         elif to == 'me':
-            await kwargs['me'].send_json(json_package)
+            await kwargs['me'].send_text(json_package)
 
         elif to == 'others':
-            for player in self.connections:
-                if player is not kwargs['me']:
-                    await player.send_json(json_package)
+            for player in self.connections.values():
+                if player[0] is not kwargs['me']:
+                    await player[0].send_text(json_package)

@@ -1,16 +1,25 @@
-import { useState, useEffect, useContext } from 'react'
+import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom';
 import useFetch from '../../utils/fetch/useFetch'
 import ServerMsgsWindow from './ServerMsgsWindow.jsx'
 import '../../styles/Options-Page.css'
 import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useNavigate } from 'react-router-dom';
 
 function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor,playerList}) {
-
+    
     const {
         playerName, setPlayerName,
-        sendJsonMessage
+        sendJsonMessage,
+        lobbyInitialised
     } = useContext(WebsocketContext)
+
+    // const firstMount = useRef(true);
+    
+    const navigate = useNavigate();
+    if (lobbyInitialised) {
+        navigate('/game');
+    }
 
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
@@ -33,6 +42,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     const handleJoinLobby = (e) => {
         e.preventDefault()
         setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
+        // Add logic to handle a lobby that's already initialised
     }
 
     const handleStart = () => {
@@ -40,13 +50,13 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
             setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
             return
         }
-        
+
         const initialiseBody = {
             'actionCategory':'game',
             'actionType':'initialise'
         }
+
         sendJsonMessage(initialiseBody)
-        console.log('fj')
     }
 
     return (
@@ -113,7 +123,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <ServerMsgsWindow messages={serverMsgs}/>
 
                 <Link className="button" to="/">Back</Link>
-                <Link className={playerList.length >= 3 ? "button" : "button link-disabled"} id='play-now' to={playerList.length >= 3 ? "/game" : "#"} onClick={handleStart}>PLAY NOW</Link>
+                <button className={playerList.length >= 3 ? "button" : "button link-disabled"} id='play-now' type="button" onClick={handleStart}>START GAME</button>
             </div>
         </div>
     )

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import './styles/index.css'
 import Game from './app/Game-Page/Game.jsx'
 import LandingPage from './app/Landing-Page/LandingPage.jsx'
@@ -9,7 +9,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
 function App() {
-
+  
   const [playerName,setPlayerName] = useState('')
 
   const playerIDs = ["mp","p1","p2","p3"];
@@ -59,33 +59,36 @@ function App() {
 
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
-  // const isMounting = useRef(true);
-  // const 
+  const [lobbyInitialised,setLobbyInitialised] = useState(false)
   
   
   const onMessageCallback = (messageEvent) => {
-    
     const jsObj = JSON.parse(messageEvent.data)
+
+    console.log(jsObj)
+    console.log(typeof jsObj)
+    console.log(jsObj.actionCategory)
+    console.log(jsObj.actionType)
     
     if (jsObj.actionCategory === 'admin') {
       if (jsObj.actionType === 'message') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
       }
-        if (jsObj.actionType === 'connected') {
-          setPlayerList(jsObj.playerList)
-        }
-        if (jsObj.actionType === 'join') {
-          setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
-          setPlayerList(jsObj.data)
-        }
-        if (jsObj.actionType === 'disconnected') {
-          setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
-        }
-      } else if (jsObj.actionCategory === 'game') {
-        if (jsObj.actionType === 'initialise') {
-          setServerMsgs(prevMsgs => [...prevMsgs,jsObj ?'Received gamestate':'Empty'])
-        }
+      if (jsObj.actionType === 'connected') {
+        setPlayerList(jsObj.playerList)
       }
+      if (jsObj.actionType === 'join') {
+        setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+        setPlayerList(jsObj.data)
+      }
+      if (jsObj.actionType === 'disconnected') {
+        setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+      }
+    } else if (jsObj.actionCategory === 'game') {
+      if (jsObj.actionType === 'initialised') {
+        setLobbyInitialised(true)
+      }
+    }
   }
   
   const joinLobbyBody = {
@@ -104,27 +107,12 @@ function App() {
       onMessage: onMessageCallback
     }
   )
-  
-    // const appendServerMsg = useCallback((setServerMsg) => {
-    //     const jsObj = JSON.parse(lastJsonMessage)
-    //     setServerMsg(prevMsgList => [...prevMsgList,jsObj.msg])
-    //   }, [lastJsonMessage])
-
-  // useEffect(() => {
-  //   if (isMounting.current === true) {
-  //     isMounting.current === false
-  //     return
-  //   }
-
-
-
-  //   // Add ref to prevent run on first redner. Add logic to append lastJsonMessage on change to server messages.
-  // }, [lastJsonMessage]);
 
   return (
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
+        lobbyInitialised,
         displayDice, setDisplayDice,
         playerName,setPlayerName,
         players, setPlayers,
@@ -146,6 +134,7 @@ function App() {
             playerColor={playerColor}
             setPlayerColor={setPlayerColor}
             playerList={playerList}
+            lobbyInitialised={lobbyInitialised}
           />} />
           <Route path="/game" element={<Game />} />
 

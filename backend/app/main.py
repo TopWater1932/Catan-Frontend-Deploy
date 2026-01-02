@@ -46,7 +46,7 @@ def createLobby(data: LobbyName, background_tasks:BackgroundTasks):
     lobbies[name] = Lobby(name)
     timeStale = 240
 
-    message = f"Lobby '{name}' has been created. You may now join. Lobby will close in {timeStale/60}mins if nobody has joined."
+    message = f"Lobby '{name}' has been created. You may now join. Lobby will close in {timeStale//60}mins if nobody has joined."
     lobbyList = list(lobbies.keys())
 
     background_tasks.add_task(lobbies[name].lobby_timer,lobbies,timeStale)
@@ -104,12 +104,12 @@ async def wsEndpoint(websocket: WebSocket):
                         game.setup()
                         lobby.game = game
                         intialisedPackage = game.board
-                        await lobby.send_gamestate(intialisedPackage,'all','initialise')
+                        await lobby.send_gamestate(intialisedPackage,'all','initialised')
                     else:
-                        await websocket.send_gamestate(game,'me','initialise',me=websocket)
+                        await lobby.send_gamestate(intialisedPackage,'me','initialised',me=websocket)
 
             
             # Insert logic on what to do with data when received
 
     except WebSocketDisconnect:
-        await lobby.disconnected(websocket,lobbies,name)
+        await lobby.disconnected(websocket,lobbies,playerObj.name)
