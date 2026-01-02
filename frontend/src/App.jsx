@@ -55,6 +55,8 @@ function App() {
   const [playerColor,setPlayerColor] = useState('')
   const [playerList, setPlayerList] = useState([])
   
+  const [displayDice,setDisplayDice] = useState(true)
+
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   // const isMounting = useRef(true);
@@ -123,6 +125,7 @@ function App() {
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
+        displayDice, setDisplayDice,
         playerName,setPlayerName,
         players, setPlayers,
         missions,

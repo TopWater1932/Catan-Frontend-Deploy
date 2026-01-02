@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import "./styles/Dice.css";
+import { useEffect, useMemo, useState, useContext } from "react";
+import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import "../../styles/Dice.css";
 
 function PipFace({ value, rolling }) {
   const on = useMemo(() => {
@@ -26,6 +27,9 @@ function PipFace({ value, rolling }) {
 }
 
 export default function Dice() {
+
+  const {setDisplayDice} = useContext(WebsocketContext)
+
   const [open, setOpen] = useState(false);
   const [rolling, setRolling] = useState(false);
   const [die1, setDie1] = useState(1);
@@ -61,13 +65,14 @@ export default function Dice() {
   const close = () => {
     if (rolling) return;
     setOpen(false);
+    setDisplayDice(false);
   };
 
   return (
     <>
       <div className="dice-launcher">
         <button
-          className="dice-launch-btn"
+          className="button dice-launch-btn"
           onClick={rollOnce}
           disabled={rolling}
         >

@@ -9,11 +9,12 @@ import LRLAIndicators from './LR-LA-indicator.jsx'
 import PlayerInfo from './PlayerInfo.jsx'
 import ActionButtons from './ActionButtons.jsx'
 import Board from './Board.jsx'
+import Dice from "./Dice.jsx"
 
 
 function Game() {
   
-  const { players, missions } = useContext(WebsocketContext);
+  const { players, missions, displayDice } = useContext(WebsocketContext);
 
 
   return (
@@ -44,6 +45,8 @@ function Game() {
           }
           
           <Board />
+
+          {displayDice && <Dice />}
           
           <PlayerInfo />
 
