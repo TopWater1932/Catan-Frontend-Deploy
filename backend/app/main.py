@@ -4,7 +4,6 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect,HTTPException, Backg
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from Lobby import Lobby
-# from utils.triage_action import admin_action
 
 import json
 import requests
@@ -109,6 +108,19 @@ async def wsEndpoint(websocket: WebSocket):
                     else:
                         intialisedPackage = lobby.game
                         await lobby.send_gamestate(intialisedPackage,'me','initialised',me=websocket)
+                
+                elif data['actionType'] == 'roll-dice':
+                    result = data['data']
+                    if result == 7:
+                        # IMPORTANT: CHECK IF ANY PLAYER HAS MORE THAN 7 CARDS.
+
+                        await lobby.send_gamestate(None,'me','move-robber',me=websocket)
+                    else:
+                        game.assign_resources(result)
+                        
+                        # Send updated player states to all players
+                        await lobby.send_gamestate(game.players,'all','player-state')
+    
 
             
             # Insert logic on what to do with data when received

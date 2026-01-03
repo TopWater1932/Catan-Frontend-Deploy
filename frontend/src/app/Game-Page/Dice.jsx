@@ -28,7 +28,7 @@ function PipFace({ value, rolling }) {
 
 export default function Dice() {
 
-  const {setDisplayDice} = useContext(WebsocketContext)
+  const {setDisplayDice,sendJsonMessage} = useContext(WebsocketContext)
 
   const [open, setOpen] = useState(false);
   const [rolling, setRolling] = useState(false);
@@ -37,6 +37,7 @@ export default function Dice() {
 
   const rollOnce = () => {
     if (rolling) return;
+
     setOpen(true);
     setRolling(true);
   };
@@ -51,9 +52,21 @@ export default function Dice() {
 
     const timeout = setTimeout(() => {
       clearInterval(interval);
-      setDie1(Math.floor(Math.random() * 6) + 1);
-      setDie2(Math.floor(Math.random() * 6) + 1);
+
+      const die1Result = Math.floor(Math.random() * 6) + 1;
+      const die2Result = Math.floor(Math.random() * 6) + 1;
+
+      setDie1(die1Result);
+      setDie2(die2Result);
       setRolling(false);
+
+      // Send dice result to server
+      const result = die1Result + die2Result;
+      sendJsonMessage({
+        'actionCategory':'game',
+        'actionType':'roll-dice',
+        'data':result
+      });
     }, 900);
 
     return () => {

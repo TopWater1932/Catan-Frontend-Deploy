@@ -12,46 +12,12 @@ function App() {
   
   const [playerName,setPlayerName] = useState('')
 
-  const playerIDs = ["mp","p1","p2","p3"];
-  const playerNames = ["Main Player","Player 1","Player 2","Player 3"]
-  const playerColors = ["red","blue","green","white"]
-
-  // Temporary
-  const turnID = 'p1'
-  const initialPlayers = []
-  for (let i=0; i<4; i++ ) {
-    initialPlayers.push({
-      'id':`p${i+1}`,
-      'name':`Name${i+1}`,
-      'color':playerColors[i],
-      'resources':{"wood":4,"brick":0,"wheat":2,"sheep":2,"ore":3},
-      'devCards':{"knight":0,"victoryPoint":0,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0},
-      'structures':{"roads":15,"settlements":5,"cities":4},
-      'vps':0,
-      'ports':[] // ADD 4-1 PORT FOR ALL PLAYERS BY DEFAULT
-    })
-  }
-
-  const [turn,setTurn] = useState(turnID);
+  const [turn,setTurn] = useState('p0');
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
   const [largestArmy,setLargestArmy] = useState('Unclaimed');
   const missions = {longestRoad,setLongestRoad,largestArmy,setLargestArmy};
 
-  const initialPlayerState = {};
-  initialPlayers.map((player) => (
-    initialPlayerState[player.id] = new Player(
-      player.id,
-      player.name,
-      player.color,
-      player.id === turnID? true:false,
-      player.resources,
-      player.devCards,
-      player.structures,
-      player.vps
-    )
-  ));
-
-  const [players,setPlayers] = useState(initialPlayerState);
+  const [players,setPlayers] = useState({});
   const [playerColor,setPlayerColor] = useState('')
   const [playerList, setPlayerList] = useState([])
   
@@ -66,7 +32,9 @@ function App() {
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
   
   const onMessageCallback = (messageEvent) => {
+
     const jsObj = JSON.parse(messageEvent.data)
+    console.log(jsObj)
     
     // Admin related messages
     if (jsObj.actionCategory === 'admin') {
@@ -91,9 +59,11 @@ function App() {
           let tempTiles = []
           let tempPaths = []
           let tempNodes = []
+          let tempPlayers = {}
+
+          setTurn(jsObj.data.players[jsObj.data.current_turn].id)
           
           jsObj.data.board.tiles.forEach(tile => {
-            console.log(tile["py/state"])
             tempTiles.push(tile["py/state"])
           });
           
@@ -107,15 +77,51 @@ function App() {
             }
           });
 
+          jsObj.data.players.forEach(player => {
+            tempPlayers[player.id] = new Player(
+              player.id,
+              player.name,
+              player.color,
+              player.id === turn? true:false,
+              player.resource_cards,
+              player.development_cards,
+              player.buildings,
+              player.victory_points,
+              player.ports
+            );
+          });
+
           setPaths(tempPaths)
           setNodes(tempNodes)
           setTiles(tempTiles)
+          setPlayers(tempPlayers)
           
           
           setLobbyInitialised(true)
+
+        } else if (jsObj.actionType === 'player-state') {
+
+          const updatedPlayers = {};
+          jsObj.data.forEach(player => {
+            updatedPlayers[player.id] = new Player(
+              player.id,
+              player.name,
+              player.color,
+              player.id === turn? true:false,
+              player.resource_cards,
+              player.development_cards,
+              player.buildings,
+              player.victory_points,
+              player.ports
+            );
+          });
+          setPlayers(updatedPlayers);
+
+        } else if (jsObj.actionType === 'move-robbber') {
+          console.log('Robber moved')
         }
-      }
     }
+  }
   
   const joinLobbyBody = {
     'actionCategory':'admin',
@@ -144,9 +150,6 @@ function App() {
         players, setPlayers,
         missions,
         turn, setTurn,
-        playerIDs,
-        playerNames,
-        playerColors,
         tiles, setTiles,
         paths, setPaths,
         nodes, setNodes
