@@ -1,6 +1,6 @@
 import { useContext, useState } from "react"
-import { TradeContext } from "./TradeContext.jsx";
-import './styles/options-modal.css'
+import { TradeContext } from "../../context/TradeContext.jsx";
+import '../../styles/options-modal.css'
 
 
 function TradeModalContent( ) {

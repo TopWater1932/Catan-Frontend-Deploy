@@ -4,7 +4,7 @@
   display: grid;
   place-items: center;
   pointer-events: none;
-  z-index: 9998;
+  /* z-index: 9998; */
 }
 
 .dice-launch-btn {
@@ -30,7 +30,7 @@
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.45);
-  z-index: 9999;
+  /* z-index: 9999; */
 }
 
 .dice-modal {

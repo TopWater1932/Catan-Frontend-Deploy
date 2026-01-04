@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import bg from "./assets/green-countryside-1527845592.avif";
-import "./styles/LandingPage.css";
+import bg from "../../assets/green-countryside-1527845592.avif";
+import "../../styles/LandingPage.css";
 
 
 function LandingPage() {

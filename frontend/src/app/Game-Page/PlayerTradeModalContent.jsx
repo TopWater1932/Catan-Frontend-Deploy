@@ -1,14 +1,14 @@
 import { useContext, useState, useEffect } from "react"
-import { GlobalContext } from "./GlobalContext.jsx";
-import { ModalContext } from "./ModalContext.jsx";
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { ModalContext } from "../../context/ModalContext.jsx";
 import TimerContent from "./TimerContent.jsx";
 import TradeResourceSelection from "./TradeResourceSelection.jsx";
-import './styles/options-modal.css'
+import '../../styles/options-modal.css'
 
 
 function PlayerTradeModalContent( ) {
 
-    const {players,turn} = useContext(GlobalContext);
+    const {players,turn} = useContext(WebsocketContext);
     const {resources} = players[turn];
 
     const {setIsEnabled} = useContext(ModalContext);

@@ -5,8 +5,10 @@ class Path:
         self.connectedNodes = connectedNodes  # Tuple of two nodes that the path connects
 
     def __getstate__(self):
-        self.connectedNodes = [node.id for node in self.connectedNodes]
-        return self.__dict__
+        pathState = self.__dict__.copy()
+        
+        pathState['connectedNodes'] = [node.id for node in pathState['connectedNodes']]
+        return pathState
 
     def build(self, player):
         if self.owner is None:

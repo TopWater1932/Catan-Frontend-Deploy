@@ -1,19 +1,19 @@
 import { useContext } from 'react'
-import { GlobalContext } from "./GlobalContext.jsx";
-import './styles/player.css'
-import createCardArray from './utils/func-createCardArray.jsx'
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import '../../styles/player.css'
+import createCardArray from '../../utils/func-createCardArray.jsx'
 
 
 function MainPlayerInfo({id}) {
 
-  const {players,missions,turn} = useContext(GlobalContext)
+  const {players,missions,turn} = useContext(WebsocketContext)
 
   const {name,color,activeTurn,resources,devCards,structures,vps} = players[id];
   const {longestRoad,largestArmy} = missions;
   let {knightsPlayed} = devCards;
 
   
-  let cardArray = createCardArray(id,resources,devCards);
+  let cardArray = createCardArray(resources,devCards);
 
 
   return (

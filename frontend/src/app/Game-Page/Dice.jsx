@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import "./styles/Dice.css";
+import { useEffect, useMemo, useState, useContext } from "react";
+import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import "../../styles/Dice.css";
 
 function PipFace({ value, rolling }) {
   const on = useMemo(() => {
@@ -26,6 +27,9 @@ function PipFace({ value, rolling }) {
 }
 
 export default function Dice() {
+
+  const {setDisplayDice,sendJsonMessage} = useContext(WebsocketContext)
+
   const [open, setOpen] = useState(false);
   const [rolling, setRolling] = useState(false);
   const [die1, setDie1] = useState(1);
@@ -33,6 +37,7 @@ export default function Dice() {
 
   const rollOnce = () => {
     if (rolling) return;
+
     setOpen(true);
     setRolling(true);
   };
@@ -47,9 +52,21 @@ export default function Dice() {
 
     const timeout = setTimeout(() => {
       clearInterval(interval);
-      setDie1(Math.floor(Math.random() * 6) + 1);
-      setDie2(Math.floor(Math.random() * 6) + 1);
+
+      const die1Result = Math.floor(Math.random() * 6) + 1;
+      const die2Result = Math.floor(Math.random() * 6) + 1;
+
+      setDie1(die1Result);
+      setDie2(die2Result);
       setRolling(false);
+
+      // Send dice result to server
+      const result = die1Result + die2Result;
+      sendJsonMessage({
+        'actionCategory':'game',
+        'actionType':'roll-dice',
+        'data':result
+      });
     }, 900);
 
     return () => {
@@ -61,13 +78,14 @@ export default function Dice() {
   const close = () => {
     if (rolling) return;
     setOpen(false);
+    setDisplayDice(false);
   };
 
   return (
     <>
       <div className="dice-launcher">
         <button
-          className="dice-launch-btn"
+          className="button dice-launch-btn"
           onClick={rollOnce}
           disabled={rolling}
         >

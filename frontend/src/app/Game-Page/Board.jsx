@@ -1,11 +1,11 @@
-import { useState , useLayoutEffect, useRef} from 'react'
+import { useState , useLayoutEffect, useRef, useContext, useEffect } from 'react'
 import Structures from './Structures.jsx'
-import './styles/board.css'
+import '../../styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
-import handleWindowResize from './utils/event-handler/func-handleWindowResize.jsx'
-import initialiseTileGrid from './utils/func-initialiseTileGrid.jsx'
-
-import Tile from './classes/Tile.jsx'
+import handleWindowResize from '../../utils/event-handler/func-handleWindowResize.jsx'
+import initialiseTileGrid from '../../utils/func-initialiseTileGrid.jsx'
+import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import Tile from '../../classes/Tile.jsx'
 
 
 function Board() {
@@ -16,6 +16,12 @@ function Board() {
   const radius = (initHeight/2)+40;
   const [stageSize,setStageSize] = useState({width: initWidth,height: initHeight,scaleX: 1,scaleY: 1});
   const boardAreaRef = useRef(null);
+
+  const {
+    tiles, setTiles,
+    paths, setPaths,
+    nodes, setNodes
+  } = useContext(WebsocketContext)
   
   useLayoutEffect(() => {
     const handleFunc = () => handleWindowResize(initWidth,initHeight,boardAreaRef,stageSize,setStageSize)
@@ -28,17 +34,14 @@ function Board() {
 
 
   const resourceColors = {
-    'or':'rgba(78, 78, 78, 1)',
-    'wo':'rgba(97, 36, 0, 1)',
-    'sh':'rgba(34, 202, 0, 1)',
-    'br':'rgba(206, 99, 0, 1)',
-    'wh':'rgba(255, 230, 0, 1)',
-    'de': 'rgba(218, 188, 89, 1)'
+    'ORE':'rgba(78, 78, 78, 1)',
+    'LUMBER':'rgba(97, 36, 0, 1)',
+    'WOOL':'rgba(34, 202, 0, 1)',
+    'BRICK':'rgba(206, 99, 0, 1)',
+    'GRAIN':'rgba(255, 230, 0, 1)',
+    null: 'rgba(218, 188, 89, 1)'
   };
   
-  const tileID = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S']; // Example array retrieved from backend
-  const tileNumberArray = [10,2,9,12,6,4,10,9,11,0,3,8,8,3,4,5,5,6,11]; // Example array retrieved from backend
-  const tileResourceArray = ['or','sh','wo','wh','br','sh','br','wh','wo','de','wo','or','wo','or','wh','sh','br','wh','sh']; // Example array retrieved from backend
   
   // Tiles initialisation
   const boardHexSize = 3;
@@ -46,19 +49,30 @@ function Board() {
   const tileGridX = 306;
   const tileGridY = 127;
   const tileGrid = initialiseTileGrid(tileGridX,tileGridY,tileRadius,boardHexSize);
-  const [robberTile,setRobberTile] = useState(tileID[9]); // Initial robber tile ID
+  const [robberTile,setRobberTile] = useState('T9'); // Initial robber tile ID
+  
 
-  const tilesMasterArray = tileGrid.map((coord,i) => (
-    new Tile(
-      tileID[i],
-      tileResourceArray[i],
-      tileNumberArray[i],
+  const tilesMasterArray = tileGrid.map((coord,i) => {
+    const tile = new Tile(
+      tiles[i].id,
+      tiles[i].resource,
+      tiles[i].number_token,
+      tiles[i].has_robber,
       coord.x,
       coord.y
     )
-  ));
-  
 
+    return tile
+  });
+
+  // Set robber tile
+  useEffect(() => {
+    const robberTileObj = tiles.find(tile => tile.has_robber);
+    if (robberTileObj) {
+      setRobberTile(robberTileObj.id);
+    }
+  },[tiles]);
+  
   return (
     <div id="board-area" ref={boardAreaRef}>
 
@@ -80,24 +94,24 @@ function Board() {
         </Layer>
 
         <Layer id="tiles" name="Tiles">
-          {tilesMasterArray.map(coord => 
+          {tilesMasterArray.map(tile => 
             <RegularPolygon
-              key={'Tile'+coord.id}
-              x={coord.x}
-              y={coord.y}
+              key={'Tile'+tile.id}
+              x={tile.x}
+              y={tile.y}
               sides={6}
               radius={tileRadius}
-              fill={resourceColors[coord.resource]}
+              fill={resourceColors[tile.resource]}
               stroke='rgb(255, 239, 147)'
               strokeWidth={5}
             />
           )}
 
-          {tilesMasterArray.filter(tile => tile.resource!=='de').map(coord => 
+          {tilesMasterArray.filter(tile => tile.resource!==null).map(tile => 
             <Circle
-              key={'Circle'+coord.id}
-              x={coord.x}
-              y={coord.y}
+              key={'Circle'+tile.id}
+              x={tile.x}
+              y={tile.y}
               radius={18}
               fill={'rgb(255, 239, 147)'}
               stroke='black'
@@ -105,19 +119,19 @@ function Board() {
             />
           )}
 
-          {tilesMasterArray.filter(tile => tile.resource!=='de').map(coord => 
+          {tilesMasterArray.filter(tile => tile.resource!=='de').map(tile => 
             <Text
-              key={'Number'+coord.id}
-              x={coord.x-18}
-              y={coord.y-12}
+              key={'Number'+tile.id}
+              x={tile.x-18}
+              y={tile.y-12}
               width={18*2}
               align="center"
               verticalAlign="middle"
-              text={coord.number}
+              text={tile.number}
               fontFamily="Times New Roman"
               fontSize={25}
               fontStyle="bold"
-              fill={(coord.number===6 || coord.number===8)? 'rgba(221, 71, 33, 1)': 'black'}
+              fill={(tile.number===6 || tile.number===8)? 'rgba(221, 71, 33, 1)': 'black'}
             />
           )}
 

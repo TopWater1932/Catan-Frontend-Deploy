@@ -1,13 +1,13 @@
 import { useState,useContext } from "react"
-import { GlobalContext } from "./GlobalContext.jsx";
-import './styles/options-modal.css'
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import '../../styles/options-modal.css'
 
 import TradeResourceSelection from './TradeResourceSelection.jsx'
 
 
 function MaritimeTradeModalContent( ) {
 
-    const {players,turn} = useContext(GlobalContext);
+    const {players,turn} = useContext(WebsocketContext);
     // const {ports, resources} = players[turn];
     const {resources} = players[turn];
 
