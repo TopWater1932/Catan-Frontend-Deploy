@@ -171,6 +171,132 @@ class Game:
             player.giveResource('wood', 1)  # Example: give 1 wood to the player
         
 
+    # Longest Road
+    
+
+    def _node_blocks_player(self, node, player):
+
+        occ = getattr(node, "occupiedBy", None)
+        return (occ is not None) and (occ is not player)
+
+    def _player_owned_paths(self, player):
+        """Return list of Path objects owned by player"""
+        if self.board is None:
+            return []
+        return [p for p in self.board.paths if getattr(p, "owner", None) is player]
+
+    def _build_road_adjacency(self, player):
+        """
+        Build adjacency list from the player's owned roads:
+          adj[node_id] - list of (neighbor_node, path_id)
+        """
+        owned_paths = self._player_owned_paths(player)
+        adj = {}
+        nodes_by_id = {}
+
+        for path in owned_paths:
+            a, b = path.connectedNodes
+            nodes_by_id[a.id] = a
+            nodes_by_id[b.id] = b
+
+            adj.setdefault(a.id, []).append((b, path.id))
+            adj.setdefault(b.id, []).append((a, path.id))
+
+        return adj, nodes_by_id
+
+    def longest_road_length(self, player):
+        """
+        compute longest road length for player, (max number of edges in a valid continuous road, without reuisng any segment
+        """
+        adj, nodes_by_id = self._build_road_adjacency(player)
+        if not adj:
+            return 0
+
+        def dfs(current_node_id, used_paths):
+            # If we are trying to cont from a blocked node - must stop.
+            current_node = nodes_by_id[current_node_id]
+            if self._node_blocks_player(current_node, player) and len(used_paths) > 0:
+                return 0
+
+            best = 0
+            for nbr_node, path_id in adj.get(current_node_id, []):
+                if path_id in used_paths:
+                    continue
+
+                used_paths.add(path_id)
+                candidate = 1 + dfs(nbr_node.id, used_paths)
+                used_paths.remove(path_id)
+
+                if candidate > best:
+                    best = candidate
+
+            return best
+
+        overall_best = 0
+        for start_node_id in adj.keys():
+            length = dfs(start_node_id, set())
+            if length > overall_best:
+                overall_best = length
+
+        return overall_best
+
+    def update_player_longest_road(self, player):
+        """recompute and store player.longest_road_length."""
+        player.longest_road_length = self.longest_road_length(player)
+        return player.longest_road_length
+
+    def update_longest_road_holder(self):
+        """
+        dfetermine who holds Longest Road and update  add 2 VP accordingly.
+        rules:
+        -must be >= 5 to claim
+        -ties do NOT change holder
+        -if a new player strictly exceeds, they take 
+        """
+        # Compute lengths
+        best_len = 0
+        best_players = []
+
+        for p in self.players:
+            length = self.update_player_longest_road(p)
+            if length > best_len:
+                best_len = length
+                best_players = [p]
+            elif length == best_len and length != 0:
+                best_players.append(p)
+        # Decide new holder
+        new_holder = None
+        if best_len >= 5 and len(best_players) == 1:
+            new_holder = best_players[0]
+
+        old_holder = self.longest_road_holder
+        # If tied or nobody qualifies, keep current holder 
+        if new_holder is None:
+            return old_holder
+        # If no change, nothing to do
+        if new_holder is old_holder:
+            return old_holder
+        # Remove award and VP from old holder
+        if old_holder is not None:
+            old_holder.has_longest_road = False
+            old_holder.victory_points -= 2
+        # Give awared and Vp to new holder
+        new_holder.has_longest_road = True
+        new_holder.victory_points += 2
+        self.longest_road_holder = new_holder
+
+        return new_holder
+
+    def build_road(self, path, player):
+        """
+        Use this to build roads, will make sure this always stays updated and works
+        """
+        ok = path.build(player)
+        if ok:
+            self.update_longest_road_holder()
+        return ok
+
+
 # game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
 
 
@@ -247,3 +373,82 @@ if __name__ == "__main__":
     ok, msg = game.maritime_trade(p1, "WOOD", 2, "BRICK", 1)
     print("maritime_trade 2:1 (WOOD port):", ok, msg)
     print("After 2:1 maritime p1:", p1.resource_cards)
+
+    #  TEST BLOCK FOR LONGEST ROAD ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+    print("\n LONGEST ROAD TEST ")
+
+    # Make a new game and setup full board
+    p1 = Player("p1", "Miles", "Red")
+    p2 = Player("p2", "Duke", "Blue")
+    game = Game(board=None, players=[p1, p2])
+    game.setup()
+
+  
+    def find_path_chain(paths, target_len=5):
+        # adjacency: node_id  list of path objects touching it
+        adj = {}
+        for path in paths:
+            a, b = path.connectedNodes
+            adj.setdefault(a.id, []).append(path)
+            adj.setdefault(b.id, []).append(path)
+
+        # DFS over edges to find a chain of length target_len
+        def dfs(current_node, used_path_ids, chain):
+            if len(chain) == target_len:
+                return chain
+
+            for path in adj.get(current_node.id, []):
+                if path.id in used_path_ids:
+                    continue
+                # move to the other endpoint
+                a, b = path.connectedNodes
+                nxt = b if a.id == current_node.id else a
+
+                used_path_ids.add(path.id)
+                chain.append(path)
+                res = dfs(nxt, used_path_ids, chain)
+                if res is not None:
+                    return res
+                chain.pop()
+                used_path_ids.remove(path.id)
+
+            return None
+        # Try starting from each node endpoint we see
+        seen_nodes = {}
+        for path in paths:
+            a, b = path.connectedNodes
+            seen_nodes[a.id] = a
+            seen_nodes[b.id] = b
+
+        for node in seen_nodes.values():
+            res = dfs(node, set(), [])
+            if res is not None:
+                return res
+
+        return None
+
+    chain = find_path_chain(game.board.paths, target_len=5)
+    if chain is None:
+        print("[FAIL] coulnt find a connected chain of 5 paths on board")
+    else:
+        print("[OK] found chain of 5 path")
+        print([p.id for p in chain])
+
+        # build the roads for p1 using the Game wrapper (important! has to be done like this pls or i think stuff breaks)
+        start_vp = p1.victory_points
+        for path in chain:
+            ok = game.build_road(path, p1)
+            if not ok:
+                print("[FAIL] Could not build path:", path.id)
+
+        print("p1.longest_road_length =", getattr(p1, "longest_road_length", None))
+        print("longest_road_holder =", getattr(game.longest_road_holder, "name", None))
+        print("p1 victory points:", start_vp, "->", p1.victory_points,)
+
+        # Extra check should be at least 5
+        if p1.longest_road_length >= 5 and game.longest_road_holder is p1 and p1.victory_points == start_vp + 2:
+            print("[PASS] Longest road award works.")
+        else:
+            print("[WARN] smthn broken.")

@@ -19,6 +19,9 @@ class Player:
         self.buildings = buildings
         self.ports = ports
         self.connected = connected
+        self.longest_road_length = 0
+        self.has_longest_road = False
+
 
     def __getattribute__(self, name):
         return super().__getattribute__(name)
