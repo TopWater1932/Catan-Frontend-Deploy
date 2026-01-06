@@ -1,4 +1,4 @@
-import './styles/LR-LA-indicator.css'
+import '../../styles/LR-LA-indicator.css'
 
 
 

@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { createPortal } from "react-dom"
-import closeBtn from "./assets/close-btn.svg"
-import './styles/modal.css'
+import closeBtn from "../../assets/close-btn.svg"
+import '../../styles/modal.css'
 
-import { ModalContext } from "./ModalContext.jsx";
+import { ModalContext } from "../../context/ModalContext.jsx";
 
 function Modal({ isVisible, setIsVisible, modalClassTypes, content }) {
     

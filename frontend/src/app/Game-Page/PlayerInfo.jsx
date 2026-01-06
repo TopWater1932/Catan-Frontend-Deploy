@@ -1,12 +1,14 @@
 import { useContext } from 'react'
-import { GlobalContext } from "./GlobalContext.jsx";
-import './styles/player-info.css'
+import { GameContext } from "../../context/GameContext.jsx";
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import '../../styles/player-info.css'
 
 
 
 function PlayerInfo() {
   
-  const {players,turn,resIcons} = useContext(GlobalContext);
+  const {players,turn} = useContext(WebsocketContext);
+  const {resIcons} = useContext(GameContext);
   const {resources,structures,devCards,vps} = players[turn];
 
   const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;

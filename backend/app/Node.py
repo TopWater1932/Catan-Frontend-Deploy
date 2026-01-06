@@ -8,8 +8,10 @@ class Node:
         self.port_type = port_type
 
     def __getstate__(self):
-        self.paths = [path.id for path in self.paths]
-        return self.__dict__
+        nodeState = self.__dict__.copy()
+
+        nodeState['paths'] = [path.id for path in  nodeState['paths']]
+        return nodeState
         
     def updateNeighbors(self):
         for path in self.paths:

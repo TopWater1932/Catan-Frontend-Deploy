@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import {Layer,RegularPolygon,Line,Circle,Rect,Text} from 'react-konva'
 import ValidPlacementLayers from './ValidPlacements.jsx'
-import initialiseVertexGrid from './utils/func-initialiseVertexGrid.jsx'
-import assignVertices from './utils/func-assignVertices.jsx'
-import generateVertexIDs from './utils/func-generateVertexIDs.jsx'
-import generatePortCoords from './utils/func-generatePortCoords.jsx'
-import calcValidPlacements from './utils/func-calcValidPlacements.jsx'
+import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid.jsx'
+import assignVertices from '../../utils/func-assignVertices.jsx'
+import generateVertexIDs from '../../utils/func-generateVertexIDs.jsx'
+import generatePortCoords from '../../utils/func-generatePortCoords.jsx'
+import calcValidPlacements from '../../utils/func-calcValidPlacements.jsx'
 
 
 function Structures({tilesMasterArray,tileRadius}) {

@@ -7,12 +7,15 @@ class Tile:
         self.y = y
         self.terrain_type = terrain_type
         self.resource = resource
+        self.has_robber = has_robber
         self.number_token = number_token
         self.associated_nodes = []
 
     def __getstate__(self):
-        self.associated_nodes = [node.id for node in self.associated_nodes]
-        return self.__dict__
+        tileState = self.__dict__.copy()
+
+        tileState['associated_nodes'] = [node.id for node in tileState['associated_nodes']]
+        return tileState
 
     def giveResoucetoPlayers(self):
         for node in self.associated_nodes:

@@ -164,6 +164,13 @@ class Game:
 
         return True, "Maritime trade executed."
 
+    def assign_resources(self, dice_roll):
+        print(f"Assigning resources for dice roll: {dice_roll}")
+        for player in self.players:
+            # Logic to assign resources based on dice_roll and board state
+            player.giveResource('wood', 1)  # Example: give 1 wood to the player
+        
+
 # game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
 
 

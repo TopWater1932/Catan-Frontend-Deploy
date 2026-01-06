@@ -1,14 +1,14 @@
 import { useState,useContext } from 'react'
-import './styles/buttons.css'
-import './styles/trade-resources.css'
-import doubleArrows from './assets/reshot-icon-left-and-right-arrows-Z5XLT7B8WY.svg'
-import capsResourceName from './utils/func-capsResourceNames.jsx'
-import { TradeContext } from './TradeContext.jsx'
-import { GlobalContext } from "./GlobalContext.jsx";
+import '../../styles/buttons.css'
+import '../../styles/trade-resources.css'
+import doubleArrows from '../../assets/reshot-icon-left-and-right-arrows-Z5XLT7B8WY.svg'
+import capsResourceName from '../../utils/func-capsResourceNames.jsx'
+import { TradeContext } from '../../context/TradeContext.jsx'
+import { WebsocketContext } from "../../context/WebsocketContext.jsx";
 
 function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle, giveArray}) {
 
-    const {players,turn} = useContext(GlobalContext);
+    const {players,turn} = useContext(WebsocketContext);
     const {resources} = players[turn];
 
     const receiveArray = Object.keys(resources);
