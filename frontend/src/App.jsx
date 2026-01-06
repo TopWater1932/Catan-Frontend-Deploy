@@ -30,6 +30,7 @@ function App() {
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
+  const [currentLobby,setCurrentLobby] = useState('[Join a Lobby]')
   
   const onMessageCallback = (messageEvent) => {
 
@@ -43,6 +44,7 @@ function App() {
       }
       if (jsObj.actionType === 'connected') {
         setPlayerList(jsObj.playerList)
+        setCurrentLobby(jsObj.lobbyName)
       }
       if (jsObj.actionType === 'join') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
@@ -50,6 +52,7 @@ function App() {
       }
       if (jsObj.actionType === 'disconnected') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+        setPlayerList(jsObj.data)
       }
 
 
@@ -76,6 +79,7 @@ function App() {
               tempNodes.push(node["py/state"])
             }
           });
+
 
           jsObj.data.players.forEach(player => {
             tempPlayers[player.id] = new Player(
@@ -130,13 +134,19 @@ function App() {
     'color':playerColor
   }
 
-  const {sendJsonMessage,readyState} = useWebSocket(socketURL,
+  const {sendJsonMessage, readyState} = useWebSocket(socketURL,
     {
       onOpen: () => {
         sendJsonMessage(joinLobbyBody)
       },
 
-      onMessage: onMessageCallback
+      onMessage: onMessageCallback,
+
+      onClose: () => {
+        setServerMsgs(prevMsgs => [...prevMsgs,'You have left the lobby.'])
+        setPlayerList([])
+        setCurrentLobby('[Join a Lobby]')
+      }
     }
   )
 
@@ -144,7 +154,7 @@ function App() {
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
-        lobbyInitialised,
+        lobbyInitialised, currentLobby,
         displayDice, setDisplayDice,
         playerName,setPlayerName,
         players, setPlayers,
@@ -166,7 +176,6 @@ function App() {
             playerColor={playerColor}
             setPlayerColor={setPlayerColor}
             playerList={playerList}
-            lobbyInitialised={lobbyInitialised}
           />} />
           <Route path="/game" element={<Game />} />
 

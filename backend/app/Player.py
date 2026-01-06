@@ -1,7 +1,7 @@
 from enum import Enum
 
 class Player:
-    def __init__(self, id, name='', colour='',
+    def __init__(self, id, name='', color='',
         resource_cards={"wood":0,"brick":0,"wheat":0,"sheep":0,"ore":0},
         development_cards={"knight":0,"victoryPoint":0,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0},
         buildings={"roads":15,"settlements":5,"cities":4},
@@ -12,7 +12,7 @@ class Player:
 
         self.id = id
         self.name = name
-        self.colour = colour
+        self.color = color
         self.resource_cards = resource_cards
         self.development_cards = development_cards
         self.victory_points = victory_points
@@ -34,7 +34,7 @@ class Player:
 
 
     
-class Colour(Enum):
+class Color(Enum):
     RED = "Red"
     BLUE = "Blue"
     WHITE = "White"

@@ -4,7 +4,7 @@ import '../../styles/player.css'
 import createCardArray from '../../utils/func-createCardArray.jsx'
 
 
-function MainPlayerInfo({id}) {
+function MainPlayerInfo({id, position}) {
 
   const {players,missions,turn} = useContext(WebsocketContext)
 
@@ -17,7 +17,7 @@ function MainPlayerInfo({id}) {
 
 
   return (
-      <div id={id} className="player">
+      <div id={position} className="player">
         <div className="cardsAndName">
           <div className="cards">
 

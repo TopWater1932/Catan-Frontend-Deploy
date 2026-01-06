@@ -55,7 +55,6 @@ class Game:
         updated_board = Board(tiles=Tiles, nodes=Nodes, paths=Paths)
 
         self.board = updated_board
-        return Tiles, Nodes, Paths
     
     def nextTurn(self):
             self.current_turn = (self.current_turn + 1) % len(self.players)
@@ -67,7 +66,7 @@ class Game:
             player.giveResource('wood', 1)  # Example: give 1 wood to the player
         
 
-# game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+# game = Game(None, [{'name':'Alice', 'color':'red'}, {'name':'Bob', 'color':'blue'}, {'name':'Rob', 'color':'green'}, {'name':'Sherry', 'color':'white'}])
 
 
 # tiles, nodes, paths = game.setup()

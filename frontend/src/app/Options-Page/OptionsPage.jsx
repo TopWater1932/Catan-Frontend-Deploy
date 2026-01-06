@@ -11,7 +11,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     const {
         playerName, setPlayerName,
         sendJsonMessage,
-        lobbyInitialised
+        lobbyInitialised,currentLobby
     } = useContext(WebsocketContext)
     
     const navigate = useNavigate();
@@ -59,6 +59,12 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
         sendJsonMessage(initialiseBody)
     }
 
+    const handleLeaveLobby = () => {
+        if (currentLobby !== '[Join a Lobby]') {
+            setSocketURL(null)
+        }
+    }
+
     return (
         <div className='game-background'>
             <div className='options-content'>
@@ -78,7 +84,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 {/* CREATE LOBBY */}
                 <div className="panel-background create-lobby-panel">
                 <h3>Create Lobby</h3>
-                <form onSubmit={handleCreateLobby}>
+                <form className="create-lobby-form" onSubmit={handleCreateLobby}>
                     <label htmlFor="create-lobby-name">Lobby Name:</label>
                     <input type="text" id="create-lobby-name" value={createLobbyName} onChange={(e) => setCreateLobbyName(e.target.value)} placeholder="Enter a lobby name" />
                     <button className="button opt-panel-button" type="submit" disabled={createLobLoading}>{createLobLoading ? 'Loading...' : 'Create Lobby'}</button>
@@ -110,13 +116,15 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
 
                 {/* LOBBY STATUS PANEL */}
                 <div className="panel-background lobby-panel">
-                <h3>Lobby: [Join a Lobby]</h3>
-                <ul className="player-list">
-                    <li>P1</li>
-                    <li>P2</li>
-                    <li>P3</li>
-                    <li>P4</li>
-                </ul>
+                    <h3>Lobby: <span className='italics'>{currentLobby}</span></h3>
+                    <div className="player-list">
+                        {playerList.map((player,index) => 
+                        <>
+                            <p className="lobby-row" key={index}><span aria-hidden="true" style={{color: player.color}}>&#x25CF;</span> {player.name}</p>
+                        </>
+                        )}
+                    </div>
+                    <button className="button opt-panel-button leave-lobby-btn" type="button" onClick={handleLeaveLobby}>Leave Lobby</button>
                 </div>
 
                 {/* SERVER MESSAGE WINDOW */}

@@ -16,6 +16,13 @@ function Game() {
   
   const { players, missions, displayDice,lobbyInitialised } = useContext(WebsocketContext);
 
+  const pageLocations = ['south','west','north','east'];
+  const positions = {};
+
+  Object.keys(players).forEach((id,i) => {
+    positions[pageLocations[i]] = id;
+  });
+
 
   if (!lobbyInitialised) {
     return (
@@ -46,10 +53,11 @@ function Game() {
           >
 
             
-            {Object.keys(players).map((id) => 
+            {Object.keys(positions).map((pos) => 
                 <MainPlayerInfo
-                  key={`${id}-MainPlayerInfo`}
-                  id={id}
+                  key={`${positions[pos]}-MainPlayerInfo`}
+                  id={positions[pos]}
+                  position={pos}
                 />
               )
             }
