@@ -11,6 +11,7 @@ import useWebSocket from 'react-use-websocket';
 function App() {
   
   const [playerName,setPlayerName] = useState('')
+  const [playerID,setPlayerID] = useState('')
 
   const [turn,setTurn] = useState('p0');
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
@@ -21,7 +22,7 @@ function App() {
   const [playerColor,setPlayerColor] = useState('')
   const [playerList, setPlayerList] = useState([])
   
-  const [displayDice,setDisplayDice] = useState(true)
+  const [displayDice,setDisplayDice] = useState(false);
 
   const [tiles,setTiles] = useState([]);
   const [paths,setPaths] = useState([]);
@@ -93,14 +94,17 @@ function App() {
               player.victory_points,
               player.ports
             );
+
+            if (player.name === playerName) {
+              setPlayerID(player.id)
+            }
           });
 
           setPaths(tempPaths)
           setNodes(tempNodes)
           setTiles(tempTiles)
           setPlayers(tempPlayers)
-          
-          
+
           setLobbyInitialised(true)
 
         } else if (jsObj.actionType === 'player-state') {
@@ -156,7 +160,7 @@ function App() {
         sendJsonMessage,
         lobbyInitialised, currentLobby,
         displayDice, setDisplayDice,
-        playerName,setPlayerName,
+        playerID, playerName,setPlayerName,
         players, setPlayers,
         missions,
         turn, setTurn,

@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import '../../styles/Game.css'
 import { GameContext } from '../../context/GameContext.jsx'
 import { WebsocketContext } from '../../context/WebsocketContext.jsx'
@@ -14,15 +14,20 @@ import { Link } from 'react-router'
 
 function Game() {
   
-  const { players, missions, displayDice,lobbyInitialised } = useContext(WebsocketContext);
+  const { turn, players, missions, displayDice, setDisplayDice, playerID, lobbyInitialised } = useContext(WebsocketContext);
 
-  const pageLocations = ['south','west','north','east'];
+  const pageLocations = ['west','north','east'];
   const positions = {};
 
   Object.keys(players).forEach((id,i) => {
-    positions[pageLocations[i]] = id;
+    id === playerID ? positions['south'] = id : positions[pageLocations[i]] = id;
   });
 
+  useEffect(() => {
+    if (playerID === turn) {
+      setDisplayDice(true);
+    }
+  }, [playerID, turn]);
 
   if (!lobbyInitialised) {
     return (
