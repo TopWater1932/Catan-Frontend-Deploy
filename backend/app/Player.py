@@ -17,11 +17,19 @@ class Player:
         super().__setattr__(name, value)
     
     def giveResource(self, resource_type, amount):
-        if resource_type in self.resource_cards:
-            self.resource_cards[resource_type] += amount
-        else:
-            print("[ERROR] Resource type not recognized.")
+        amount = int(amount)
+        self.resource_cards[resource_type] = self.resource_cards.get(resource_type, 0) + amount
 
+    def takeResource(self, resource_type, amount):
+
+        """
+        optional helper function for trading, returns true if taken, false if not enough
+        """
+        amount = int(amount)
+        if self.resource_cards.get(resource_type, 0) < amount:
+            return False
+        self.resource_cards[resource_type] -= amount
+        return True
 
     
 class Colour(Enum):
