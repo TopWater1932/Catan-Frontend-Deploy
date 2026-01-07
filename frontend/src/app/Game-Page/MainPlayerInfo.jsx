@@ -4,9 +4,9 @@ import '../../styles/player.css'
 import createCardArray from '../../utils/func-createCardArray.jsx'
 
 
-function MainPlayerInfo({id}) {
+function MainPlayerInfo({id, position}) {
 
-  const {players,missions,turn} = useContext(WebsocketContext)
+  const {players,missions,turn,playerID} = useContext(WebsocketContext)
 
   const {name,color,activeTurn,resources,devCards,structures,vps} = players[id];
   const {longestRoad,largestArmy} = missions;
@@ -17,7 +17,7 @@ function MainPlayerInfo({id}) {
 
 
   return (
-      <div id={id} className="player">
+      <div id={position} className={turn === id ? "current-turn player" : "player"}>
         <div className="cardsAndName">
           <div className="cards">
 
@@ -38,7 +38,7 @@ function MainPlayerInfo({id}) {
           </div>
         </div>
         
-        {id!=="mp" && (
+        {id!==playerID && ( 
           <ul className="panel-background list">
             <li><span className="bold">Victory Points: </span>{vps}</li>
             <li><span className="bold">Knights Played: </span>{knightsPlayed}</li>

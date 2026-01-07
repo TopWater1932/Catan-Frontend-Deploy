@@ -46,19 +46,19 @@
   align-self: start;
 }
 
-#p1 {
+#south {
   grid-column: 2;
   grid-row: 4;
   justify-self: center;
   align-self: end;
 }
 
-#p2 {
+#west {
   grid-column: 1;
   grid-row: 2;
 }
 
-#p3 {
+#north {
   grid-column: 2;
   grid-row: 1;
   flex-direction: row;
@@ -68,13 +68,13 @@
   align-self: start;
 }
 
-#p3 .cardsAndName,
-#p3 .list {
+#north .cardsAndName,
+#north .list {
   width: 100%;
   max-width: 18.75em;
 }
 
-#p4 {
+#east {
   grid-column: 3;
   grid-row: 2;
   justify-self: end;

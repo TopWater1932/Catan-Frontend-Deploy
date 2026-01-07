@@ -55,7 +55,6 @@ class Game:
         updated_board = Board(tiles=Tiles, nodes=Nodes, paths=Paths)
 
         self.board = updated_board
-        return Tiles, Nodes, Paths
     
     def nextTurn(self):
             self.current_turn = (self.current_turn + 1) % len(self.players)

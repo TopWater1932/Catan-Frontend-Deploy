@@ -50,3 +50,8 @@
   font-size: 4em;
   
 }
+
+.current-turn {
+  box-shadow: 0 0 10px 4px red;
+  border-radius: 5px;
+}

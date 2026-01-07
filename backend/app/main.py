@@ -88,7 +88,7 @@ async def wsEndpoint(websocket: WebSocket):
                 if data['actionType'] == 'join':
                     playerObj = lobby.connections[playerID][1]
                     playerObj.name = data['name']
-                    playerObj.colour = data['color']
+                    playerObj.color = data['color']
 
                     playerNameList = lobby.getPlayerNameList()
                     await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerNameList)
