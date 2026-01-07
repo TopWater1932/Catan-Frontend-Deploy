@@ -20,7 +20,10 @@ function MainPlayerInfo({id, position}) {
       sendJsonMessage({
         'actionCategory':'game',
         'actionType':'steal-from',
-        'data':id
+        'data':{
+          'from':id,
+          'to':playerID
+        }
       });
       setStealCard(false);
     }

@@ -149,7 +149,17 @@ async def wsEndpoint(websocket: WebSocket):
                         await lobby.send_gamestate(associated_player_ids,'me','steal-from',me=websocket)
 
                 elif data['actionType'] == 'steal-from':
-                    target_player_id = data['data']
+                    steal_from_ID = data['data']['from']
+                    give_to_ID = data['data']['to']
+                    game.steal(steal_from_ID, give_to_ID)
+                    
+
+                    await lobby.send_gamestate(game.players,'all','player-state')
+
+
+
+
+
                     # Implement logic to steal a card from the target player
 
                 elif data['actionType'] == 'end-turn':

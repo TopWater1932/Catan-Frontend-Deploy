@@ -137,13 +137,13 @@ class Game:
         ports = self.player_port_ownership(player)
 
         any_rate = 4
-        if ports.get("3:1", False):
+        if ports.get("3-1", False):
             any_rate = 3
 
         rates = {"ANY": any_rate}
 
         for port_type, owned in ports.items():
-            if owned and port_type != "3:1":
+            if owned and port_type != "3-1":
                 rates[port_type] = 2
 
         return rates
@@ -302,6 +302,24 @@ class Game:
         if ok:
             self.update_longest_road_holder()
         return ok
+    
+    def steal(self, from_player_ID, to_player_ID):
+        from_player = next((p for p in self.players if p.id == from_player_ID), None)
+        to_player = next((p for p in self.players if p.id == to_player_ID), None)
+
+        if from_player is None or to_player is None:
+            return False, "Invalid player IDs."
+
+        available_resources = [res for res, amt in from_player.resource_cards.items() if amt > 0]
+        if not available_resources:
+            return False, f"{from_player.name} has no resources to steal."
+
+        stolen_resource = random.choice(available_resources)
+        from_player.resource_cards[stolen_resource] -= 1
+        to_player.resource_cards[stolen_resource] = to_player.resource_cards.get(stolen_resource, 0) + 1
+
+        return True, f"{to_player.name} stole 1 {stolen_resource} from {from_player.name}."
+        
 
 
 # game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
