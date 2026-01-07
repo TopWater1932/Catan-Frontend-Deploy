@@ -1,4 +1,5 @@
 from enum import Enum
+from Node import Node
 
 class Tile:
     def __init__(self, id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
@@ -26,6 +27,7 @@ class Tile:
                     amount = 2
                 player = node.occupiedBy
                 player.giveResource(self.resource, amount)
+
 
 
 

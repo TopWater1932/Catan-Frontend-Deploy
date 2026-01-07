@@ -3,6 +3,8 @@ class Node:
         # self.next = None
         self.id = id
         self.paths = []
+        self.occupiedBy = None
+        self.isBuildable= True
 
     def __getstate__(self):
         nodeState = self.__dict__.copy()
@@ -19,6 +21,7 @@ class Node:
     def build(self, player, buildingType):
         if self.occupiedBy is None and self.isBuildable:
             self.occupiedBy = player
+            self.isBuildable = False
             self.buildingType = buildingType
             self.updateNeighbors()
             return True

@@ -5,17 +5,18 @@ from Path import Path
 from Player import Player
 from Tile import TerrainType
 from BoardSetUp import BoardSetUp
+from Dice import Dice
 
 import random
 
 class Game:
     def __init__(self, board, players, current_turn=0, longest_road_holder=None, largest_army_holder=None):
-        self.board = board
+        self.board = None
         self.players = players
         self.current_turn = current_turn
         self.longest_road_holder = longest_road_holder
         self.largest_army_holder = largest_army_holder
-    
+
     
     def setup(self):
         '''
@@ -59,6 +60,7 @@ class Game:
     def nextTurn(self):
             self.current_turn = (self.current_turn + 1) % len(self.players)
 
+<<<<<<< Updated upstream
     def assign_resources(self, dice_roll):
         print(f"Assigning resources for dice roll: {dice_roll}")
         for player in self.players:
@@ -67,27 +69,99 @@ class Game:
         
 
 # game = Game(None, [{'name':'Alice', 'color':'red'}, {'name':'Bob', 'color':'blue'}, {'name':'Rob', 'color':'green'}, {'name':'Sherry', 'color':'white'}])
+=======
+
+    
+    def buildSettlement(self, nodeID:str, player:Player):
+         '''
+         Function to handle building a settlement at a given node for a player
+         '''
+         node = self.findNodeByID(nodeID)
+         if node is None:
+            return False
+         if node.build(player, "SETTLEMENT"):
+            player.buildings.append(node)
+            return True
+         print("Failed to build settlment on node " + node.id)
+         return False
+    
+    def buildRoad(self, pathID:str, player:Player):
+        '''
+        Function to handle building a road at a given path for a player
+        '''
+        path = None
+        for p in self.board.paths:
+            if p.id == pathID:
+                path = p
+                break
+        if path is None:
+            return False
+    
+        if path.build(player):
+            player.roads.append(path)
+            return True
+        print("Failed to build road on path " + path.id)
+        return False
+    
+    def setupBuildSettlement(self, nodeID:str, player:Player):
+        '''
+        Funtion to build settlements for game setup
+
+        NOTE
+        only to be called during setup phase of game
+        '''
+        node = self.findNodeByID(nodeID)
+        if node is None:
+            return False
+        if self.buildSettlement(node, player):
+            for tile in self.board.tiles:   
+                if node in tile.associated_nodes:
+                    player.giveResource(tile.resource, 1)
+            return True
+        else:
+            print("Failed to build settlement during setup phase")
+            return False
+
+    def findNodeByID(self, nodeID:str):
+        for row in self.board.nodes:
+            for node in row:
+                if node is not None and node.id == nodeID:
+                    return node
+        print("Node with ID " + nodeID + " not found.")
+        return None
+
+#game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+game = Game(None, players=[Player(0, "Amy", "red"), Player(1, "Ben", "red")])
+
+tiles, nodes, paths = game.setup()
+node = paths[1]
+
+game.setupBuildSettlement(game.board.nodes[3][3], game.players[1])
+print(game.players[1].resource_cards)
+print(f"Node is occupied by {game.board.nodes[3][3].occupiedBy.name} and now isBuildeable = {game.board.nodes[3][3].isBuildable}")
+print(f"Surrounding nodes {game.board.nodes[4][3].isBuildable}")
+'''
+for prop_name, prop_value in vars(node).items():
+    print(f"{prop_name}: {type(prop_value)}")
+
+for tile in tiles:
+    print(f"ID: {tile.id}, RESOURCE {tile.resource}, Tile Type: {tile.terrain_type}, NUMBER: {tile.number_token}")
+for node_row in nodes:
+    print("------------------------------------------------------------------")
+    for node in node_row:
+        if node is None:
+            print("Buf", end=" | ")
+        else:
+            print(f"{node.id}", end = " | ")
+
+    print("")
+print("------------------------------------------------------------------")
+print(f"{paths[0].connectedNodes}")
+
+for hex in tiles:
+    print(f"Hex ID: {hex.id} has associated nodes: {[node.id for node in hex.associated_nodes]}")
+>>>>>>> Stashed changes
 
 
-# tiles, nodes, paths = game.setup()
-# node = paths[1]
+'''
 
-# for prop_name, prop_value in vars(node).items():
-#     print(f"{prop_name}: {type(prop_value)}")
-
-# for tile in tiles:
-#     print(f"ID: {tile.id}, RESOURCE {tile.resource}, Tile Type: {tile.terrain_type}, NUMBER: {tile.number_token}")
-# for node_row in nodes:
-#     print("------------------------------------------------------------------")
-#     for node in node_row:
-#         if node is None:
-#             print("Buf", end=" | ")
-#         else:
-#             print(f"{node.id}", end = " | ")
-
-#     print("")
-# print("------------------------------------------------------------------")
-# print(f"{paths[0].connectedNodes}")
-
-# for hex in tiles:
-#     print(f"Hex ID: {hex.id} has associated nodes: {[node.id for node in hex.associated_nodes]}")
