@@ -1,5 +1,6 @@
 from Game import Game
 from Player import Player
+from utils.WS_Conn_Health_Manager import WS_Conn_Health_Manager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect,HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,6 +8,7 @@ from Lobby import Lobby
 
 import json
 import requests
+import asyncio
 
 
 app = FastAPI()
@@ -63,6 +65,8 @@ async def wsEndpoint(websocket: WebSocket):
     await websocket.accept()
     lobby_name = websocket.query_params.get("lobby_name")
 
+    websocket_health_manager = WS_Conn_Health_Manager(websocket).start_heartbeat()
+
     try:
         if lobby_name in lobbies.keys():
             lobby = lobbies[lobby_name]
@@ -78,10 +82,12 @@ async def wsEndpoint(websocket: WebSocket):
             })
             await websocket.close(code=1000)
             return
+    
         
         # Wait to receive data
         while True:
             data = await websocket.receive_json()
+            print(data)
 
             # Undertake websocket admin actions.
             if data['actionCategory'] == 'admin':
@@ -94,8 +100,9 @@ async def wsEndpoint(websocket: WebSocket):
                     await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerNameList)
                 
                 elif data['actionType'] == 'pong':
-                    # Keepalive pong response from client
-                    pass
+                    # Keep alive pong response from client
+                    print(f'Received pong from {playerID}')
+                    await websocket_health_manager.reset_timeout()
 
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':
