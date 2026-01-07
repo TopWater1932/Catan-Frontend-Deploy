@@ -42,16 +42,23 @@ function App() {
     if (jsObj.actionCategory === 'admin') {
       if (jsObj.actionType === 'message') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
-      }
-      if (jsObj.actionType === 'connected') {
+
+      } else if (jsObj.actionType === 'connected') {
         setPlayerList(jsObj.playerList)
         setCurrentLobby(jsObj.lobbyName)
-      }
-      if (jsObj.actionType === 'join') {
+        
+      } else if (jsObj.actionType === 'join') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
         setPlayerList(jsObj.data)
-      }
-      if (jsObj.actionType === 'disconnected') {
+
+      } else if (jsObj.actionType === 'ping') {
+        // Respond to server ping to keep connection alive
+        sendJsonMessage({
+          'actionCategory':'admin',
+          'actionType':'pong'
+        })
+
+      } else if (jsObj.actionType === 'disconnected') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
         setPlayerList(jsObj.data)
       }

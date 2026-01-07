@@ -92,6 +92,10 @@ async def wsEndpoint(websocket: WebSocket):
 
                     playerNameList = lobby.getPlayerNameList()
                     await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerNameList)
+                
+                elif data['actionType'] == 'pong':
+                    # Keepalive pong response from client
+                    pass
 
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':
