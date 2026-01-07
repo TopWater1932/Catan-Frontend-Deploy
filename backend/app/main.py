@@ -138,6 +138,20 @@ async def wsEndpoint(websocket: WebSocket):
 
                     await lobby.send_gamestate(game.board.tiles,'all','tile-state')
 
+                    selected_tile = next((tile for tile in game.board.tiles if tile.id == tile_id), None)
+
+                    if selected_tile is None:
+                        print("Error: Selected tile not found.")
+
+                    associated_player_ids = selected_tile.findAssociatedPlayers()
+
+                    if len(associated_player_ids) > 0:
+                        await lobby.send_gamestate(associated_player_ids,'me','steal-from',me=websocket)
+
+                elif data['actionType'] == 'steal-from':
+                    target_player_id = data['data']
+                    # Implement logic to steal a card from the target player
+
                 elif data['actionType'] == 'end-turn':
                     lobby.game.nextTurn()
                     await lobby.send_gamestate(lobby.game, 'all', 'new-turn')
@@ -173,6 +187,10 @@ async def wsEndpoint(websocket: WebSocket):
                         #[TODO] handle failed build
                         pass
 
+                    
+    
+
+            
             # Insert logic on what to do with data when received
 
     except WebSocketDisconnect:

@@ -25,6 +25,7 @@ function App() {
   const [displayDice,setDisplayDice] = useState(false);
   const [moveRobber,setMoveRobber] = useState(false);
   const [stealCard,setStealCard] = useState(false);
+  const [stealList,setStealList] = useState([]);
 
   const [tiles,setTiles] = useState([]);
   const [paths,setPaths] = useState([]);
@@ -146,6 +147,7 @@ function App() {
           setMoveRobber(true)
         
         } else if (jsObj.actionType === 'steal-from') {
+          setStealList(jsObj.data)
           setStealCard(true)
         }
     }
@@ -182,7 +184,7 @@ function App() {
         displayDice, setDisplayDice,
         playerID, playerName,setPlayerName,
         moveRobber, setMoveRobber,
-        stealCard, setStealCard,
+        stealCard, setStealCard, stealList,
         players, setPlayers,
         missions,
         turn, setTurn,

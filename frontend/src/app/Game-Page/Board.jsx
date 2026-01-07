@@ -22,7 +22,7 @@ function Board() {
     tiles, setTiles,
     paths, setPaths,
     nodes, setNodes,
-    moveRobber, setMoveRobber, setStealCard
+    moveRobber, setMoveRobber
   } = useContext(WebsocketContext)
   
   useLayoutEffect(() => {
