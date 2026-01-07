@@ -46,16 +46,21 @@
   width: 100%;
 }
 
+.italics {
+  font-style: italic;
+  font-weight: normal;
+}
+
 /* ---------- Panels positioning ---------- */
 
 .setup-panel {
-  grid-column: 1 / 3;
+  grid-column: 1 / 2;
   grid-row: 2 / 5;
   padding: 1.5rem;
 }
 
 .create-lobby-panel {
-  grid-column: 3 / 4;
+  grid-column: 2 / 3;
   grid-row: 2 / 3;
   padding: 1.5rem;
   display: flex;
@@ -63,9 +68,15 @@
   gap: 0.75rem;
 }
 
+.create-lobby-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .join-lobby-panel {
   grid-column: 3 / 4;
-  grid-row: 3 / 4;
+  grid-row: 2 / 3;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -74,7 +85,7 @@
 
 .lobby-panel {
   grid-column: 4 / 5;
-  grid-row: 2 / 4; /* spans BOTH rows */
+  grid-row: 2 / 3;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -102,17 +113,31 @@
 
 .lobby-panel {
   grid-column: 4 / 5;
-  grid-row: 2 / 4;
+  grid-row: 2 / 3;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  justify-content: start;
 }
 
 .player-list {
   margin-top: 1rem;
-  padding-left: 1.5rem;
   list-style: disc;
   line-height: 1.6;
+  border-bottom: 1px solid black;
+}
+
+.lobby-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5rem;
+  list-style-type: decimal;
+  border-top: 1px solid black;
+}
+
+.leave-lobby-btn {
+  margin-top: 1rem;
 }
 
 /* ---------- Players panel ---------- */
@@ -129,8 +154,8 @@
 /* ---------- Server message window ---------- */
 
 .server-messages {
-  grid-column: 3 / 5;
-  grid-row: 4;
+  grid-column: 2 / 5;
+  grid-row: 3 / 5;
   align-self: end;
   height: 100%;
 

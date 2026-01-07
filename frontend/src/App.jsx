@@ -11,6 +11,7 @@ import useWebSocket from 'react-use-websocket';
 function App() {
   
   const [playerName,setPlayerName] = useState('')
+  const [playerID,setPlayerID] = useState('')
 
   const [turn,setTurn] = useState('p0');
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
@@ -21,7 +22,7 @@ function App() {
   const [playerColor,setPlayerColor] = useState('')
   const [playerList, setPlayerList] = useState([])
   
-  const [displayDice,setDisplayDice] = useState(true)
+  const [displayDice,setDisplayDice] = useState(false);
 
   const [tiles,setTiles] = useState([]);
   const [paths,setPaths] = useState([]);
@@ -30,6 +31,7 @@ function App() {
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
+  const [currentLobby,setCurrentLobby] = useState('[Join a Lobby]')
   
   const onMessageCallback = (messageEvent) => {
 
@@ -43,6 +45,7 @@ function App() {
       }
       if (jsObj.actionType === 'connected') {
         setPlayerList(jsObj.playerList)
+        setCurrentLobby(jsObj.lobbyName)
       }
       if (jsObj.actionType === 'join') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
@@ -50,6 +53,7 @@ function App() {
       }
       if (jsObj.actionType === 'disconnected') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
+        setPlayerList(jsObj.data)
       }
 
 
@@ -77,6 +81,7 @@ function App() {
             }
           });
 
+
           jsObj.data.players.forEach(player => {
             tempPlayers[player.id] = new Player(
               player.id,
@@ -89,14 +94,17 @@ function App() {
               player.victory_points,
               player.ports
             );
+
+            if (player.name === playerName) {
+              setPlayerID(player.id)
+            }
           });
 
           setPaths(tempPaths)
           setNodes(tempNodes)
           setTiles(tempTiles)
           setPlayers(tempPlayers)
-          
-          
+
           setLobbyInitialised(true)
 
         } else if (jsObj.actionType === 'player-state') {
@@ -130,13 +138,19 @@ function App() {
     'color':playerColor
   }
 
-  const {sendJsonMessage,readyState} = useWebSocket(socketURL,
+  const {sendJsonMessage, readyState} = useWebSocket(socketURL,
     {
       onOpen: () => {
         sendJsonMessage(joinLobbyBody)
       },
 
-      onMessage: onMessageCallback
+      onMessage: onMessageCallback,
+
+      onClose: () => {
+        setServerMsgs(prevMsgs => [...prevMsgs,'You have left the lobby.'])
+        setPlayerList([])
+        setCurrentLobby('[Join a Lobby]')
+      }
     }
   )
 
@@ -144,9 +158,9 @@ function App() {
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
-        lobbyInitialised,
+        lobbyInitialised, currentLobby,
         displayDice, setDisplayDice,
-        playerName,setPlayerName,
+        playerID, playerName,setPlayerName,
         players, setPlayers,
         missions,
         turn, setTurn,
@@ -166,7 +180,6 @@ function App() {
             playerColor={playerColor}
             setPlayerColor={setPlayerColor}
             playerList={playerList}
-            lobbyInitialised={lobbyInitialised}
           />} />
           <Route path="/game" element={<Game />} />
 

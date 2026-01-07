@@ -19,7 +19,7 @@ class Lobby:
     def getPlayerNameList(self):
         playerNameList = []
         for conn in self.connections.values():
-            playerNameList.append({'name':conn[1].name,'color':conn[1].colour})
+            playerNameList.append({'name':conn[1].name,'color':conn[1].color})
         return playerNameList
 
 
@@ -35,7 +35,8 @@ class Lobby:
                     'actionCategory':'admin',
                     'actionType':'connected',
                     'msg':message,
-                    'playerList': playerNameList
+                    'playerList': playerNameList,
+                    'lobbyName': self.name
                 })
         else:
             message = "Sorry, this lobby already has 4 players. You have not been added."
@@ -51,7 +52,7 @@ class Lobby:
         del self.connections[playerID]
 
         if len(self.connections) > 0:
-            await self.broadcast(f'{playerName} has left the game.')
+            await self.broadcast('disconnected',f'{playerName} has left the game.',data=self.getPlayerNameList())
 
         else:
             await self.lobby_timer(lobbies,30)
@@ -87,7 +88,7 @@ class Lobby:
             'data':data
         }
 
-        json_package = jp.encode(json_data)
+        json_package = jp.encode(json_data,make_refs=False)
 
         if to == 'all':
             for player in self.connections.values():
