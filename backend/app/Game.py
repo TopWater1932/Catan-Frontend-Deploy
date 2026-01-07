@@ -316,7 +316,7 @@ class Game:
 
         stolen_resource = random.choice(available_resources)
         from_player.resource_cards[stolen_resource] -= 1
-        to_player.resource_cards[stolen_resource] = to_player.resource_cards.get(stolen_resource, 0) + 1
+        to_player.resource_cards[stolen_resource] += 1
 
         return True, f"{to_player.name} stole 1 {stolen_resource} from {from_player.name}."
         
