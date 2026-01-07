@@ -122,15 +122,21 @@ async def wsEndpoint(websocket: WebSocket):
                 
                 elif data['actionType'] == 'roll-dice':
                     result = data['data']
-                    if result == 7:
+                    # if result == 7:
                         # IMPORTANT: CHECK IF ANY PLAYER HAS MORE THAN 7 CARDS.
 
-                        await lobby.send_gamestate(None,'me','move-robber',me=websocket)
-                    else:
-                        game.assign_resources(result)
+                    await lobby.send_gamestate(None,'me','move-robber',me=websocket)
+                    # else:
+                        # game.assign_resources(result)
                         
                         # Send updated player states to all players
-                        await lobby.send_gamestate(game.players,'all','player-state')
+                        # await lobby.send_gamestate(game.players,'all','player-state')
+
+                elif data['actionType'] == 'move-robber':
+                    tile_id = data['data']
+                    game.board.move_robber(tile_id)
+
+                    await lobby.send_gamestate(game.board.tiles,'all','tile-state')
 
                 elif data['actionType'] == 'end-turn':
                     lobby.game.nextTurn()

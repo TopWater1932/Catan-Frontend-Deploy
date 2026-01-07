@@ -23,6 +23,8 @@ function App() {
   const [playerList, setPlayerList] = useState([])
   
   const [displayDice,setDisplayDice] = useState(false);
+  const [moveRobber,setMoveRobber] = useState(false);
+  const [stealCard,setStealCard] = useState(false);
 
   const [tiles,setTiles] = useState([]);
   const [paths,setPaths] = useState([]);
@@ -132,8 +134,19 @@ function App() {
           });
           setPlayers(updatedPlayers);
 
-        } else if (jsObj.actionType === 'move-robbber') {
-          console.log('Robber moved')
+        } else if (jsObj.actionType === 'tile-state') {
+          const updatedTiles = [];
+          jsObj.data.forEach(tile => {
+            updatedTiles.push(tile["py/state"])
+          });
+
+          setTiles(updatedTiles);
+
+        } else if (jsObj.actionType === 'move-robber') {
+          setMoveRobber(true)
+        
+        } else if (jsObj.actionType === 'steal-from') {
+          setStealCard(true)
         }
     }
   }
@@ -168,6 +181,8 @@ function App() {
         lobbyInitialised, currentLobby,
         displayDice, setDisplayDice,
         playerID, playerName,setPlayerName,
+        moveRobber, setMoveRobber,
+        stealCard, setStealCard,
         players, setPlayers,
         missions,
         turn, setTurn,
