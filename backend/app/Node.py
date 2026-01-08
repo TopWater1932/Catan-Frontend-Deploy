@@ -27,3 +27,8 @@ class Node:
             return True
         return False
     
+    def getPathIDs(self):
+        pathIDs = []
+        for path in self.paths:
+            pathIDs.append(path.id)
+        return pathIDs

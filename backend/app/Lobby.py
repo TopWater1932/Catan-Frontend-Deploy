@@ -101,3 +101,25 @@ class Lobby:
             for player in self.connections.values():
                 if player[0] is not kwargs['me']:
                     await player[0].send_text(json_package)
+
+    # Generic send function
+    async def send(self,data,to,actionCategory,actionType,**kwargs):
+        json_data = {
+            'actionCategory':actionCategory,
+            'actionType':actionType,
+            'data':data
+        }
+        json_package = jp.encode(json_data,make_refs=False)
+
+        if to == 'all':
+            for player in self.connections.values():
+                await player[0].send_text(json_package)
+
+        elif to == 'me':
+            await kwargs['me'].send_text(json_package)
+
+        elif to == 'others':
+            for player in self.connections.values():
+                if player[0] is not kwargs['me']:
+                    await player[0].send_text(json_package)
+    
