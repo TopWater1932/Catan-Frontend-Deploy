@@ -405,12 +405,12 @@ class Game:
 
 
 #game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
+'''
 game = Game(None, players=[Player(0, "Amy", "red"), Player(1, "Ben", "blue")])
 
 tiles, nodes, paths = game.setup()
 node = paths[1]
 
-'''
 game.setupBuildSettlement("N33", game.players[1])
 print(game.players[1].resource_cards)
 print(f"Node is occupied by {game.board.nodes[3][3].occupiedBy.name} and now isBuildeable = {game.board.nodes[3][3].isBuildable}")
@@ -477,7 +477,7 @@ for hex in tiles:
 
 
 #  TEST BLOCK FOR TRADING::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+'''
 if __name__ == "__main__":
     # create 2 players
     p1 = Player(1, "Thelonius", "Red", resource_cards={"WOOD": 2, "BRICK": 0, "SHEEP": 0, "WHEAT": 0, "ORE": 0})
@@ -597,3 +597,5 @@ if __name__ == "__main__":
             print("[PASS] Longest road award works.")
         else:
             print("[WARN] smthn broken.")
+
+'''
