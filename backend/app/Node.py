@@ -1,10 +1,11 @@
 class Node:
-    def __init__(self, id, occupiedBy=None, isBuildable=True, buildingType=None, paths=[]):
-        # self.next = None
+    def __init__(self, id, occupiedBy=None, isBuildable=True, buildingType=None, paths=None, port_type=None):
         self.id = id
-        self.paths = []
-        self.occupiedBy = None
-        self.isBuildable= True
+        self.occupiedBy = occupiedBy
+        self.isBuildable = isBuildable
+        self.buildingType = buildingType
+        self.paths = paths or []
+        self.port_type = port_type
 
     def __getstate__(self):
         nodeState = self.__dict__.copy()
