@@ -206,7 +206,7 @@ function App() {
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
-        setLobbyInitialised, lobbyInitialised, currentLobby, setPlayerList, setCurrentLobby, setShouldReconnect,
+        setLobbyInitialised, lobbyInitialised, currentLobby, setPlayerList, setCurrentLobby, setShouldReconnect,setSocketURL,
         displayDice, setDisplayDice,
         playerID, playerName,setPlayerName,
         moveRobber, setMoveRobber,
