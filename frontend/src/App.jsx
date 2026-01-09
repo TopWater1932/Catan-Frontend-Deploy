@@ -34,6 +34,7 @@ function App() {
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
+  const [shouldReconnect,setShouldReconnect] = useState(true)
   const [currentLobby,setCurrentLobby] = useState('[Join a Lobby]')
   
   const onMessageCallback = (messageEvent) => {
@@ -180,17 +181,24 @@ function App() {
   const {sendJsonMessage, readyState} = useWebSocket(socketURL,
     {
       onOpen: () => {
+        setShouldReconnect(true)
         sendJsonMessage(joinLobbyBody)
       },
 
       onMessage: onMessageCallback,
 
       onClose: () => {
-        setSocketURL(null)
         setServerMsgs(prevMsgs => [...prevMsgs,'You have been disconnected.'])
         setPlayerList([])
         setCurrentLobby('[Join a Lobby]')
-      }
+      },
+
+      shouldReconnect: (closeEvent) => {
+        return shouldReconnect;
+      },
+      reconnectAttempts: 9,
+      reconnectInterval: (attemptNumber) =>
+        Math.min(Math.pow(2, attemptNumber) * 1000, 10000)
     }
   )
 
@@ -198,7 +206,7 @@ function App() {
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
-        lobbyInitialised, currentLobby,
+        setLobbyInitialised, lobbyInitialised, currentLobby, setPlayerList, setCurrentLobby, setShouldReconnect,
         displayDice, setDisplayDice,
         playerID, playerName,setPlayerName,
         moveRobber, setMoveRobber,

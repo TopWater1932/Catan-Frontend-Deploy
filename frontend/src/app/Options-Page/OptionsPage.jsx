@@ -11,7 +11,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     const {
         playerName, setPlayerName,
         sendJsonMessage,
-        lobbyInitialised,currentLobby
+        lobbyInitialised,currentLobby, setShouldReconnect,
     } = useContext(WebsocketContext)
     
     const navigate = useNavigate();
@@ -66,6 +66,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
 
     const handleLeaveLobby = () => {
         if (currentLobby !== '[Join a Lobby]') {
+            setShouldReconnect(false)
             setSocketURL(null)
         }
     }
