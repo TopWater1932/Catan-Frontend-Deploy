@@ -120,9 +120,42 @@ async def wsEndpoint(websocket: WebSocket):
                         
                         # Send updated player states to all players
                         await lobby.send_gamestate(game.players,'all','player-state')
-    
 
-            
+                elif data['actionType'] == 'end-turn':
+                    lobby.game.nextTurn()
+                    await lobby.send_gamestate(lobby.game, 'all', 'new-turn')
+
+                elif data['actionCategory'] == 'build-settlement':
+                    nodeID = data['data']['nodeID']
+                    node = lobby.game.findNodeByID(nodeID)
+                    if lobby.game.setup_phase:
+                        success = lobby.game.setupBuildSettlement(nodeID)
+                        #send back buildable paths for setup phase
+                        await lobby.send(data=node.getPathIDs(),actionType='buildable-paths',recipient='me', me=websocket)
+                    else:
+                        success = lobby.game.buildSettlement(nodeID)
+
+                    if success:
+                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
+                    else:
+                        #[TODO] handle failed build
+                        pass
+                        
+                elif data['actionCategory'] == 'build-road':
+                    pathID = data['data']['pathID']
+
+                    success = lobby.game.buildRoad(pathID)
+                    if lobby.game.setup_phase:
+                        lobby.game.nextSetupTurn()
+                        if lobby.game.setup_phase == False:
+                            #setup phase over
+                            await lobby.send_gamestate(lobby.game,'all','setup-complete')
+                    if success:
+                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
+                    else:
+                        #[TODO] handle failed build
+                        pass
+
             # Insert logic on what to do with data when received
 
     except WebSocketDisconnect:

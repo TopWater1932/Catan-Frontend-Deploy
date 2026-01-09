@@ -22,8 +22,14 @@ class Node:
     def build(self, player, buildingType):
         if self.occupiedBy is None and self.isBuildable:
             self.occupiedBy = player
+            self.isBuildable = False
             self.buildingType = buildingType
             self.updateNeighbors()
             return True
         return False
     
+    def getPathIDs(self):
+        pathIDs = []
+        for path in self.paths:
+            pathIDs.append(path.id)
+        return pathIDs
