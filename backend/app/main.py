@@ -70,9 +70,7 @@ async def wsEndpoint(websocket: WebSocket):
     try:
         if lobby_name in lobbies.keys():
             lobby = lobbies[lobby_name]
-            playerID = f'p{lobby.connCounter}'
-            await lobby.addToLobby(websocket,playerID)
-            lobby.connCounter += 1
+            
         else:
             message = f'{lobby_name} is not an existing lobby.'
             await websocket.send_json({
@@ -90,14 +88,41 @@ async def wsEndpoint(websocket: WebSocket):
             print(data)
 
             # Undertake websocket admin actions.
-            if data['actionCategory'] == 'admin':
+            if data['actionCategory'] == 'admin':                                               
                 if data['actionType'] == 'join':
-                    playerObj = lobby.connections[playerID][1]
-                    playerObj.name = data['name']
-                    playerObj.color = data['color']
 
-                    playerNameList = lobby.getPlayerNameList()
-                    await lobby.broadcast('join',f'{playerObj.name} has joined the game.',data=playerNameList)
+                    # Joining BEFORE game has begun
+                    if lobby.game == False:
+
+                        playerID = await lobby.addToLobby(websocket,data)
+
+                        playerNameList = lobby.getPlayerNameList()
+                        await lobby.broadcast('player-joined',f'{data['name']} has joined the game.',data=playerNameList)
+                    
+                    # Joining AFTER the game has begun
+                    else:
+                        playerID = data['player_id']
+
+                        rejoining_player = next((p for p in lobby.game.players if p.id == playerID), None)
+
+                        if rejoining_player:
+                            await lobby.reconnectToLobby(websocket,playerID,rejoining_player)
+
+                            playerNameList = lobby.getPlayerNameList()
+                            await lobby.broadcast('player-joined',f'{data['name']} has joined the game.',data=playerNameList)
+
+                        else:
+                            message = (
+                                f'The game at {lobby_name} has already begun. Joining mid-way is not permitted.'
+                            )
+                            await websocket.send_json({
+                                'actionCategory': 'admin',
+                                'actionType': 'message',
+                                'msg': message
+                            })
+                            await websocket.close(code=1000)
+                            return
+
                 
                 elif data['actionType'] == 'pong':
                     # Keep alive pong response from client
@@ -117,8 +142,8 @@ async def wsEndpoint(websocket: WebSocket):
                         intialisedPackage = game
                         await lobby.send_gamestate(intialisedPackage,'all','initialised')
                     else:
-                        intialisedPackage = lobby.game
-                        await lobby.send_gamestate(intialisedPackage,'me','initialised',me=websocket)
+                        gameState = lobby.game
+                        await lobby.send_gamestate(gameState,'me','initialised',me=websocket)
                 
                 elif data['actionType'] == 'roll-dice':
                     result = data['data']
@@ -204,4 +229,7 @@ async def wsEndpoint(websocket: WebSocket):
             # Insert logic on what to do with data when received
 
     except WebSocketDisconnect:
-        await lobby.disconnected(lobbies,playerObj.id,playerObj.name)
+        player = next((p[1] for p in lobby.connections.values() if p[1].id == playerID), None)
+
+        if player:
+            await lobby.disconnected(lobbies,playerID,player.name)
