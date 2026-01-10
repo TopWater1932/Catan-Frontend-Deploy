@@ -76,3 +76,8 @@ export interface StageSize {
     scaleX: number;
     scaleY: number;
 }
+
+export interface Coordinates {
+    x: number;
+    y: number;
+}

@@ -3,7 +3,7 @@ import Structures from './Structures.jsx'
 import '../../styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
 import handleWindowResize from '../../utils/event-handler/func-handleWindowResize.tsx'
-import initialiseTileGrid from '../../utils/func-initialiseTileGrid.jsx'
+import initialiseTileGrid from '../../utils/func-initialiseTileGrid.tsx'
 import { WebsocketContext } from '../../context/WebsocketContext.jsx'
 import Tile from '../../classes/Tile.jsx'
 
