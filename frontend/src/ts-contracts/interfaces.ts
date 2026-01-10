@@ -58,7 +58,6 @@ export interface ServerMsgsWindowProps {
 }
 
 // useFetch utility hook
-
 export type FetchCallback = () => Promise<void>
 
 export interface useFetchArgs {
@@ -69,3 +68,11 @@ export interface useFetchArgs {
 }
 
 export type useFetchReturns = [any,boolean,any, FetchCallback]
+
+// Window resize util
+export interface StageSize {
+    width: number;
+    height: number;
+    scaleX: number;
+    scaleY: number;
+}
