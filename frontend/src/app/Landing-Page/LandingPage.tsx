@@ -5,7 +5,7 @@ import "../../styles/LandingPage.css";
 
 
 function LandingPage() {
-  const bgRef = useRef(null);
+  const bgRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
 
