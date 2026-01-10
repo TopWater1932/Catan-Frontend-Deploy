@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import {Layer,RegularPolygon,Line,Circle,Rect,Text} from 'react-konva'
 import ValidPlacementLayers from './ValidPlacements.jsx'
-import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid.jsx'
+import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid.tsx'
 import assignVertices from '../../utils/func-assignVertices.jsx'
 import generateVertexIDs from '../../utils/func-generateVertexIDs.tsx'
 import generatePortCoords from '../../utils/func-generatePortCoords.jsx'

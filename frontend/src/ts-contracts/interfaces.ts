@@ -28,15 +28,15 @@ export interface PlayerNameColor {
     color: string;
 }
 
-export interface Tile {
+export interface TileData {
     [key: string]: any;             // TBC
 }
 
-export interface Node {
+export interface NodeData {
     [key: string]: any;             // TBC
 }
 
-export interface Path {
+export interface PathData {
     [key: string]: any;             // TBC
 }
 
