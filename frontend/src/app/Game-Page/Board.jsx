@@ -169,10 +169,10 @@ function Board() {
               stroke='red'
               strokeWidth={4}
               onClick={() => handlePlaceRobber(tile.id)}
-              onMouseEnter={(e) => {
+              onMouseEnter={(e: KonvaMouseEvent) => {
                 e.target.getStage().container().style.cursor = 'pointer';
               }}
-              onMouseLeave={(e) => {
+              onMouseLeave={(e: KonvaMouseEvent) => {
                 e.target.getStage().container().style.cursor = 'default';
               }}
             />

@@ -69,7 +69,7 @@ function BuyModalContent({ setBuyModalIsVisible }) {
                             <span className='bold'>{`${structure}: `}</span><br/>
                             <span>{`${resRequirementLabels[structure]}`}</span>
                         </p>
-                        <button className='button' type="button" onClick={(e) => handleUseClick(e,structure)} disabled={!hasEnoughResources(resRequirements,resources,structure)}>Use</button>
+                        <button className='button' type="button" onClick={(e: ReactMouseEvent) => handleUseClick(e,structure)} disabled={!hasEnoughResources(resRequirements,resources,structure)}>Use</button>
                     </div>
             )}
 

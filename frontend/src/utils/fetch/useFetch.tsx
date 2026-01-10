@@ -1,6 +1,10 @@
 import { useState, useCallback } from 'react'
+import {
+  useFetchArgs,
+  useFetchReturns
+} from '../../ts-contracts/interfaces'
 
-function useFetch(url,method,info,setServerMsgs) {
+function useFetch({url, method ,info, setServerMsgs}: useFetchArgs): useFetchReturns {
     const [data,setData] = useState(null);
     const [loading,setLoading] = useState(false);
     const [error,setError] = useState(null);
@@ -27,7 +31,7 @@ function useFetch(url,method,info,setServerMsgs) {
             const jsObj = JSON.parse(json)
             setData(jsObj);
             setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
-        } catch (error) {
+        } catch (error: any) {
             setError(error);
             setServerMsgs(prevMsgs => [...prevMsgs,error.message])
         } finally {

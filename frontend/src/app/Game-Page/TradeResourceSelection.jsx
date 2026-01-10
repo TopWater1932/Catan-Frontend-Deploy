@@ -45,7 +45,7 @@ function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle
                                     type={dialogueType}
                                     name={dialogueType === 'radio' ? 'give-resources' : `give-player-${res}`}
                                     value={dialogueType === 'radio'? res : giveAmount[res]}
-                                    onChange={(e) => {dialogueType === 'radio' ? setGiveSelection(e.target.value) : setGiveAmount({...giveAmount,[res]: e.target.value})}}
+                                    onClick={(e: ReactMouseEvent) => {dialogueType === 'radio' ? setGiveSelection(e.target.value) : setGiveAmount({...giveAmount,[res]: e.target.value})}}
                                     checked={res === giveSelection ? true : false}
                                     min={0}
                                     max={resources[res]}
@@ -73,7 +73,7 @@ function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle
                                     type={dialogueType}
                                     name={dialogueType === 'radio' ? 'receive-resources' : `receive-player-${res}`}
                                     value={dialogueType === 'radio'? res : receiveAmount[res]}
-                                    onChange={(e) => {dialogueType === 'radio' ? setReceiveSelection(e.target.value) : setReceiveAmount({...receiveAmount,[res]: e.target.value})}}
+                                    onClick={(e: ReactMouseEvent) => {dialogueType === 'radio' ? setReceiveSelection(e.target.value) : setReceiveAmount({...receiveAmount,[res]: e.target.value})}}
                                     checked={res === receiveSelection ? true : false}
                                     min={0}
                                     max={10}

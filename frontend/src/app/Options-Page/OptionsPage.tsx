@@ -1,12 +1,18 @@
 import { useState, useEffect, useContext, useCallback, useRef } from 'react'
 import { Link } from 'react-router-dom';
 import useFetch from '../../utils/fetch/useFetch'
-import ServerMsgsWindow from './ServerMsgsWindow.jsx'
+import ServerMsgsWindow from './ServerMsgsWindow'
 import '../../styles/Options-Page.css'
 import { WebsocketContext } from '../../context/WebsocketContext.jsx'
 import { useNavigate } from 'react-router-dom';
 
-function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor,playerList}) {
+import {
+    OptionsPageProps,
+    ReactMouseEvent,
+    ReactChangeEvent
+} from '../../ts-contracts/interfaces'
+
+function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor,playerList}: OptionsPageProps) {
     
     const {
         playerName, setPlayerName,
@@ -28,20 +34,19 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
 
     const createLobbyURL = 'http://127.0.0.1:8000/lobbies'
     const createLobbyBody = {'name':createLobbyName}
-    const [
-        createLobMsg,
-        createLobLoading,
-        createLobError,
-        createLobbyFetch
-    ] = useFetch(createLobbyURL,"POST",createLobbyBody,setServerMsgs)
+    const [createLobMsg,createLobLoading,createLobError,createLobbyFetch] = 
+        useFetch({url:createLobbyURL,
+        method:"POST",
+        info:createLobbyBody,
+        setServerMsgs:setServerMsgs})
     
     
-    const handleCreateLobby = (e) => {
+    const handleCreateLobby = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         createLobbyFetch()
     }
     
-    const handleJoinLobby = (e) => {
+    const handleJoinLobby = (e: ReactMouseEvent) => {
         e.preventDefault()
         setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
 
@@ -94,7 +99,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <h3>Create Lobby</h3>
                 <form className="create-lobby-form" onSubmit={handleCreateLobby}>
                     <label htmlFor="create-lobby-name">Lobby Name:</label>
-                    <input type="text" id="create-lobby-name" value={createLobbyName} onChange={(e) => setCreateLobbyName(e.target.value)} maxLength='15' placeholder="Enter a lobby name" />
+                    <input type="text" id="create-lobby-name" value={createLobbyName} onChange={(event: ReactChangeEvent<HTMLInputElement>) => setCreateLobbyName(event.currentTarget.value)} maxLength={15} placeholder="Enter a lobby name" />
                     <button className="button opt-panel-button" type="submit" disabled={createLobLoading}>{createLobLoading ? 'Loading...' : 'Create Lobby'}</button>
                 </form>
 
@@ -105,17 +110,17 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <h3>Join Lobby</h3>
 
                     <label htmlFor="join-lobby-name">Lobby Name <span className='red-text'>*</span></label>
-                    <input type="text" id="join-lobby-name" value={joinLobbyName} onChange={(e) => setJoinLobbyName(e.target.value)} maxLength='15' placeholder="Join a lobby" />
+                    <input type="text" id="join-lobby-name" value={joinLobbyName} onChange={(event: ReactChangeEvent<HTMLInputElement>) => setJoinLobbyName(event.currentTarget.value)} maxLength={15} placeholder="Join a lobby" />
 
                     <label htmlFor="player-name">Player Name
                         <span className='note-text'><br/>Not required if reconnecting</span>
                     </label>
-                    <input type="text" id="player-name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} maxLength='15' placeholder="Enter a player name" required />
+                    <input type="text" id="player-name" value={playerName}  onChange={(event: ReactChangeEvent<HTMLInputElement>) => setPlayerName(event.currentTarget.value)} maxLength={15} placeholder="Enter a player name" required />
 
                     <label htmlFor="colors">Choose a Color
                         <span className='note-text'><br/>Not required if reconnecting</span>
                     </label>
-                    <select id="colors" name="colors" value={playerColor} defaultValue="" onChange={(e) => setPlayerColor(e.target.value)} required>
+                    <select id="colors" name="colors" value={playerColor} defaultValue=""  onChange={(event: ReactChangeEvent<HTMLSelectElement>) => setPlayerColor(event.currentTarget.value)} required>
                         <option value="" disabled>Select your player color</option>
                         {colorOptions.map((color) => 
                             <option value={color} disabled={playerList.some(player => player.color === color)}>

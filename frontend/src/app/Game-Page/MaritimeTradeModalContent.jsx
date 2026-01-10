@@ -62,7 +62,7 @@ function MaritimeTradeModalContent( ) {
         setPortSelected(port);
     }
 
-    const handleConfirm = (e) => {
+    const handleConfirm = (e: ReactMouseEvent) => {
         e.preventDefault();
         // Post the trade to the backend here
     };
@@ -78,7 +78,7 @@ function MaritimeTradeModalContent( ) {
                     {usablePorts.map((port,i) => 
                             <div className='option-row'>
                                 <p><span className='bold'>{`${ports[i]['text']}`}</span></p>
-                                <button className='button' type="button" onClick={(e) => handleUseClick(e,port)} disabled={!port.enabled}>Use</button>
+                                <button className='button' type="button" onClick={(e: ReactMouseEvent) => handleUseClick(e,port)} disabled={!port.enabled}>Use</button>
                             </div>
                     )}
                 </div>

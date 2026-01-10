@@ -21,11 +21,11 @@ function TradeModalContent( ) {
         <div className='options'>
             <div className='option-row'>
                 <p><span className='bold'>{'Maritime Trade'}</span></p>
-                <button className='button' type="button" onClick={(e) => handleSelectMaritime(e)}>Select</button>
+                <button className='button' type="button" onClick={handleSelectMaritime}>Select</button>
             </div>
             <div className='option-row'>
                 <p><span className='bold'>{'Player Trade'}</span></p>
-                <button className='button' type="button" onClick={(e) => handleSelectPlayer(e)}>Select</button>
+                <button className='button' type="button" onClick={handleSelectPlayer}>Select</button>
             </div>
         </div>
 )}

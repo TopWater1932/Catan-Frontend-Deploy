@@ -22,7 +22,7 @@ function PlayDevCardModalContent({ setDCModalIsVisible }) {
             {names.map((name,i) => 
                     <div className='option-row'>
                         <p><span className='bold'>{`${dcNames[i]}: `}</span><span>{`${devCards[name]}`}</span></p>
-                        <button className='button' type="button" onClick={(e) => handleUseClick(i,e)} disabled={devCards[name]>0 ? false : true}>Use</button>
+                        <button className='button' type="button" onClick={(e: ReactMouseEvent) => handleUseClick(i,e)} disabled={devCards[name]>0 ? false : true}>Use</button>
                     </div>
             )}
         </div>

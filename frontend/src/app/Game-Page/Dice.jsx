@@ -95,7 +95,7 @@ export default function Dice() {
 
       {open && (
         <div className="dice-overlay" onClick={close}>
-          <div className="dice-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="dice-modal" onClick={(e: ReactMouseEvent) => e.stopPropagation()}>
             <div className="dice-modal-title">Dice Roll</div>
 
             <div className="dice-row">

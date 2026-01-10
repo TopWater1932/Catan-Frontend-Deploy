@@ -1,43 +1,52 @@
 import { useState, useRef, useCallback } from 'react'
 import './styles/index.css'
 import Game from './app/Game-Page/Game.jsx'
-import LandingPage from './app/Landing-Page/LandingPage.jsx'
-import OptionsPage from './app/Options-Page/OptionsPage.jsx'
+import LandingPage from './app/Landing-Page/LandingPage.js'
+import OptionsPage from './app/Options-Page/OptionsPage.js'
 import Player from './classes/Player.jsx'
 import { WebsocketContext } from './context/WebsocketContext.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
 
+import {
+  SocketURL,
+  PlayerNameColor,
+  PlayerState, PlayerStateData,
+  Tile,
+  Node,
+  Path
+} from './ts-contracts/interfaces'
+
 function App() {
   
   const [playerName,setPlayerName] = useState('')
   const [playerID,setPlayerID] = useState('')
+  const [playerColor,setPlayerColor] = useState('')
 
-  const [turn,setTurn] = useState('p0');
+  const [turn,setTurn] = useState('');
   const [longestRoad,setLongestRoad] = useState('Unclaimed');
   const [largestArmy,setLargestArmy] = useState('Unclaimed');
   const missions = {longestRoad,setLongestRoad,largestArmy,setLargestArmy};
 
-  const [players,setPlayers] = useState({});
-  const [playerColor,setPlayerColor] = useState('')
-  const [playerList, setPlayerList] = useState([])
+  const [players,setPlayers] = useState<PlayerState>({});
+  const [playerList, setPlayerList] = useState<PlayerNameColor[]>([])
   
   const [displayDice,setDisplayDice] = useState(false);
   const [moveRobber,setMoveRobber] = useState(false);
   const [stealCard,setStealCard] = useState(false);
-  const [stealList,setStealList] = useState([]);
+  const [stealList,setStealList] = useState<string[]>([]);
 
-  const [tiles,setTiles] = useState([]);
-  const [paths,setPaths] = useState([]);
-  const [nodes,setNodes] = useState([]);
+  const [tiles,setTiles] = useState<Tile[]>([]);
+  const [paths,setPaths] = useState<Path[]>([]);
+  const [nodes,setNodes] = useState<Node[]>([]);
 
-  const [socketURL,setSocketURL] = useState(null)
-  const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
+  const [socketURL,setSocketURL] = useState<SocketURL>(null)
+  const [serverMsgs, setServerMsgs] = useState<string[]>(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
   const [shouldReconnect,setShouldReconnect] = useState(true)
-  const [currentLobby,setCurrentLobby] = useState('[Join a Lobby]')
+  const [currentLobby,setCurrentLobby] = useState<string>('[Join a Lobby]')
   
-  const onMessageCallback = (messageEvent) => {
+  const onMessageCallback = (messageEvent: MessageEvent) => {
 
     const jsObj = JSON.parse(messageEvent.data)
     console.log(jsObj)
@@ -82,29 +91,29 @@ function App() {
     // Game related messages
     } else if (jsObj.actionCategory === 'game') {
         if (jsObj.actionType === 'initialised') {
-          let tempTiles = []
-          let tempPaths = []
-          let tempNodes = []
-          let tempPlayers = {}
+          let tempTiles: Tile[] = []
+          let tempPaths: Path[] = []
+          let tempNodes: Node[] = []
+          let tempPlayers: PlayerState = {}
 
           setTurn(jsObj.data.players[jsObj.data.current_turn].id)
           
-          jsObj.data.board.tiles.forEach(tile => {
+          jsObj.data.board.tiles.forEach((tile: Tile) => {
             tempTiles.push(tile["py/state"])
           });
           
-          jsObj.data.board.paths.forEach(path => {
+          jsObj.data.board.paths.forEach((path: Path) => {
             tempPaths.push(path["py/state"])
           });
           
-          jsObj.data.board.nodes.forEach(node => {
+          jsObj.data.board.nodes.forEach((node: Node) => {
             if (node) {
               tempNodes.push(node["py/state"])
             }
           });
 
 
-          jsObj.data.players.forEach(player => {
+          jsObj.data.players.forEach((player: PlayerStateData) => {
             tempPlayers[player.id] = new Player(
               player.id,
               player.name,
@@ -134,8 +143,8 @@ function App() {
 
         } else if (jsObj.actionType === 'player-state') {
 
-          const updatedPlayers = {};
-          jsObj.data.forEach(player => {
+          const updatedPlayers: PlayerState = {};
+          jsObj.data.forEach((player: PlayerStateData) => {
             updatedPlayers[player.id] = new Player(
               player.id,
               player.name,
@@ -151,8 +160,8 @@ function App() {
           setPlayers(updatedPlayers);
 
         } else if (jsObj.actionType === 'tile-state') {
-          const updatedTiles = [];
-          jsObj.data.forEach(tile => {
+          const updatedTiles: Tile[] = [];
+          jsObj.data.forEach((tile: Tile) => {
             updatedTiles.push(tile["py/state"])
           });
 
@@ -193,7 +202,7 @@ function App() {
         setCurrentLobby('[Join a Lobby]')
       },
 
-      shouldReconnect: (closeEvent) => {
+      shouldReconnect: (closeEvent: CloseEvent) => {
         return shouldReconnect;
       },
       reconnectAttempts: 9,

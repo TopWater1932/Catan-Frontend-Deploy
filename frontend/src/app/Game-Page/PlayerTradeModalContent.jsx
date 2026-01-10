@@ -18,7 +18,7 @@ function PlayerTradeModalContent( ) {
     const giveArray = Object.keys(resources);
 
 
-    const handlePropose = (e) => {
+    const handlePropose = (e: ReactMouseEvent) => {
         e.preventDefault()
         setIsEnabled(false);
         setWaiting(true);
