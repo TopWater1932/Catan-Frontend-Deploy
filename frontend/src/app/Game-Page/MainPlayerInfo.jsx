@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { WebsocketContext } from "../../context/WebsocketContext.jsx";
 import '../../styles/player.css'
-import createCardArray from '../../utils/func-createCardArray.jsx'
+import createCardArray from '../../utils/func-createCardArray.tsx'
 
 
 function MainPlayerInfo({id, position}) {

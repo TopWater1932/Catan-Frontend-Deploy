@@ -81,3 +81,12 @@ export interface Coordinates {
     x: number;
     y: number;
 }
+
+// Create card array util
+export interface ResourcesMap {
+    [resource: string]: number;
+}
+
+export interface DevCardsMap {
+    [card: string]: number;
+}
