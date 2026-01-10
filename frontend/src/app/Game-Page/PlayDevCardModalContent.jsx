@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { WebsocketContext } from "../../context/WebsocketContext.jsx";
-import capsResourceName from '../../utils/func-capsResourceNames.jsx'
+import capsResourceName from '../../utils/func-capsResourceNames.tsx'
 import '../../styles/options-modal.css'
 
 function PlayDevCardModalContent({ setDCModalIsVisible }) {
