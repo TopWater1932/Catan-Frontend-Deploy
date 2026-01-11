@@ -1,4 +1,4 @@
-import Structure from './Structure.jsx';
+import Structure from './Structure.tsx';
 
 export default class Path {
     constructor(idPath,connectedNodes=[],isBuildable=true,owner=null) {

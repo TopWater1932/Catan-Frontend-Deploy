@@ -8,7 +8,7 @@ import LRLAIndicators from './LR-LA-indicator.jsx'
 import PlayerInfo from './PlayerInfo.jsx'
 import ActionButtons from './ActionButtons.jsx'
 import Board from './Board.jsx'
-import Dice from "./Dice.jsx"
+import Dice from "./Dice.tsx"
 import { Link } from 'react-router'
 
 

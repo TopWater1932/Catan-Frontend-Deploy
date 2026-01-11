@@ -1,4 +1,4 @@
-import Structure from './Structure.jsx';
+import Structure from './Structure.tsx';
 
 export default class Node {
     constructor(idNode,row,occupiedBy=null,isBuildable=true,buildingType=null,neighborNodes=[],xCoord,yCoord) {
