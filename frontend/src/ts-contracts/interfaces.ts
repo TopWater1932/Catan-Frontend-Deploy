@@ -40,6 +40,24 @@ export interface PathData {
     [key: string]: any;             // TBC
 }
 
+export interface Port {
+  reqNumIn: number;
+  reqTypeIn: string;
+  vert: string[];
+  text: string;
+}
+
+export interface PortsMap {
+    [portID: string]: Port;
+}
+
+export interface Vertex extends Coordinates {  // To be superseded by Node class
+    id: string;
+    player: 'empty' | string;
+    structure: 'empty' | string;
+    port: 'none' | string;
+}
+
 // Options Page props
 export type SocketURL = string | null
 
