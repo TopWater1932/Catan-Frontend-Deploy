@@ -4,7 +4,7 @@ import ValidPlacementLayers from './ValidPlacements.jsx'
 import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid.tsx'
 import assignVertices from '../../utils/func-assignVertices.tsx'
 import generateVertexIDs from '../../utils/func-generateVertexIDs.tsx'
-import generatePortCoords from '../../utils/func-generatePortCoords.jsx'
+import generatePortCoords from '../../utils/func-generatePortCoords.tsx'
 import calcValidPlacements from '../../utils/func-calcValidPlacements.jsx'
 
 

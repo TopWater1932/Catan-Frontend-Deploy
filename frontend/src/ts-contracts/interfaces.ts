@@ -45,6 +45,8 @@ export interface Port {
   reqTypeIn: string;
   vert: string[];
   text: string;
+  x?: number;
+  y?: number;
 }
 
 export interface PortsMap {
