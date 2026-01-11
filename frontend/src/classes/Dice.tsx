@@ -1,8 +1,8 @@
 export default class Dice {
     // Explicitly define property types
-    numbers: number[]; // Array of possible dice outcomes (e.g., [1, 2, 3, 4, 5, 6])
-    isRollable: boolean;
-    playerPosition: string; // Player ID
+    public numbers: number[]; // Array of possible dice outcomes (e.g., [1, 2, 3, 4, 5, 6])
+    public isRollable: boolean;
+    public playerPosition: string; // Player ID
 
     constructor(numbers: number[], isRollable: boolean = true, playerPosition: string) {
         this.numbers = numbers;

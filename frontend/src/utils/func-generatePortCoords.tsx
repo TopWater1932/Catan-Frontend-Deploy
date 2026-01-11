@@ -1,5 +1,5 @@
 import { Coordinates, PortsMap, Vertex } from '../ts-contracts/interfaces';
-import Tile from '../classes/Tile.jsx'
+import Tile from '../classes/Tile.tsx'
 
 function generatePortCoords(ports: PortsMap, verticesMasterArray: Vertex[], tilesMasterArray: Tile[]): void {
     // The original function modifies the `ports` object in place (void return type).

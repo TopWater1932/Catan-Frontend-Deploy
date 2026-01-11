@@ -1,8 +1,8 @@
 export default class Structure {
     // Explicitly define property types
-    idStruc: string;
-    positionID: string;
-    type: 'settlement' | 'road' | 'city';
+    public idStruc: string;
+    public positionID: string;
+    public type: 'settlement' | 'road' | 'city';
 
     constructor(idStruc: string, positionID: string, type: 'settlement' | 'road') {
 

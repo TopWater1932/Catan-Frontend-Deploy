@@ -110,3 +110,7 @@ export interface ResourcesMap {
 export interface DevCardsMap {
     [card: string]: number;
 }
+
+export interface PlayerStrucMap {
+    [struc: string]: number;
+}

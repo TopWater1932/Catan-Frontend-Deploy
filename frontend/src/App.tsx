@@ -3,7 +3,7 @@ import './styles/index.css'
 import Game from './app/Game-Page/Game.jsx'
 import LandingPage from './app/Landing-Page/LandingPage.js'
 import OptionsPage from './app/Options-Page/OptionsPage.js'
-import Player from './classes/Player.jsx'
+import Player from './classes/Player.tsx'
 import { WebsocketContext } from './context/WebsocketContext.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';

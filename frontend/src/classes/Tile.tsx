@@ -1,5 +1,13 @@
 export default class Tile {
-    constructor(id,resource,number,robber,x,y) {
+    // Explicitly define property types
+    public id: string;
+    public resource: string;
+    public number: number;
+    public robber: boolean;
+    public x: number;
+    public y: number;
+
+    constructor(id: string, resource: string, number: number, robber: boolean, x: number, y: number) {
         this.id = id;
         this.resource = resource;
         this.number = number;
@@ -13,4 +21,3 @@ export default class Tile {
     //     console.log(this.robber)
     // }
 }
-

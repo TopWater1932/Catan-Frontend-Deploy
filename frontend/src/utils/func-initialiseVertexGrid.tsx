@@ -1,5 +1,5 @@
 import { Coordinates } from '../ts-contracts/interfaces';
-import Tile from '../classes/Tile.jsx'
+import Tile from '../classes/Tile.tsx'
 
 function initialiseVertexGrid(tilesMasterArray: Tile[], tileRadius: number): Coordinates[] {
     let coords: Coordinates[] = [];
