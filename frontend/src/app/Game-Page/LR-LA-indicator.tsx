@@ -1,10 +1,18 @@
 import '../../styles/LR-LA-indicator.css'
 import {
-  Missions
+  SetterFunction
 } from '../../ts-contracts/interfaces'
 
+interface Missions {
+  missions: {
+    longestRoad: string;
+    setLongestRoad: SetterFunction<string>;
+    largestArmy: string;
+    setLargestArmy: SetterFunction<string>;
+  }
+}
 
-function LRLAIndicators(missions: Missions) {
+function LRLAIndicators({missions}: Missions) {
 
   const {longestRoad, largestArmy} = missions;
 

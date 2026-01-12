@@ -175,6 +175,11 @@ export interface ResourceColors {
   [key: string]: string;
 }
 
+// Game component
+export interface GamePagePositions {
+    [position: string]: string;
+}
+
 // Contexts
 export interface Missions {
     longestRoad: string;

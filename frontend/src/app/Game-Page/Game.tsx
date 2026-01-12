@@ -1,23 +1,26 @@
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import '../../styles/Game.css'
 import { GameContext } from '../../context/GameContext'
 import { useWebSocketContext } from '../../context/WebsocketContext'
-import MainPlayerInfo from './MainPlayerInfo.jsx'
-import CloseButton from './CloseBtn.jsx'
-import LRLAIndicators from './LR-LA-indicator.jsx'
-import PlayerInfo from './PlayerInfo.jsx'
-import ActionButtons from './ActionButtons.jsx'
-import Board from './Board.jsx'
-import Dice from "./Dice.tsx"
+import MainPlayerInfo from './MainPlayerInfo'
+import CloseButton from './CloseBtn'
+import LRLAIndicators from './LR-LA-indicator'
+import PlayerInfo from './PlayerInfo'
+import ActionButtons from './ActionButtons'
+import Board from './Board'
+import Dice from "./Dice"
 import { Link } from 'react-router'
 
+import {
+  GamePagePositions
+} from '../../ts-contracts/interfaces'
 
 function Game() {
   
   const { turn, players, missions, displayDice, setDisplayDice, playerID, lobbyInitialised } = useWebSocketContext();
 
-  const pageLocations = ['west','north','east'];
-  const positions = {};
+  const pageLocations: string[] = ['west','north','east'];
+  const positions: GamePagePositions = {};
 
   Object.keys(players).forEach((id,i) => {
     id === playerID ? positions['south'] = id : positions[pageLocations[i]] = id;
