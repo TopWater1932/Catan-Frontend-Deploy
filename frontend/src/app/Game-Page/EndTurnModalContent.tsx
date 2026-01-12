@@ -5,7 +5,11 @@ import {
   SetterFunction
 } from '../../ts-contracts/interfaces'
 
-function EndTurnModalContent(setEndModalIsVisible: SetterFunction<boolean>) {
+interface EndTurnModalContentArgs {
+    setEndModalIsVisible: SetterFunction<boolean>;
+}
+
+function EndTurnModalContent({setEndModalIsVisible}: EndTurnModalContentArgs) {
     
     const { turn, setTurn } = useWebSocketContext();
 

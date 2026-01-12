@@ -20,7 +20,11 @@ const resRequirements: ResourceRequirements = {
 
 type BuildableItem = keyof typeof resRequirements;
 
-function BuyModalContent(setBuyModalIsVisible: SetterFunction<boolean>) {
+interface BuyModalContentArgs {
+    setBuyModalIsVisible: SetterFunction<boolean>;
+}
+
+function BuyModalContent({setBuyModalIsVisible}: BuyModalContentArgs) {
     
     const {players,setPlayers,turn} = useWebSocketContext();
     const {resIcons} = useGameContext();

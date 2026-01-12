@@ -5,7 +5,7 @@ import {
 } from '../../ts-contracts/interfaces';
 
 // Define the type for the boardAreaRef, which is a React ref to a DOM element.
-type BoardAreaRef = React.RefObject<HTMLDivElement>;
+type BoardAreaRef = React.RefObject<HTMLDivElement | null>;
 
 function handleWindowResize(
     initWidth: number,

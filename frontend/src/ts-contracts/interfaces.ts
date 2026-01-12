@@ -165,6 +165,15 @@ export interface TradeResourceSelectionArgs {
     giveArray: string[]                  // TBC
 }
 
+// Board component
+export interface ResourceColors {
+  ORE: string;
+  LUMBER: string;
+  WOOL: string;
+  BRICK: string;
+  GRAIN: string;
+  [key: string]: string;
+}
 
 // Contexts
 export interface Missions {

@@ -8,7 +8,11 @@ import {
     ReactMouseEvent
 } from '../../ts-contracts/interfaces'
 
-function PlayDevCardModalContent(setDCModalIsVisible: SetterFunction<boolean>) {
+interface PlayDevCardModalContentArgs {
+    setDCModalIsVisible: SetterFunction<boolean>;
+}
+
+function PlayDevCardModalContent({setDCModalIsVisible}: PlayDevCardModalContentArgs) {
 
   const {players,turn} = useWebSocketContext();
   const {devCards} = players[turn];

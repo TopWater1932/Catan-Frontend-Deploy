@@ -1,12 +1,16 @@
-import { useState , useLayoutEffect, useRef, useContext, useEffect } from 'react'
-import Structures from './Structures.jsx'
+import { useState , useLayoutEffect, useRef, useEffect } from 'react'
+import Structures from './Structures'
 import '../../styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
-import handleWindowResize from '../../utils/event-handler/func-handleWindowResize.tsx'
-import initialiseTileGrid from '../../utils/func-initialiseTileGrid.tsx'
+import handleWindowResize from '../../utils/event-handler/func-handleWindowResize'
+import initialiseTileGrid from '../../utils/func-initialiseTileGrid'
 import { useWebSocketContext } from '../../context/WebsocketContext'
-import Tile from '../../classes/Tile.tsx'
+import Tile from '../../classes/Tile'
 
+import {
+  ResourceColors,
+  KonvaMouseEvent
+} from '../../ts-contracts/interfaces'
 
 function Board() {
 
@@ -15,7 +19,7 @@ function Board() {
   const initHeight = 670;
   const radius = (initHeight/2)+40;
   const [stageSize,setStageSize] = useState({width: initWidth,height: initHeight,scaleX: 1,scaleY: 1});
-  const boardAreaRef = useRef(null);
+  const boardAreaRef = useRef<HTMLDivElement | null>(null);
 
   const {
     sendJsonMessage,
@@ -35,7 +39,7 @@ function Board() {
   },[])
 
 
-  const resourceColors = {
+  const resourceColors: ResourceColors = {
     'ORE':'rgba(78, 78, 78, 1)',
     'LUMBER':'rgba(97, 36, 0, 1)',
     'WOOL':'rgba(34, 202, 0, 1)',
@@ -54,7 +58,7 @@ function Board() {
   const [robberTile,setRobberTile] = useState('T9'); // Initial robber tile ID
 
 
-  const tilesMasterArray = tileGrid.map((coord,i) => {
+  const tilesMasterArray: Tile[] = tileGrid.map((coord,i) => {
     const tile = new Tile(
       tiles[i].id,
       tiles[i].resource,
@@ -75,15 +79,29 @@ function Board() {
     }
   },[tiles]);
 
-  const handlePlaceRobber = (selectedTile) => {
+  const handlePlaceRobber = (selectedTileID: string) => {
     sendJsonMessage({
       'actionCategory': 'game',
       'actionType': 'move-robber',
-      'data': selectedTile
+      'data': selectedTileID
     });
     
     setMoveRobber(false);
   };
+
+  const handleMouseEnter = (e: KonvaMouseEvent) => {
+    const stage = e.currentTarget.getStage()
+    if (stage) {
+      stage.container().style.cursor = 'pointer';
+    }
+  }
+
+  const handleMouseLeave = (e: KonvaMouseEvent) => {
+    const stage = e.currentTarget.getStage()
+    if (stage) {
+      stage.container().style.cursor = 'default';
+    }
+  }
 
   return (
     <div id="board-area" ref={boardAreaRef}>
@@ -139,7 +157,7 @@ function Board() {
               width={18*2}
               align="center"
               verticalAlign="middle"
-              text={tile.number}
+              text={String(tile.number)}
               fontFamily="Times New Roman"
               fontSize={25}
               fontStyle="bold"
@@ -149,8 +167,8 @@ function Board() {
 
           <Wedge
             key='robber'
-            x={tilesMasterArray.find(tile => tile.id === robberTile).x}
-            y={tilesMasterArray.find(tile => tile.id === robberTile).y}
+            x={tilesMasterArray.find(tile => tile.id === robberTile)?.x}
+            y={tilesMasterArray.find(tile => tile.id === robberTile)?.y}
             radius={40}
             angle={60}
             fill="grey"
@@ -169,12 +187,8 @@ function Board() {
               stroke='red'
               strokeWidth={4}
               onClick={() => handlePlaceRobber(tile.id)}
-              onMouseEnter={(e: KonvaMouseEvent) => {
-                e.target.getStage().container().style.cursor = 'pointer';
-              }}
-              onMouseLeave={(e: KonvaMouseEvent) => {
-                e.target.getStage().container().style.cursor = 'default';
-              }}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             />
           )}
 
@@ -184,8 +198,6 @@ function Board() {
           tilesMasterArray={tilesMasterArray}
           tileRadius={tileRadius}
         />
-
-
 
       </Stage>
     </div>
