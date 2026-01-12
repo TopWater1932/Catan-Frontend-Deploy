@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import useFetch from '../../utils/fetch/useFetch'
 import ServerMsgsWindow from './ServerMsgsWindow'
 import '../../styles/Options-Page.css'
-import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import { useNavigate } from 'react-router-dom';
 
 import {
@@ -18,7 +18,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
         playerName, setPlayerName,
         sendJsonMessage,
         lobbyInitialised,currentLobby, setShouldReconnect,
-    } = useContext(WebsocketContext)
+    } = useWebSocketContext()
     
     const navigate = useNavigate();
     useEffect(() => {

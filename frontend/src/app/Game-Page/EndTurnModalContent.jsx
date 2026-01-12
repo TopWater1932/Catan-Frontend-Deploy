@@ -4,7 +4,7 @@ import '../../styles/close-btn.css';
 
 function EndTurnModalContent({ setEndModalIsVisible }) {
     
-    const { turn, setTurn } = useContext(WebsocketContext);
+    const { turn, setTurn } = useWebSocketContext();
 
     const handleClick = () => {
         

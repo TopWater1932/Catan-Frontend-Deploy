@@ -6,7 +6,7 @@ import createCardArray from '../../utils/func-createCardArray.tsx'
 
 function MainPlayerInfo({id, position}) {
 
-  const {players,missions,turn,playerID,stealCard,setStealCard,stealList,sendJsonMessage} = useContext(WebsocketContext)
+  const {players,missions,turn,playerID,stealCard,setStealCard,stealList,sendJsonMessage} = useWebSocketContext()
 
   const {name,color,activeTurn,resources,devCards,structures,vps} = players[id];
   const {longestRoad,largestArmy} = missions;

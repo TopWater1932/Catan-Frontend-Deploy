@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback } from 'react'
 import './styles/index.css'
 import Game from './app/Game-Page/Game.jsx'
-import LandingPage from './app/Landing-Page/LandingPage.js'
-import OptionsPage from './app/Options-Page/OptionsPage.js'
-import Player from './classes/Player.tsx'
+import LandingPage from './app/Landing-Page/LandingPage'
+import OptionsPage from './app/Options-Page/OptionsPage'
+import Player from './classes/Player'
 import { WebsocketContext } from './context/WebsocketContext.jsx'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import useWebSocket from 'react-use-websocket';
@@ -12,9 +12,9 @@ import {
   SocketURL,
   PlayerNameColor,
   PlayerState, PlayerStateData,
-  Tile,
-  Node,
-  Path
+  TileData,
+  NodeData,
+  PathData
 } from './ts-contracts/interfaces'
 
 function App() {
@@ -36,11 +36,11 @@ function App() {
   const [stealCard,setStealCard] = useState(false);
   const [stealList,setStealList] = useState<string[]>([]);
 
-  const [tiles,setTiles] = useState<Tile[]>([]);
-  const [paths,setPaths] = useState<Path[]>([]);
-  const [nodes,setNodes] = useState<Node[]>([]);
+  const [tiles,setTiles] = useState<TileData[]>([]);
+  const [paths,setPaths] = useState<PathData[]>([]);
+  const [nodes,setNodes] = useState<NodeData[]>([]);
 
-  const [socketURL,setSocketURL] = useState<SocketURL>(null)
+  const [socketURL,setSocketURL] = useState<SocketURL | null>(null)
   const [serverMsgs, setServerMsgs] = useState<string[]>(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
   const [shouldReconnect,setShouldReconnect] = useState(true)
@@ -91,22 +91,22 @@ function App() {
     // Game related messages
     } else if (jsObj.actionCategory === 'game') {
         if (jsObj.actionType === 'initialised') {
-          let tempTiles: Tile[] = []
-          let tempPaths: Path[] = []
-          let tempNodes: Node[] = []
+          let tempTiles: TileData[] = []
+          let tempPaths: PathData[] = []
+          let tempNodes: NodeData[] = []
           let tempPlayers: PlayerState = {}
 
           setTurn(jsObj.data.players[jsObj.data.current_turn].id)
           
-          jsObj.data.board.tiles.forEach((tile: Tile) => {
+          jsObj.data.board.tiles.forEach((tile: TileData) => {
             tempTiles.push(tile["py/state"])
           });
           
-          jsObj.data.board.paths.forEach((path: Path) => {
+          jsObj.data.board.paths.forEach((path: PathData) => {
             tempPaths.push(path["py/state"])
           });
           
-          jsObj.data.board.nodes.forEach((node: Node) => {
+          jsObj.data.board.nodes.forEach((node: NodeData) => {
             if (node) {
               tempNodes.push(node["py/state"])
             }
@@ -160,8 +160,8 @@ function App() {
           setPlayers(updatedPlayers);
 
         } else if (jsObj.actionType === 'tile-state') {
-          const updatedTiles: Tile[] = [];
-          jsObj.data.forEach((tile: Tile) => {
+          const updatedTiles: TileData[] = [];
+          jsObj.data.forEach((tile: TileData) => {
             updatedTiles.push(tile["py/state"])
           });
 
@@ -214,18 +214,18 @@ function App() {
   return (
     <WebsocketContext.Provider
       value={{
-        sendJsonMessage,
-        setLobbyInitialised, lobbyInitialised, currentLobby, setPlayerList, setCurrentLobby, setShouldReconnect,setSocketURL,
-        displayDice, setDisplayDice,
+        sendJsonMessage, setShouldReconnect, setSocketURL,
+        lobbyInitialised, setLobbyInitialised, currentLobby, setCurrentLobby, setPlayerList,
         playerID, playerName,setPlayerName,
+        displayDice, setDisplayDice,
         moveRobber, setMoveRobber,
         stealCard, setStealCard, stealList,
         players, setPlayers,
-        missions,
         turn, setTurn,
         tiles, setTiles,
         paths, setPaths,
-        nodes, setNodes
+        nodes, setNodes,
+        missions
       }}
     >
       <BrowserRouter>

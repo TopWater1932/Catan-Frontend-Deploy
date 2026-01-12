@@ -4,7 +4,7 @@ import '../../styles/board.css'
 import {Stage,Layer,RegularPolygon,Circle,Wedge,Text, Shape} from 'react-konva'
 import handleWindowResize from '../../utils/event-handler/func-handleWindowResize.tsx'
 import initialiseTileGrid from '../../utils/func-initialiseTileGrid.tsx'
-import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import Tile from '../../classes/Tile.tsx'
 
 
@@ -23,7 +23,7 @@ function Board() {
     paths, setPaths,
     nodes, setNodes,
     moveRobber, setMoveRobber
-  } = useContext(WebsocketContext)
+  } = useWebSocketContext()
   
   useLayoutEffect(() => {
     const handleFunc = () => handleWindowResize(initWidth,initHeight,boardAreaRef,stageSize,setStageSize)

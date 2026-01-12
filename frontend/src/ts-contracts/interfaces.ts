@@ -114,3 +114,51 @@ export interface DevCardsMap {
 export interface PlayerStrucMap {
     [struc: string]: number;
 }
+
+export interface WebsocketContextShape {
+  // WebSocket
+  sendJsonMessage: (data: SendJSONFormatObj) => void;
+  setSocketURL: SetterFunction<SocketURL>;
+  setShouldReconnect: SetterFunction<boolean>;
+
+  // Lobby / connection
+  lobbyInitialised: boolean;
+  setLobbyInitialised: SetterFunction<boolean>;
+  currentLobby: string;
+  setCurrentLobby: SetterFunction<string>;
+  setPlayerList: SetterFunction<PlayerNameColor[]>;
+
+  // Player identity
+  playerID: string;
+  playerName: string;
+  setPlayerName: SetterFunction<string>;
+
+  // UI flags
+  displayDice: boolean;
+  setDisplayDice: SetterFunction<boolean>;
+  moveRobber: boolean;
+  setMoveRobber: SetterFunction<boolean>;
+  stealCard: boolean;
+  setStealCard: SetterFunction<boolean>;
+  stealList: string[];
+
+  // Game state
+  players: PlayerState;
+  setPlayers: SetterFunction<PlayerState>;
+  turn: string;
+  setTurn: SetterFunction<string>;
+  tiles: TileData[];
+  setTiles: SetterFunction<TileData[]>;
+  paths: PathData[];
+  setPaths: SetterFunction<PathData[]>;
+  nodes: NodeData[];
+  setNodes: SetterFunction<NodeData[]>;
+
+  // Missions
+  missions: {
+    longestRoad: string;
+    setLongestRoad: SetterFunction<string>;
+    largestArmy: string;
+    setLargestArmy: SetterFunction<string>;
+  }
+}

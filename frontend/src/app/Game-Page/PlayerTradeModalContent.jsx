@@ -8,7 +8,7 @@ import '../../styles/options-modal.css'
 
 function PlayerTradeModalContent( ) {
 
-    const {players,turn} = useContext(WebsocketContext);
+    const {players,turn} = useWebSocketContext();
     const {resources} = players[turn];
 
     const {setIsEnabled} = useContext(ModalContext);

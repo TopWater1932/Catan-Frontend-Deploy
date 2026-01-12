@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import closeBtn from "../../assets/close-btn.svg"
 import "../../styles/close-btn.css"
 import Modal from "./Modal.jsx"
@@ -10,7 +10,7 @@ import { useState } from "react";
 function CloseButton() {
   
   const [exitModalIsVisible,setExitModalIsVisible] = useState(false);
-  const { setSocketURL, setLobbyInitialised, setPlayerList, setCurrentLobby, setShouldReconnect } = useContext(WebsocketContext);
+  const { setSocketURL, setLobbyInitialised, setPlayerList, setCurrentLobby, setShouldReconnect } = useWebSocketContext();
 
   const handleExit = () => {
     setShouldReconnect(false)

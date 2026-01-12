@@ -5,7 +5,7 @@ import '../../styles/options-modal.css'
 
 function PlayDevCardModalContent({ setDCModalIsVisible }) {
 
-  const {players,turn} = useContext(WebsocketContext);
+  const {players,turn} = useWebSocketContext();
   const {devCards} = players[turn];
 
     const names = Object.keys(devCards).slice(0,5);

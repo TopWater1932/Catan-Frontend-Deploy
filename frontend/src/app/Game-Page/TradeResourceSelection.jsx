@@ -8,7 +8,7 @@ import { WebsocketContext } from "../../context/WebsocketContext.jsx";
 
 function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle, giveArray}) {
 
-    const {players,turn} = useContext(WebsocketContext);
+    const {players,turn} = useWebSocketContext();
     const {resources} = players[turn];
 
     const receiveArray = Object.keys(resources);

@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react'
 import '../../styles/buttons.css'
-import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import Modal from './Modal.jsx'
 import PlayDevCardModalContent from './PlayDevCardModalContent.jsx'
 import EndTurnModalContent from './EndTurnModalContent.jsx'
@@ -13,7 +13,7 @@ import { TradeContext } from '../../context/TradeContext.jsx'
 
 function ActionButtons() {
 
-  const {displayDice} = useContext(WebsocketContext)
+  const {displayDice} = useWebSocketContext()
   
   const [dcModalIsVisible,setDCModalIsVisible] = useState(false)
   const [tradeModalIsVisible,setTradeModalIsVisible] = useState(false)

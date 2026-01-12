@@ -8,7 +8,7 @@ import '../../styles/options-modal.css'
 
 function BuyModalContent({ setBuyModalIsVisible }) {
     
-    const {players,setPlayers,turn} = useContext(WebsocketContext);
+    const {players,setPlayers,turn} = useWebSocketContext();
     const {resIcons} = useContext(GameContext);
     const {resources,structures,devCards,vps} = players[turn];
     const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;

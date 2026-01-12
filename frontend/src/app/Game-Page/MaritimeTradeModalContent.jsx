@@ -7,7 +7,7 @@ import TradeResourceSelection from './TradeResourceSelection.jsx'
 
 function MaritimeTradeModalContent( ) {
 
-    const {players,turn} = useContext(WebsocketContext);
+    const {players,turn} = useWebSocketContext();
     // const {ports, resources} = players[turn];
     const {resources} = players[turn];
 

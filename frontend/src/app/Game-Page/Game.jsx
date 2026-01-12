@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react'
 import '../../styles/Game.css'
 import { GameContext } from '../../context/GameContext.jsx'
-import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import MainPlayerInfo from './MainPlayerInfo.jsx'
 import CloseButton from './CloseBtn.jsx'
 import LRLAIndicators from './LR-LA-indicator.jsx'
@@ -14,7 +14,7 @@ import { Link } from 'react-router'
 
 function Game() {
   
-  const { turn, players, missions, displayDice, setDisplayDice, playerID, lobbyInitialised } = useContext(WebsocketContext);
+  const { turn, players, missions, displayDice, setDisplayDice, playerID, lobbyInitialised } = useWebSocketContext();
 
   const pageLocations = ['west','north','east'];
   const positions = {};

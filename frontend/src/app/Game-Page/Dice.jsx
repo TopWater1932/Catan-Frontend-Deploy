@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useContext } from "react";
-import { WebsocketContext } from '../../context/WebsocketContext.jsx'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import "../../styles/Dice.css";
 
 function PipFace({ value, rolling }) {
@@ -28,7 +28,7 @@ function PipFace({ value, rolling }) {
 
 export default function Dice() {
 
-  const {setDisplayDice,sendJsonMessage} = useContext(WebsocketContext)
+  const {setDisplayDice,sendJsonMessage} = useWebSocketContext()
 
   const [open, setOpen] = useState(false);
   const [rolling, setRolling] = useState(false);

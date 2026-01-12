@@ -7,7 +7,7 @@ import '../../styles/player-info.css'
 
 function PlayerInfo() {
   
-  const {players,turn} = useContext(WebsocketContext);
+  const {players,turn} = useWebSocketContext();
   const {resIcons} = useContext(GameContext);
   const {resources,structures,devCards,vps} = players[turn];
 
