@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import Konva from 'konva';
+import Tile from '../classes/Tile'
 
 // All setter functions
 export type SetterFunction<T> = Dispatch<SetStateAction<T>>;
@@ -233,4 +234,9 @@ export interface GameContextShape {
 export interface ModalContextShape {
     isEnabled: boolean;
     setIsEnabled: SetterFunction<boolean>;
+}
+
+export interface StructuresArgs {
+    tilesMasterArray: Tile[];
+    tileRadius: number;
 }

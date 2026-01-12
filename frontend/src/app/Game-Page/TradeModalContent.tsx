@@ -1,4 +1,3 @@
-import { useContext, useState } from "react"
 import { useTradeContext } from '../../context/TradeContext';
 import '../../styles/options-modal.css'
 

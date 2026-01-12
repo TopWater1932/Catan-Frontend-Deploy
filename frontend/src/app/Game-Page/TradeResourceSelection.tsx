@@ -7,10 +7,8 @@ import { useWebSocketContext } from '../../context/WebsocketContext'
 
 import {
   TradeResourceSelectionArgs,
-  ReactMouseEvent,
   ResourcesMap,
-  ReactChangeEvent,
-  ButtonInfo
+  ReactChangeEvent
 } from '../../ts-contracts/interfaces'
 
 function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle, giveArray}: TradeResourceSelectionArgs) {

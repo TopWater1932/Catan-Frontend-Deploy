@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react'
 import {Layer,RegularPolygon,Line,Circle,Rect,Text} from 'react-konva'
-import ValidPlacementLayers from './ValidPlacements.jsx'
-import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid.tsx'
-import assignVertices from '../../utils/func-assignVertices.tsx'
-import generateVertexIDs from '../../utils/func-generateVertexIDs.tsx'
-import generatePortCoords from '../../utils/func-generatePortCoords.tsx'
-import calcValidPlacements from '../../utils/func-calcValidPlacements.tsx'
+// import ValidPlacementLayers from './ValidPlacements.tsx'
+import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid'
+import assignVertices from '../../utils/func-assignVertices'
+import generateVertexIDs from '../../utils/func-generateVertexIDs'
+import generatePortCoords from '../../utils/func-generatePortCoords'
+import calcValidPlacements from '../../utils/func-calcValidPlacements'
 
 
-function Structures({tilesMasterArray,tileRadius}) {
+import {
+  StructuresArgs
+} from '../../ts-contracts/interfaces'
+
+function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
  
-  // Initialise ports
+  // Port initialisation on backend data pending backend
   const ports = {
     'port-3-1A':{'reqNumIn':3,'reqTypeIn':'any','vert':['V0','V1'],'text':`?\n3 : 1`},
     'port-wh':{'reqNumIn':2,'reqTypeIn':'wh','vert':['V3','V4'],'text':`🌾\n2 : 1`},

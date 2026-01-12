@@ -7,7 +7,7 @@ import {
 // Create a context for passing Websocket data to components
 export const ModalContext = createContext<ModalContextShape | null>(null);
 
-export const useWebSocketContext = () => {
+export const useModalContext = () => {
     const context = useContext(ModalContext)
     if (!context) {
         throw new Error('Context value has been rendered outside the provider and is null by default')

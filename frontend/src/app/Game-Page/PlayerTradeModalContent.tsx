@@ -1,10 +1,13 @@
-import { useContext, useState, useEffect } from "react"
+import { useState } from "react"
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import { useModalContext } from "../../context/ModalContext";
-import TimerContent from "./TimerContent.jsx";
-import TradeResourceSelection from "./TradeResourceSelection.jsx";
+import TimerContent from "./TimerContent";
+import TradeResourceSelection from "./TradeResourceSelection";
 import '../../styles/options-modal.css'
 
+import {
+  ReactMouseEvent
+} from '../../ts-contracts/interfaces'
 
 function PlayerTradeModalContent( ) {
 

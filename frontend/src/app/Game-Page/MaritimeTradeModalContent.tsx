@@ -2,9 +2,14 @@ import { useState,useContext } from "react"
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/options-modal.css'
 
-import TradeResourceSelection from './TradeResourceSelection.jsx'
+import TradeResourceSelection from './TradeResourceSelection'
+
+import {
+  ReactMouseEvent
+} from '../../ts-contracts/interfaces'
 
 
+// Typescript errors pending provision of port data from backend
 function MaritimeTradeModalContent( ) {
 
     const {players,turn} = useWebSocketContext();
