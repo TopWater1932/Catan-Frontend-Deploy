@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react"
 import { useWebSocketContext } from '../../context/WebsocketContext'
-import { ModalContext } from "../../context/ModalContext.jsx";
+import { useModalContext } from "../../context/ModalContext";
 import TimerContent from "./TimerContent.jsx";
 import TradeResourceSelection from "./TradeResourceSelection.jsx";
 import '../../styles/options-modal.css'
@@ -11,7 +11,7 @@ function PlayerTradeModalContent( ) {
     const {players,turn} = useWebSocketContext();
     const {resources} = players[turn];
 
-    const {setIsEnabled} = useContext(ModalContext);
+    const {setIsEnabled} = useModalContext();
 
     const [waiting,setWaiting] = useState(false);
 

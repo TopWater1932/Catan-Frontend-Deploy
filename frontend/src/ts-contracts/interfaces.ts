@@ -175,3 +175,8 @@ export interface TradeContextShape {
 export interface GameContextShape {
     resIcons: Record<'woodIcon' | 'brickIcon' | 'wheatIcon' | 'sheepIcon' | 'oreIcon', string>;
 }
+
+export interface ModalContextShape {
+    isEnabled: boolean;
+    setIsEnabled: SetterFunction<boolean>;
+}

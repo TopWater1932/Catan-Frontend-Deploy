@@ -3,7 +3,7 @@ import { createPortal } from "react-dom"
 import closeBtn from "../../assets/close-btn.svg"
 import '../../styles/modal.css'
 
-import { ModalContext } from "../../context/ModalContext.jsx";
+import { ModalContext } from "../../context/ModalContext";
 
 function Modal({ isVisible, setIsVisible, modalClassTypes, content }) {
     
