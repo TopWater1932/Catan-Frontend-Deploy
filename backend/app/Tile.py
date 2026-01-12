@@ -28,6 +28,15 @@ class Tile:
                 player = node.occupiedBy
                 player.giveResource(self.resource, amount)
 
+    def findAssociatedPlayers(self,player_turn_id):
+        playerIDs = set()
+        for node in self.associated_nodes:
+            if node.occupiedBy is not None:
+                playerIDs.add(node.occupiedBy)
+        
+        playerIDs = set(id for id in playerIDs if id != player_turn_id)
+
+        return list(playerIDs)
 
 
 

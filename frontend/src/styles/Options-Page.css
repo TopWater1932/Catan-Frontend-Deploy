@@ -51,6 +51,15 @@
   font-weight: normal;
 }
 
+.red-text {
+  color: red;
+}
+
+.note-text {
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
 /* ---------- Panels positioning ---------- */
 
 .setup-panel {

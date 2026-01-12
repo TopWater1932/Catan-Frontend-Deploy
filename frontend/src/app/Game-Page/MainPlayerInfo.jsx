@@ -6,7 +6,7 @@ import createCardArray from '../../utils/func-createCardArray.jsx'
 
 function MainPlayerInfo({id, position}) {
 
-  const {players,missions,turn,playerID} = useContext(WebsocketContext)
+  const {players,missions,turn,playerID,stealCard,setStealCard,stealList,sendJsonMessage} = useContext(WebsocketContext)
 
   const {name,color,activeTurn,resources,devCards,structures,vps} = players[id];
   const {longestRoad,largestArmy} = missions;
@@ -15,6 +15,19 @@ function MainPlayerInfo({id, position}) {
   
   let cardArray = createCardArray(resources,devCards);
 
+  const handleChoice = () => {
+    if (stealCard && stealList.includes(id)) {
+      sendJsonMessage({
+        'actionCategory':'game',
+        'actionType':'steal-from',
+        'data':{
+          'from':id,
+          'to':playerID
+        }
+      });
+      setStealCard(false);
+    }
+  }
 
   return (
       <div id={position} className={turn === id ? "current-turn player" : "player"}>
@@ -23,7 +36,7 @@ function MainPlayerInfo({id, position}) {
 
             {cardArray.map(type => (
               type==="R"?
-                <div className="card res">{type}</div> :
+                <div className={(stealCard && stealList.includes(id)) ? "card res choose-steal":"card res"} onClick={handleChoice}>{type}</div> :
                 <div className="card dev">{type}</div>
             ))}
           </div>

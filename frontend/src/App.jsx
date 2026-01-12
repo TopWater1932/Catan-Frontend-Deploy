@@ -23,6 +23,9 @@ function App() {
   const [playerList, setPlayerList] = useState([])
   
   const [displayDice,setDisplayDice] = useState(false);
+  const [moveRobber,setMoveRobber] = useState(false);
+  const [stealCard,setStealCard] = useState(false);
+  const [stealList,setStealList] = useState([]);
 
   const [tiles,setTiles] = useState([]);
   const [paths,setPaths] = useState([]);
@@ -31,6 +34,7 @@ function App() {
   const [socketURL,setSocketURL] = useState(null)
   const [serverMsgs, setServerMsgs] = useState(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
+  const [shouldReconnect,setShouldReconnect] = useState(true)
   const [currentLobby,setCurrentLobby] = useState('[Join a Lobby]')
   
   const onMessageCallback = (messageEvent) => {
@@ -42,12 +46,23 @@ function App() {
     if (jsObj.actionCategory === 'admin') {
       if (jsObj.actionType === 'message') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
-
-      } else if (jsObj.actionType === 'connected') {
+      }
+      if (jsObj.actionType === 'connected') {
+        window.localStorage.setItem('player_id',jsObj.player_id)
+        setPlayerID(jsObj.player_id)
         setPlayerList(jsObj.playerList)
         setCurrentLobby(jsObj.lobbyName)
+
+        if (jsObj.gameInit === true) {
+          const initialiseBody = {
+            'actionCategory':'game',
+            'actionType':'initialise'
+          }
         
-      } else if (jsObj.actionType === 'join') {
+          sendJsonMessage(initialiseBody)
+        }
+      }
+      if (jsObj.actionType === 'player-joined') {
         setServerMsgs(prevMsgs => [...prevMsgs,jsObj.msg])
         setPlayerList(jsObj.data)
 
@@ -100,12 +115,14 @@ function App() {
               player.buildings,
               player.victory_points,
               player.ports
-            );
-
-            if (player.name === playerName) {
-              setPlayerID(player.id)
-            }
+            )
           });
+
+          //   if (player.id === playerID) { 
+          //     setPlayerID(player.id)
+          //     debugger;
+          //   }
+          // });
 
           setPaths(tempPaths)
           setNodes(tempNodes)
@@ -113,6 +130,7 @@ function App() {
           setPlayers(tempPlayers)
 
           setLobbyInitialised(true)
+          console.log(`Lobby initialised: ${lobbyInitialised}`)
 
         } else if (jsObj.actionType === 'player-state') {
 
@@ -132,32 +150,55 @@ function App() {
           });
           setPlayers(updatedPlayers);
 
-        } else if (jsObj.actionType === 'move-robbber') {
-          console.log('Robber moved')
+        } else if (jsObj.actionType === 'tile-state') {
+          const updatedTiles = [];
+          jsObj.data.forEach(tile => {
+            updatedTiles.push(tile["py/state"])
+          });
+
+          setTiles(updatedTiles);
+
+        } else if (jsObj.actionType === 'move-robber') {
+          setMoveRobber(true)
+        
+        } else if (jsObj.actionType === 'steal-from') {
+          setStealList(jsObj.data)
+          setStealCard(true)
         }
     }
   }
   
+  const cachedID = window.localStorage.getItem('player_id')
+
   const joinLobbyBody = {
     'actionCategory':'admin',
     'actionType':'join',
     'name':playerName,
-    'color':playerColor
+    'color':playerColor,
+    'player_id':cachedID
   }
 
   const {sendJsonMessage, readyState} = useWebSocket(socketURL,
     {
       onOpen: () => {
+        setShouldReconnect(true)
         sendJsonMessage(joinLobbyBody)
       },
 
       onMessage: onMessageCallback,
 
       onClose: () => {
-        setServerMsgs(prevMsgs => [...prevMsgs,'You have left the lobby.'])
+        setServerMsgs(prevMsgs => [...prevMsgs,'You have been disconnected.'])
         setPlayerList([])
         setCurrentLobby('[Join a Lobby]')
-      }
+      },
+
+      shouldReconnect: (closeEvent) => {
+        return shouldReconnect;
+      },
+      reconnectAttempts: 9,
+      reconnectInterval: (attemptNumber) =>
+        Math.min(Math.pow(2, attemptNumber) * 1000, 10000)
     }
   )
 
@@ -165,9 +206,11 @@ function App() {
     <WebsocketContext.Provider
       value={{
         sendJsonMessage,
-        lobbyInitialised, currentLobby,
+        setLobbyInitialised, lobbyInitialised, currentLobby, setPlayerList, setCurrentLobby, setShouldReconnect,setSocketURL,
         displayDice, setDisplayDice,
         playerID, playerName,setPlayerName,
+        moveRobber, setMoveRobber,
+        stealCard, setStealCard, stealList,
         players, setPlayers,
         missions,
         turn, setTurn,

@@ -18,9 +18,11 @@ function Board() {
   const boardAreaRef = useRef(null);
 
   const {
+    sendJsonMessage,
     tiles, setTiles,
     paths, setPaths,
-    nodes, setNodes
+    nodes, setNodes,
+    moveRobber, setMoveRobber
   } = useContext(WebsocketContext)
   
   useLayoutEffect(() => {
@@ -50,7 +52,7 @@ function Board() {
   const tileGridY = 127;
   const tileGrid = initialiseTileGrid(tileGridX,tileGridY,tileRadius,boardHexSize);
   const [robberTile,setRobberTile] = useState('T9'); // Initial robber tile ID
-  
+
 
   const tilesMasterArray = tileGrid.map((coord,i) => {
     const tile = new Tile(
@@ -72,7 +74,17 @@ function Board() {
       setRobberTile(robberTileObj.id);
     }
   },[tiles]);
-  
+
+  const handlePlaceRobber = (selectedTile) => {
+    sendJsonMessage({
+      'actionCategory': 'game',
+      'actionType': 'move-robber',
+      'data': selectedTile
+    });
+    
+    setMoveRobber(false);
+  };
+
   return (
     <div id="board-area" ref={boardAreaRef}>
 
@@ -137,8 +149,8 @@ function Board() {
 
           <Wedge
             key='robber'
-            x={tilesMasterArray.find(tile => tile.id == robberTile).x}
-            y={tilesMasterArray.find(tile => tile.id == robberTile).y}
+            x={tilesMasterArray.find(tile => tile.id === robberTile).x}
+            y={tilesMasterArray.find(tile => tile.id === robberTile).y}
             radius={40}
             angle={60}
             fill="grey"
@@ -146,6 +158,25 @@ function Board() {
             strokeWidth={1}
             rotation={60}
           />
+
+          {moveRobber &&
+            tilesMasterArray.filter(tile => tile.id !== robberTile).map(tile => 
+            <Circle
+              key={'LegalRobPlacement'+tile.id}
+              x={tile.x}
+              y={tile.y}
+              radius={18}
+              stroke='red'
+              strokeWidth={4}
+              onClick={() => handlePlaceRobber(tile.id)}
+              onMouseEnter={(e) => {
+                e.target.getStage().container().style.cursor = 'pointer';
+              }}
+              onMouseLeave={(e) => {
+                e.target.getStage().container().style.cursor = 'default';
+              }}
+            />
+          )}
 
         </Layer>
 

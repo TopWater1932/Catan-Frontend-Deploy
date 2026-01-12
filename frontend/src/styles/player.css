@@ -55,3 +55,14 @@
   box-shadow: 0 0 10px 4px red;
   border-radius: 5px;
 }
+
+.choose-steal {
+  box-shadow: 0 0 5px 2px red;
+  border-radius: 5px;
+}
+
+.choose-steal:hover {
+  cursor: pointer;
+  width: 25px;
+  height: 35px;
+}

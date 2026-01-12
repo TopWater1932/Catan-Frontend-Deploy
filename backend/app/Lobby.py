@@ -1,6 +1,7 @@
 import asyncio
 import jsonpickle as jp
 from Player import Player
+from uuid import uuid4
 
 class Lobby:
     def __init__(self,name):
@@ -8,7 +9,7 @@ class Lobby:
         self.maxPlayers=4
         self.connections = {}
         self.game = False
-        self.connCounter = 0
+        self.lobbytimer_running = False
 
     def getPlayerList(self):
         playerList = []
@@ -21,40 +22,83 @@ class Lobby:
         for conn in self.connections.values():
             playerNameList.append({'name':conn[1].name,'color':conn[1].color})
         return playerNameList
+    
+    async def sendInfoOnConnect(self,ws,message,playerObj):
+        playerNameList = self.getPlayerNameList()
+        gameIsInit = False if self.game == False else True
+
+        await ws.send_json({
+                'actionCategory':'admin',
+                'actionType':'connected',
+                'msg':message,
+                'playerList': playerNameList,
+                'lobbyName': self.name,
+                'player_id': playerObj.id,
+                'playerName': playerObj.name,
+                'playerColor': playerObj.color,
+                'gameInit': gameIsInit
+            })
 
 
     # Add new websocket connection to the connections list for this lobby
-    async def addToLobby(self,ws,playerID):
-        if len(self.connections) < self.maxPlayers:
-            newPlayer = Player(playerID,f'Anonymous Villager {playerID}')
-            self.connections[playerID] = [ws,newPlayer]
+    async def addToLobby(self,ws,data):
+        inputError = False
+        playerID = str(uuid4())
 
-            message = "You were successfully added to lobby."
-            playerNameList = self.getPlayerNameList()
-            await ws.send_json({
-                    'actionCategory':'admin',
-                    'actionType':'connected',
-                    'msg':message,
-                    'playerList': playerNameList,
-                    'lobbyName': self.name
-                })
-        else:
+        playerNameList = self.getPlayerNameList()
+
+        if len(self.connections) >= self.maxPlayers:
+            inputError = True
             message = "Sorry, this lobby already has 4 players. You have not been added."
+
+        elif any(data['color'] in player['color'] for player in playerNameList):
+            inputError = True
+            message = f"Color '{data['color'].capitalize()}' has already been taken."
+
+        elif any(data['name'] in player['name'] for player in playerNameList):
+            inputError = True
+            message = f"The name '{data['name']}' has already been taken."
+        
+        if inputError:
             await ws.send_json({
                     'actionCategory':'admin',
                     'actionType':'message',
                     'msg':message
                 })
             await ws.close(code=1000)
+            return None
+        
+        newPlayer = Player(playerID,data['name'],data['color'])
+        self.connections[playerID] = [ws,newPlayer]
+
+        message = "You were successfully added to lobby."
+        await self.sendInfoOnConnect(ws,message,newPlayer)
+        
+        return playerID
+
+    
+    # Handle reconnecting users. Use only after game initialised.
+    async def reconnectToLobby(self,ws,playerID,rejoiningPlayer):
+        rejoiningPlayer.connected = True
+        self.connections[playerID] = [ws, rejoiningPlayer]
+
+        message = "You were successfully reconnected to lobby."
+        await self.sendInfoOnConnect(ws,message,rejoiningPlayer)
 
     # Handle users disconnecting
     async def disconnected(self,lobbies,playerID,playerName):
-        del self.connections[playerID]
+        self.connections.pop(playerID,None)
+
+        # Disconnecting after game has begun
+        if self.game != False:
+            disconn_player = next((p for p in self.game.players if p.id == playerID),None)
+            if disconn_player:
+                disconn_player.connected = False
 
         if len(self.connections) > 0:
             await self.broadcast('disconnected',f'{playerName} has left the game.',data=self.getPlayerNameList())
 
-        else:
+        elif len(self.connections) <=0 and not self.lobbytimer_running:
             await self.lobby_timer(lobbies,30)
 
 
@@ -71,14 +115,19 @@ class Lobby:
 
     # Close the lobby 30secs after all users have left
     async def lobby_timer(self,lobbies,time):
-        while len(self.connections) == 0 and time > 0:
-            print(f'Lobby will close in: {time}seconds')
-            await asyncio.sleep(1)
-            time -= 1
+        self.lobbytimer_running = True
+        
+        try:
+            while len(self.connections) == 0 and time > 0:
+                print(f'Lobby will close in: {time}seconds')
+                await asyncio.sleep(1)
+                time -= 1
 
-            if time <= 0:
-                del lobbies[self.name]
-                print(f'Lobby {self.name} removed from lobby list.')
+                if time <= 0:
+                    del lobbies[self.name]
+                    print(f'Lobby {self.name} removed from lobby list.')
+        finally:
+            self.lobbytimer_running = False
 
     # Serialize python object to JSON and send
     async def send_gamestate(self,data,to,actionType,**kwargs):
