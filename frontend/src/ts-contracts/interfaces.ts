@@ -77,6 +77,13 @@ export interface ServerMsgsWindowProps {
   messages: string[];
 }
 
+// Dice component
+export interface PipFaceArgs {
+    value: number;
+    rolling: boolean;
+}
+
+
 // useFetch utility hook
 export type FetchCallback = () => Promise<void>
 
@@ -113,6 +120,15 @@ export interface DevCardsMap {
 
 export interface PlayerStrucMap {
     [struc: string]: number;
+}
+
+
+// Contexts
+export interface Missions {
+    longestRoad: string;
+    setLongestRoad: SetterFunction<string>;
+    largestArmy: string;
+    setLargestArmy: SetterFunction<string>;
 }
 
 export interface WebsocketContextShape {
@@ -155,12 +171,8 @@ export interface WebsocketContextShape {
   setNodes: SetterFunction<NodeData[]>;
 
   // Missions
-  missions: {
-    longestRoad: string;
-    setLongestRoad: SetterFunction<string>;
-    largestArmy: string;
-    setLargestArmy: SetterFunction<string>;
-  }
+  missions: Missions
+
 }
 
 export interface TradeContextShape {

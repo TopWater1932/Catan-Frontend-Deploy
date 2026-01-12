@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import TradeResourceSelection from "./TradeResourceSelection.jsx";
 
 
 

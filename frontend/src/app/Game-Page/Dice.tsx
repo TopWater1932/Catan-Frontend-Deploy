@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useState, useContext } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import "../../styles/Dice.css";
+import {
+  ReactMouseEvent,
+  PipFaceArgs
+} from '../../ts-contracts/interfaces'
 
-function PipFace({ value, rolling }) {
+function PipFace({ value, rolling }: PipFaceArgs) {
   const on = useMemo(() => {
     const maps = {
       1: [4],
