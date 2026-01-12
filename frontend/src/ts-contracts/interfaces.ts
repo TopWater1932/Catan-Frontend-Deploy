@@ -130,6 +130,40 @@ export interface PlayerStrucMap {
     [struc: string]: number;
 }
 
+// Resource requirements for buying
+export interface ResourceRequirements {
+    'Road': {[res: string]: number};
+    'Settlement': {[res: string]: number};
+    'City': {[res: string]: number};
+    'DevelopmentCard': {[res: string]: number};
+}
+
+// MainPlayerInfo component args
+export interface MainPlayerInfoArgs {
+    id: string;
+    position: string;
+}
+
+// Trade resource selection content
+type handleConfirm = (e: ReactMouseEvent) => void
+type handleBack = () => void
+
+type TradeResourceSelectionButtonActionCallbacks = handleConfirm | handleBack
+
+export interface ButtonInfo {
+    text: string;
+    type: React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
+    callback: TradeResourceSelectionButtonActionCallbacks;
+}
+
+export interface TradeResourceSelectionArgs {
+    dialogueType: string;
+    buttons: ButtonInfo[];
+    giveTitle: string;
+    receiveTitle: string;
+    giveArray: string[]                  // TBC
+}
+
 
 // Contexts
 export interface Missions {

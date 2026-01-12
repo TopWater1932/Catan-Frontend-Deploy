@@ -1,8 +1,11 @@
-import { useContext } from "react"
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/close-btn.css';
 
-function EndTurnModalContent({ setEndModalIsVisible }) {
+import {
+  SetterFunction
+} from '../../ts-contracts/interfaces'
+
+function EndTurnModalContent(setEndModalIsVisible: SetterFunction<boolean>) {
     
     const { turn, setTurn } = useWebSocketContext();
 

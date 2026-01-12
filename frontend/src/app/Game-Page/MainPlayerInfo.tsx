@@ -1,10 +1,13 @@
-import { useContext } from 'react'
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/player.css'
-import createCardArray from '../../utils/func-createCardArray.tsx'
+import createCardArray from '../../utils/func-createCardArray'
+
+import {
+  MainPlayerInfoArgs
+} from '../../ts-contracts/interfaces'
 
 
-function MainPlayerInfo({id, position}) {
+function MainPlayerInfo({id, position}: MainPlayerInfoArgs) {
 
   const {players,missions,turn,playerID,stealCard,setStealCard,stealList,sendJsonMessage} = useWebSocketContext()
 
