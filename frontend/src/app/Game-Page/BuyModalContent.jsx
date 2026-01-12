@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { useWebSocketContext } from '../../context/WebsocketContext'
-import { GameContext } from "../../context/GameContext.jsx";
+import { useGameContext } from "../../context/GameContext";
 import PlayerInfo from "./PlayerInfo.jsx";
 import '../../styles/options-modal.css'
 
@@ -9,7 +9,7 @@ import '../../styles/options-modal.css'
 function BuyModalContent({ setBuyModalIsVisible }) {
     
     const {players,setPlayers,turn} = useWebSocketContext();
-    const {resIcons} = useContext(GameContext);
+    const {resIcons} = useGameContext();
     const {resources,structures,devCards,vps} = players[turn];
     const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;
 

@@ -164,10 +164,14 @@ export interface WebsocketContextShape {
 }
 
 export interface TradeContextShape {
-    tradeModalIsVisible: boolean,
-    setTradeModalIsVisible: SetterFunction<boolean>,
-    marTradeModalIsVisible: boolean,
-    setMarTradeModalIsVisible: SetterFunction<boolean>,
-    playerTradeModalIsVisible: boolean,
-    setPlayerTradeModalIsVisible: SetterFunction<boolean>
+    tradeModalIsVisible: boolean;
+    setTradeModalIsVisible: SetterFunction<boolean>;
+    marTradeModalIsVisible: boolean;
+    setMarTradeModalIsVisible: SetterFunction<boolean>;
+    playerTradeModalIsVisible: boolean;
+    setPlayerTradeModalIsVisible: SetterFunction<boolean>;
+}
+
+export interface GameContextShape {
+    resIcons: Record<'woodIcon' | 'brickIcon' | 'wheatIcon' | 'sheepIcon' | 'oreIcon', string>;
 }

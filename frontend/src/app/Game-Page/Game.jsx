@@ -1,6 +1,6 @@
 import { useContext, useEffect } from 'react'
 import '../../styles/Game.css'
-import { GameContext } from '../../context/GameContext.jsx'
+import { GameContext } from '../../context/GameContext'
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import MainPlayerInfo from './MainPlayerInfo.jsx'
 import CloseButton from './CloseBtn.jsx'
