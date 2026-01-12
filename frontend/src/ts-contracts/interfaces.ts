@@ -162,3 +162,12 @@ export interface WebsocketContextShape {
     setLargestArmy: SetterFunction<string>;
   }
 }
+
+export interface TradeContextShape {
+    tradeModalIsVisible: boolean,
+    setTradeModalIsVisible: SetterFunction<boolean>,
+    marTradeModalIsVisible: boolean,
+    setMarTradeModalIsVisible: SetterFunction<boolean>,
+    playerTradeModalIsVisible: boolean,
+    setPlayerTradeModalIsVisible: SetterFunction<boolean>
+}

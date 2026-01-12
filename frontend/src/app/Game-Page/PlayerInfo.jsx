@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { GameContext } from "../../context/GameContext.jsx";
-import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/player-info.css'
 
 

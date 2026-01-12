@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/player.css'
 import createCardArray from '../../utils/func-createCardArray.tsx'
 

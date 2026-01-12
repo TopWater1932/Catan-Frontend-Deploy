@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/close-btn.css';
 
 function EndTurnModalContent({ setEndModalIsVisible }) {

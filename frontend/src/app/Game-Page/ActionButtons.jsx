@@ -9,7 +9,7 @@ import MaritimeTradeModalContent from './MaritimeTradeModalContent.jsx'
 import PlayerTradeModalContent from './PlayerTradeModalContent.jsx'
 import BuyModalContent from './BuyModalContent.jsx'
 
-import { TradeContext } from '../../context/TradeContext.jsx'
+import { TradeContext } from '../../context/TradeContext'
 
 function ActionButtons() {
 

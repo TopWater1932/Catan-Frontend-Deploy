@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import capsResourceName from '../../utils/func-capsResourceNames.tsx'
 import '../../styles/options-modal.css'
 

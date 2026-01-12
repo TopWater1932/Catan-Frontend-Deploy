@@ -3,8 +3,8 @@ import '../../styles/buttons.css'
 import '../../styles/trade-resources.css'
 import doubleArrows from '../../assets/reshot-icon-left-and-right-arrows-Z5XLT7B8WY.svg'
 import capsResourceName from '../../utils/func-capsResourceNames.tsx'
-import { TradeContext } from '../../context/TradeContext.jsx'
-import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+// import { useTradeContext } from '../../context/TradeContext'
+import { useWebSocketContext } from '../../context/WebsocketContext'
 
 function TradeResourceSelection({ dialogueType, buttons, giveTitle, receiveTitle, giveArray}) {
 

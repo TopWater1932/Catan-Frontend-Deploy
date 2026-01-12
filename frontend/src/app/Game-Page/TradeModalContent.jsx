@@ -1,11 +1,11 @@
 import { useContext, useState } from "react"
-import { TradeContext } from "../../context/TradeContext.jsx";
+import { useTradeContext } from '../../context/TradeContext';
 import '../../styles/options-modal.css'
 
 
 function TradeModalContent( ) {
 
-    const {setTradeModalIsVisible,setMarTradeModalIsVisible,setPlayerTradeModalIsVisible} = useContext(TradeContext);
+    const {setTradeModalIsVisible,setMarTradeModalIsVisible,setPlayerTradeModalIsVisible} = useTradeContext();
 
     const handleSelectPlayer = () => {
         setTradeModalIsVisible(false);

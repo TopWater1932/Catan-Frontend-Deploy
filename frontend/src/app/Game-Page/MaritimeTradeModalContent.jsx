@@ -1,5 +1,5 @@
 import { useState,useContext } from "react"
-import { WebsocketContext } from "../../context/WebsocketContext.jsx";
+import { useWebSocketContext } from '../../context/WebsocketContext'
 import '../../styles/options-modal.css'
 
 import TradeResourceSelection from './TradeResourceSelection.jsx'
