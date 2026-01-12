@@ -157,7 +157,7 @@ function Board() {
               width={18*2}
               align="center"
               verticalAlign="middle"
-              text={String(tile.number)}
+              text={!tile.number ? '' : String(tile.number)}
               fontFamily="Times New Roman"
               fontSize={25}
               fontStyle="bold"
