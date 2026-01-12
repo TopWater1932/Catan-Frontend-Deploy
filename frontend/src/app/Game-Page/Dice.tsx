@@ -8,7 +8,8 @@ import {
 
 function PipFace({ value, rolling }: PipFaceArgs) {
   const on = useMemo(() => {
-    const maps = {
+    // A map to determine which of the 9 positions (0-8) should have a 'pip'
+    const maps: { [key: number]: number[] } = {
       1: [4],
       2: [0, 8],
       3: [0, 4, 8],
@@ -16,6 +17,8 @@ function PipFace({ value, rolling }: PipFaceArgs) {
       5: [0, 2, 4, 6, 8],
       6: [0, 2, 3, 5, 6, 8],
     };
+    
+    // Convert the numeric value to a Set for efficient lookup
     return new Set(maps[Number(value)] ?? []);
   }, [value]);
 
@@ -23,12 +26,13 @@ function PipFace({ value, rolling }: PipFaceArgs) {
     <div className={rolling ? "dice-face-lg rolling" : "dice-face-lg"}>
       <div className="pip-grid">
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i} className={on.has(i) ? "pip pip-on" : "pip"} />
+          <div key={i} className={on.has(i) ? "pip pip-on" : "pip"} 
+          />
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default function Dice() {
 

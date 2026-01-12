@@ -1,4 +1,3 @@
-import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import closeBtn from "../../assets/close-btn.svg"

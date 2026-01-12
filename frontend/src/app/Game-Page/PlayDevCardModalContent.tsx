@@ -1,9 +1,14 @@
 import { useContext } from "react"
 import { useWebSocketContext } from '../../context/WebsocketContext'
-import capsResourceName from '../../utils/func-capsResourceNames.tsx'
+import capsResourceName from '../../utils/func-capsResourceNames'
 import '../../styles/options-modal.css'
 
-function PlayDevCardModalContent({ setDCModalIsVisible }) {
+import {
+    SetterFunction,
+    ReactMouseEvent
+} from '../../ts-contracts/interfaces'
+
+function PlayDevCardModalContent(setDCModalIsVisible: SetterFunction<boolean>) {
 
   const {players,turn} = useWebSocketContext();
   const {devCards} = players[turn];
@@ -12,7 +17,7 @@ function PlayDevCardModalContent({ setDCModalIsVisible }) {
     const dcNames = names.map((key) => capsResourceName(key));
 
 
-    const handleUseClick = (selectionIndex,e) => {
+    const handleUseClick = (selectionIndex: number) => {
         
         setDCModalIsVisible(false);
     }
@@ -22,7 +27,7 @@ function PlayDevCardModalContent({ setDCModalIsVisible }) {
             {names.map((name,i) => 
                     <div className='option-row'>
                         <p><span className='bold'>{`${dcNames[i]}: `}</span><span>{`${devCards[name]}`}</span></p>
-                        <button className='button' type="button" onClick={(e: ReactMouseEvent) => handleUseClick(i,e)} disabled={devCards[name]>0 ? false : true}>Use</button>
+                        <button className='button' type="button" onClick={(e: ReactMouseEvent) => handleUseClick(i)} disabled={devCards[name]>0 ? false : true}>Use</button>
                     </div>
             )}
         </div>

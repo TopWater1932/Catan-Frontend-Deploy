@@ -5,7 +5,11 @@ import '../../styles/modal.css'
 
 import { ModalContext } from "../../context/ModalContext";
 
-function Modal({ isVisible, setIsVisible, modalClassTypes, content }) {
+import {
+    ModalArgs
+} from '../../ts-contracts/interfaces'
+
+function Modal({ isVisible, setIsVisible, modalClassTypes, content }:ModalArgs) {
     
     const [isEnabled, setIsEnabled] = useState(true);
 
@@ -30,7 +34,7 @@ function Modal({ isVisible, setIsVisible, modalClassTypes, content }) {
 
             </ModalContext.Provider>
         </>,
-        document.getElementById('modal')
+        document.getElementById('modal') as Element
 )}
 
 export default Modal;

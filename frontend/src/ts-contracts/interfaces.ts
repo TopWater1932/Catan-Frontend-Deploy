@@ -83,6 +83,14 @@ export interface PipFaceArgs {
     rolling: boolean;
 }
 
+//Modal Component
+export interface ModalArgs {
+    isVisible: boolean;
+    setIsVisible: SetterFunction<boolean>;
+    modalClassTypes: string;
+    content: any;
+}
+
 
 // useFetch utility hook
 export type FetchCallback = () => Promise<void>
