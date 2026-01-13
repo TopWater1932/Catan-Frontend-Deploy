@@ -186,7 +186,7 @@ async def wsEndpoint(websocket: WebSocket):
 
                 elif data['actionType'] == 'end-turn':
                     lobby.game.nextTurn()
-                    await lobby.send_gamestate(lobby.game.players, 'all', 'player-state')
+                    await lobby.send_gamestate(lobby.game, 'all', 'game-state')
 
                 elif data['actionType'] == 'build-settlement':
                     nodeID = data['data']['nodeID']
