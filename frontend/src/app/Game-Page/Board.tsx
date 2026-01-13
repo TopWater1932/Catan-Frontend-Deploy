@@ -40,11 +40,11 @@ function Board() {
 
 
   const resourceColors: ResourceColors = {
-    'ORE':'rgba(78, 78, 78, 1)',
-    'LUMBER':'rgba(97, 36, 0, 1)',
-    'WOOL':'rgba(34, 202, 0, 1)',
-    'BRICK':'rgba(206, 99, 0, 1)',
-    'GRAIN':'rgba(255, 230, 0, 1)',
+    'ore':'rgba(78, 78, 78, 1)',
+    'wood':'rgba(97, 36, 0, 1)',
+    'sheep':'rgba(34, 202, 0, 1)',
+    'brick':'rgba(206, 99, 0, 1)',
+    'wheat':'rgba(255, 230, 0, 1)',
     null: 'rgba(218, 188, 89, 1)'
   };
   
