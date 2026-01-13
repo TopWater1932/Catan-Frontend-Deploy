@@ -2,28 +2,36 @@ from enum import Enum
 from Tile import TerrainType
 
 class Player:
-    def __init__(self, id, name='', color='',
-        resource_cards=None,
-        development_cards={"knight":0,"victoryPoint":0,"roadBuilding":0,"yearOfPlenty":0,"monopoly":0,"knightsPlayed":0},
-        buildings={"roads":15,"settlements":5,"cities":4},
-        victory_points=0,
-        roads = [],
-        built_structures = [],
-        ports = ['4-1'], # Default 4:1 port
-        connected = True
-        ):
+    def __init__(self, id, name='', color=''):
 
         self.id = id
         self.name = name
         self.color = color
-        self.resource_cards = {TerrainType.FOREST.value:0,TerrainType.HILLS.value:0,TerrainType.MOUNTAINS.value:0,TerrainType.FIELDS.value:0,TerrainType.PASTURE.value:0}
-        self.development_cards = development_cards
-        self.victory_points = victory_points
-        self.buildings = buildings
-        self.ports = ports
-        self.connected = connected
-        self.roads = roads
-        self.built_structures = built_structures  
+        self.resource_cards = {
+            TerrainType.FOREST.value:0,
+            TerrainType.HILLS.value:0,
+            TerrainType.MOUNTAINS.value:0,
+            TerrainType.FIELDS.value:0,
+            TerrainType.PASTURE.value:0
+        }
+        self.development_cards = {
+            DevCards.KNIGHT.value:0,
+            DevCards.VP.value:0,
+            DevCards.ROAD_BUILDING.value:0,
+            DevCards.YEAR_OF_PLENTY.value:0,
+            DevCards.MONOPOLY.value:0,
+            DevCards.KNIGHTS_PLAYED.value:0
+        }
+        self.buildings = {
+            Buildings.ROADS.value:15,
+            Buildings.SETTLEMENTS.value:5,
+            Buildings.CITIES.value:4
+        }
+        self.victory_points = 0
+        self.ports = ['4-1']
+        self.connected = True
+        self.roads = []
+        self.built_structures = []
         self.longest_road_length = 0
         self.has_longest_road = False
 
@@ -69,3 +77,16 @@ class Colour(Enum):
     WHITE = "White"
     ORANGE = "Orange"
     GREEN = "Green"
+
+class DevCards(Enum):
+    KNIGHT = "knight"
+    VP = "victoryPoint"
+    ROAD_BUILDING = "roadBuilding"
+    YEAR_OF_PLENTY = "yearOfPlenty"
+    MONOPOLY = "monopoly"
+    KNIGHTS_PLAYED = "knightsPlayed"
+
+class Buildings(Enum):
+    ROADS = "roads"
+    SETTLEMENTS = "settlements"
+    CITIES = "cities"
