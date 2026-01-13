@@ -1,9 +1,9 @@
 from enum import Enum
 
 class TerrainType(Enum):
-    HILLS = "BRICK"
-    FOREST = "LUMBER"
-    MOUNTAINS = "ORE"
-    FIELDS = "GRAIN"
-    PASTURE = "WOOL"
+    HILLS = "brick"
+    FOREST = "wood"
+    MOUNTAINS = "ore"
+    FIELDS = "wheat"
+    PASTURE = "sheep"
     DESERT = None
