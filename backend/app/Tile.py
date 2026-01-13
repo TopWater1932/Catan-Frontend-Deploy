@@ -1,6 +1,5 @@
-from enum import Enum
 from Node import Node
-
+from utils.TerrainType import TerrainType
 class Tile:
     def __init__(self, id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
         self.id = id
@@ -38,13 +37,3 @@ class Tile:
 
         return list(playerIDs)
 
-
-
-class TerrainType(Enum):
-    HILLS = "BRICK"
-    FOREST = "LUMBER"
-    MOUNTAINS = "ORE"
-    FIELDS = "GRAIN"
-    PASTURE = "WOOL"
-    DESERT = None
-    

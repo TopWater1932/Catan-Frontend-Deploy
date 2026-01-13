@@ -1,5 +1,5 @@
 from enum import Enum
-from Tile import TerrainType
+from utils.TerrainType import TerrainType
 
 class Player:
     def __init__(self, id, name='', color='',
@@ -40,16 +40,31 @@ class Player:
         else:
             print(f"[ERROR] Resource type {resource_type} not recognized.")
 
+
     def findRoadBuildCandidates(self):
         road_candidates = set()
         for node in self.buildings:
             for path in node.paths:
                 if path.owner is None:
                     road_candidates.add(path)
-        amount = int(amount)
-        self.resource_cards[resource_type] = self.resource_cards.get(resource_type, 0) + amount
+        
         return list(road_candidates)
 
+    def findSettlementBuildCandidates(self):
+        settlement_candidates = set()
+        for road in self.roads:
+            for node in road.connectedNodes:
+                if node.occupiedBY is None and node.isBuildable:
+                    settlement_candidates.add(node.id)
+        return list(settlement_candidates)
+    
+    def findCityUpgradeCandidates(self):
+        city_candidates = set()
+        for node in self.buildings:
+            if node.buildingType == "SETTLEMENT":
+                city_candidates.add(node.id)
+        return list(city_candidates)
+    
     def takeResource(self, resource_type, amount):
 
         """

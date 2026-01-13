@@ -4,15 +4,17 @@ from Tile import Tile
 from Node import Node
 from Path import Path
 from Player import Player
-from Tile import TerrainType
+from utils.TerrainType import TerrainType
 from BoardSetUp import BoardSetUp
 from Dice import Dice
+from Settlement import Settlement
+from City import City
 from colorama import init, Fore, Style
 
 import random
 
 class Game:
-    def __init__(self, board, players, current_turn=0, longest_road_holder=None, largest_army_holder=None):
+    def __init__(self, players, current_turn=0, longest_road_holder=None, largest_army_holder=None):
         self.board = None
         self.players = players
         self.total_turns = 0
@@ -179,8 +181,6 @@ class Game:
         
 
     # Longest Road
-    
-
     def _node_blocks_player(self, node, player):
 
         occ = getattr(node, "occupiedBy", None)
@@ -319,47 +319,63 @@ class Game:
         to_player.resource_cards[stolen_resource] += 1
 
         return True, f"{to_player.name} stole 1 {stolen_resource} from {from_player.name}."
-        
-
-
-# game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
 
     
-    def buildSettlement(self, nodeID:str, player:Player=None):
+    def buildSettlement(self, nodeID:str, player:Player=None, isfree:bool=False):
         '''
         Function to handle building a settlement at a given node for a player
         '''
         node = self.findNodeByID(nodeID)
-    
+
         if player is None:
             player = self.players[self.current_turn]
         if node is None:
            return False
+        #Check player has required resources to build settlement 
+        if not isfree:
+            if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 1 or player.resource_cards.get(TerrainType.PASTURE.value, 0) < 1:
+                print("Player " + player.name + " cannot afford to build a settlement.")
+                return False
+        #Check player has settlements left to build
         if player.buildings['settlements'] <= 0:
             print("Player " + player.name + " has no settlements left to build.")
             return False
+        
+        #Try Build settlement
         if node.build(player, "SETTLEMENT"):
             player.built_structures.append(node)
             player.buildings['settlements'] -= 1
+            player.victory_points += 1
             return True
         else:
             print("Failed to build settlment on node " + node.id)
             return False
     
-    def buildRoad(self, pathID:str, player:Player=None):
+    def buildRoad(self, pathID:str, player:Player=None, isfree:bool=False):
         '''
         Function to handle building a road at a given path for a player
         '''
         if player is None:
              player = self.players[self.current_turn]
         path = None
+        #find path by ID
         for p in self.board.paths:
             if p.id == pathID:
                 path = p
                 break
         if path is None:
             return False
-    
+        #Check player has required resources to build road
+        if not isfree:
+            if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1:
+                print("Player " + player.name + " cannot afford to build a road.")
+                return False
+        #Check player has roads left to build
+        if player.buildings['roads'] <= 0:
+            print("Player " + player.name + " has no roads left to build.")
+            return False
+        
+        #Try build road
         if path.build(player):
             player.roads.append(path)
             return True
@@ -383,7 +399,7 @@ class Game:
             print("Not in setup phase, cannot build settlement using setupBuildSettlement")
             return False
         
-        if self.buildSettlement(nodeID, player):
+        if self.buildSettlement(nodeID, player, isfree=True):
             for tile in self.board.tiles:   
                 if tile.resource != TerrainType.DESERT.value and node in tile.associated_nodes:
                     print(f"Giving 1 {tile.resource} to player {player.name} for settlement at node {nodeID} during setup phase")
@@ -400,6 +416,14 @@ class Game:
                     return node
         print("Node with ID " + nodeID + " not found.")
         return None
+    
+    def findPathbyID(self, pathID:str):
+        for path in self.board.paths:
+            if path.id == pathID:
+                return path
+        print(f"Path with ID {pathID} not found")
+        return None
+    
     def nextSetupTurn(self):
         '''
         Function to handle the next turn during the setup phase of the game
@@ -421,22 +445,135 @@ class Game:
         
         return True
 
+    def upgradeSettlement(self, nodeID:str, player:Player=None, building_type:str="CITY"):
+        '''
+        Function to upgrade a settlement at a given node for a player
+        '''
+        node = self.findNodeByID(nodeID)
+        if player is None:
+            player = self.players[self.current_turn]
+        if node is None:
+            print("Node not found during upgrade to city")
+            return False
+        
+        if node.building == 'SETTLEMENT':
+            #Check building type to upgrade to
+            if building_type == "CITY":
+                #Check player has required resources to upgrade settlement  
+                if player.resource_cards.get(TerrainType.MOUNTAINS.value, 0) < City.requirements.get(TerrainType.MOUNTAINS.value) or player.resource_cards.get(TerrainType.FIELDS.value, 0) < City.requirements.get(TerrainType.FIELDS.value):
+                    print("Player " + player.name + " does not have enough resources to upgrade settlement to city.")
+                    return False
+
+                else:
+                    #Deduct resources from player
+                    player.takeResource(TerrainType.MOUNTAINS.value, 3)
+                    player.takeResource(TerrainType.FIELDS.value, 2)
+                
+                #add more building types here in future 
+            else:
+                print("Invalid building type for upgrade.")
+                return False
+            
+            #Try upgrade settlement
+            if node.upgradeToCity(player):
+                return True
+            else:
+                print(f"Failed to upgrade settlement on node {nodeID}")
+                return False
+        else:
+            print("No settlement found on node " + nodeID + " to upgrade.")
+            return False
+            
+    def getBuildablePathsForCurrentPlayer(self, player:Player=None):
+        '''
+        Function to get all buildable paths for the current player
+
+        RETURNS
+        - list: List of path IDs that the current player can build on
+        '''
+        if player is None:
+            player = self.players[self.current_turn]
+        if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1:
+            print("Player " + player.name + " cannot afford to build a road.")
+            return False
+        return player.findRoadBuildCandidates()
+    
+    def getBuildableNodesForCurrentPlayer(self, player:Player=None):
+        '''
+        Function to get all buildable nodes for the current player
+
+        RETURNS
+        - list: List of node IDs that the current player can build settlements on
+        '''
+        if player is None:
+            player = self.players[self.current_turn]
+        if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 1 or player.resource_cards.get(TerrainType.PASTURE.value, 0) < 1:
+            print("Player " + player.name + " cannot afford to build a settlement.")
+            return False
+        return player.findSettlementBuildCandidates()
+
+    def getUpgradeableSettlementsForCurrentPlayer(self, player:Player=None):
+        '''
+        Function to get all settlements that can be upgraded by the current player
+
+        RETURNS
+        - list: List of node IDs that the current player can upgrade to a city
+        '''
+        if player is None:
+            player = self.players[self.current_turn]
+        if player.resource_cards.get(TerrainType.MOUNTAINS.value, 0) < 3 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 2:
+            print("Player " + player.name + " cannot afford to upgrade a settlement to a city.")
+            return False
+        return player.findCityUpgradeCandidates()
+    
 
 #game = Game(None, [{'name':'Alice', 'colour':'red'}, {'name':'Bob', 'colour':'blue'}, {'name':'Rob', 'colour':'green'}, {'name':'Sherry', 'colour':'white'}])
-'''
-game = Game(None, players=[Player(0, "Amy", "red"), Player(1, "Ben", "blue")])
 
+game = Game(players=[Player(0, "Amy", "red"), Player(1, "Ben", "blue")])
 tiles, nodes, paths = game.setup()
+
+'''
+game.players[0].giveResource("LUMBER", 5)
+game.players[0].giveResource("BRICK", 5)
+game.players[0].giveResource("GRAIN", 5)    
+game.players[0].giveResource("WOOL", 5)
+game.players[0].giveResource("ORE", 5)
+
 node = paths[1]
+game.buildSettlement('N33', game.players[0])
+for node_row in nodes:
+        print("------------------------------------------------------------------")
+        for node in node_row:
+            if node is None:
+                print("Buf", end=" | ")
+            elif node.occupiedBy is not None:
+                print(Fore.RED + f"{node.id}({node.occupiedBy.name[0]})" + Style.RESET_ALL, end = " | ")
+            else:
+                print(f"{node.id}", end = " | ")
 
-game.setupBuildSettlement("N33", game.players[1])
-print(game.players[1].resource_cards)
-print(f"Node is occupied by {game.board.nodes[3][3].occupiedBy.name} and now isBuildeable = {game.board.nodes[3][3].isBuildable}")
-print(f"Surrounding nodes {game.board.nodes[4][3].isBuildable}")
+        print("")
+        print("------------------------------------------------------------------")
+
+game.upgradeSettlement("N33", game.players[0], "CITY")
+print("After upgrading settlement to city:")
+for node_row in nodes:
+        print("------------------------------------------------------------------")
+        for node in node_row:
+            if node is None:
+                print("Buf", end=" | ")
+            elif node.building == "CITY":
+                print(Fore.RED + f"{node.id}({node.building})" + Style.RESET_ALL, end = " | ")
+            else:
+                print(f"{node.id}", end = " | ")
+
+        print("")
+        print("------------------------------------------------------------------")
+
+print(f"Player {game.players[0].name} Resources after building settlement and upgrading to city: {game.players[0].resource_cards}")
+print(f"Player VP: {game.players[0].victory_points}")
 '''
 
 '''
-
 for i in range(4):
     print(f"current player turn: {game.players[game.current_turn].name}")
     node = input("Enter nodeID: ")
@@ -458,7 +595,12 @@ for i in range(4):
     print("------------------------------------------------------------------")
 
     print(f"Current turn: {game.current_turn}, Total turns: {game.total_turns}, Setup phase: {game.setup_phase}")
+
+print(f"VP of players after setup phase:")
+for player in game.players:
+    print(f"Player {player.name} VP: {player.victory_points}")
 '''
+
 '''
 for prop_name, prop_value in vars(node).items():
     print(f"{prop_name}: {type(prop_value)}")

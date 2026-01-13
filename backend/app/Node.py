@@ -1,9 +1,12 @@
+from Settlement import Settlement
+from City import City
+
 class Node:
-    def __init__(self, id, occupiedBy=None, isBuildable=True, buildingType=None, paths=None, port_type=None):
+    def __init__(self, id, occupiedBy=None, isBuildable=True, building=None, paths=None, port_type=None):
         self.id = id
         self.occupiedBy = occupiedBy
         self.isBuildable = isBuildable
-        self.buildingType = buildingType
+        self.building = building
         self.paths = paths or []
         self.port_type = port_type
 
@@ -19,12 +22,26 @@ class Node:
                 if node != self:
                     node.isBuildable = False
 
-    def build(self, player, buildingType):
+    def build(self, player, building):
         if self.occupiedBy is None and self.isBuildable:
             self.occupiedBy = player
             self.isBuildable = False
-            self.buildingType = buildingType
+            self.building = building
             self.updateNeighbors()
+            return True
+        return False
+    def upgrade(self, player, upgradeBuildingType):
+        if self.occupiedBy == player:
+                upgradedBuilding = self.building.upgrade(upgradeBuildingType)
+                if upgradedBuilding:
+                    player.victory_points += upgradedBuilding.point_value - self.building.point_value
+                    self.building = upgradedBuilding
+                    return True
+                
+    def upgradeToCity(self,player):
+        if self.occupiedBy == player:
+            self.building = 'CITY'
+            player.victory_points += 1
             return True
         return False
     
