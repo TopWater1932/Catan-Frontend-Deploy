@@ -17,15 +17,18 @@ class Tile:
         tileState['associated_nodes'] = [node.id for node in tileState['associated_nodes']]
         return tileState
 
-    def giveResoucetoPlayers(self):
+    def giveResourcetoPlayers(self):
         for node in self.associated_nodes:
             if node.occupiedBy != None:
-                if node.buildingType == "SETTLEMENT":
+                if node.building == "SETTLEMENT":
                     amount = 1
-                elif node.buildingType == "CITY":
+                elif node.building == "CITY":
                     amount = 2
                 player = node.occupiedBy
-                player.giveResource(self.resource, amount)
+                success = player.giveResource(self.resource, amount)
+                if not success:
+                    print(f"[ERROR] Failed to give resource {self.resource} to player {player.name}")
+        
 
     def findAssociatedPlayers(self,player_turn_id):
         playerIDs = set()

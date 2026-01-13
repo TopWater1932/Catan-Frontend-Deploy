@@ -39,7 +39,8 @@ class Player:
             self.resource_cards[resource_type] += amount
         else:
             print(f"[ERROR] Resource type {resource_type} not recognized.")
-
+            return False
+        return True
 
     def findRoadBuildCandidates(self):
         road_candidates = set()

@@ -175,10 +175,9 @@ class Game:
 
     def assign_resources(self, dice_roll):
         print(f"Assigning resources for dice roll: {dice_roll}")
-        for player in self.players:
-            # Logic to assign resources based on dice_roll and board state
-            player.giveResource('wood', 1)  # Example: give 1 wood to the player
-        
+        for tile in self.board.tiles:
+            if tile.number_token == dice_roll and not tile.has_robber:
+                tile.giveResourcetoPlayers()
 
     # Longest Road
     def _node_blocks_player(self, node, player):
@@ -378,6 +377,7 @@ class Game:
         #Try build road
         if path.build(player):
             player.roads.append(path)
+            player.buildings['roads'] -= 1
             return True
         print("Failed to build road on path " + path.id)
         return False
@@ -533,11 +533,11 @@ game = Game(players=[Player(0, "Amy", "red"), Player(1, "Ben", "blue")])
 tiles, nodes, paths = game.setup()
 
 '''
-game.players[0].giveResource("LUMBER", 5)
-game.players[0].giveResource("BRICK", 5)
-game.players[0].giveResource("GRAIN", 5)    
-game.players[0].giveResource("WOOL", 5)
-game.players[0].giveResource("ORE", 5)
+game.players[0].giveResource("wood", 5)
+game.players[0].giveResource("brick", 5)
+game.players[0].giveResource("wheat", 5)    
+game.players[0].giveResource("sheep", 5)
+game.players[0].giveResource("ore", 5)
 
 node = paths[1]
 game.buildSettlement('N33', game.players[0])
@@ -599,8 +599,15 @@ for i in range(4):
 print(f"VP of players after setup phase:")
 for player in game.players:
     print(f"Player {player.name} VP: {player.victory_points}")
-'''
 
+
+game.assign_resources(8)
+game.assign_resources(9)
+game.assign_resources(10)
+game.assign_resources(6)
+
+for player in game.players:
+    print(f"Player {player.name} Resources: {player.resource_cards}")
 '''
 for prop_name, prop_value in vars(node).items():
     print(f"{prop_name}: {type(prop_value)}")
