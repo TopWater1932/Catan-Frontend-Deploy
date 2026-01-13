@@ -96,6 +96,9 @@ async def wsEndpoint(websocket: WebSocket):
 
                         playerID = await lobby.addToLobby(websocket,data)
 
+                        if playerID is None:
+                            return
+
                         playerNameList = lobby.getPlayerNameList()
                         await lobby.broadcast('player-joined',f'{data['name']} has joined the game.',data=playerNameList)
                     
@@ -106,7 +109,10 @@ async def wsEndpoint(websocket: WebSocket):
                         rejoining_player = next((p for p in lobby.game.players if p.id == playerID), None)
 
                         if rejoining_player:
-                            await lobby.reconnectToLobby(websocket,playerID,rejoining_player)
+                            success = await lobby.reconnectToLobby(websocket,playerID,rejoining_player)
+
+                            if success is None:
+                                return
 
                             playerNameList = lobby.getPlayerNameList()
                             await lobby.broadcast('player-joined',f'{data['name']} has joined the game.',data=playerNameList)
@@ -232,4 +238,5 @@ async def wsEndpoint(websocket: WebSocket):
         player = next((p[1] for p in lobby.connections.values() if p[1].id == playerID), None)
 
         if player:
+            await websocket_health_manager.end_heartbeat()
             await lobby.disconnected(lobbies,playerID,player.name)
