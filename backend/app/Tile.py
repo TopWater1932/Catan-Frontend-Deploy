@@ -1,5 +1,6 @@
 from Node import Node
 from utils.TerrainType import TerrainType
+from utils.Buildings import Buildings
 class Tile:
     def __init__(self, id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
         self.id = id
@@ -20,9 +21,9 @@ class Tile:
     def giveResourcetoPlayers(self):
         for node in self.associated_nodes:
             if node.occupiedBy != None:
-                if node.building == "SETTLEMENT":
+                if node.building == Buildings.SETTLEMENTS.value:
                     amount = 1
-                elif node.building == "CITY":
+                elif node.building == Buildings.CITIES.value:
                     amount = 2
                 player = node.occupiedBy
                 success = player.giveResource(self.resource, amount)

@@ -7,8 +7,7 @@ from Player import Player
 from utils.TerrainType import TerrainType
 from BoardSetUp import BoardSetUp
 from Dice import Dice
-from Settlement import Settlement
-from City import City
+from utils.Buildings import Buildings
 from colorama import init, Fore, Style
 
 import random
@@ -336,14 +335,14 @@ class Game:
                 print("Player " + player.name + " cannot afford to build a settlement.")
                 return False
         #Check player has settlements left to build
-        if player.buildings['settlements'] <= 0:
+        if player.buildings[Buildings.SETTLEMENTS.value] <= 0:
             print("Player " + player.name + " has no settlements left to build.")
             return False
         
         #Try Build settlement
-        if node.build(player, "SETTLEMENT"):
+        if node.build(player, Buildings.SETTLEMENTS.value):
             player.built_structures.append(node)
-            player.buildings['settlements'] -= 1
+            player.buildings[Buildings.SETTLEMENTS.value] -= 1
             player.victory_points += 1
             return True
         else:
@@ -445,7 +444,7 @@ class Game:
         
         return True
 
-    def upgradeSettlement(self, nodeID:str, player:Player=None, building_type:str="CITY"):
+    def upgradeSettlement(self, nodeID:str, player:Player=None, building_type:str=Buildings.CITIES.value):
         '''
         Function to upgrade a settlement at a given node for a player
         '''
@@ -456,11 +455,11 @@ class Game:
             print("Node not found during upgrade to city")
             return False
         
-        if node.building == 'SETTLEMENT':
+        if node.building == Buildings.SETTLEMENTS.value:
             #Check building type to upgrade to
-            if building_type == "CITY":
+            if building_type == Buildings.CITIES.value:
                 #Check player has required resources to upgrade settlement  
-                if player.resource_cards.get(TerrainType.MOUNTAINS.value, 0) < City.requirements.get(TerrainType.MOUNTAINS.value) or player.resource_cards.get(TerrainType.FIELDS.value, 0) < City.requirements.get(TerrainType.FIELDS.value):
+                if player.resource_cards.get(TerrainType.MOUNTAINS.value, 0) < 3 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 2:
                     print("Player " + player.name + " does not have enough resources to upgrade settlement to city.")
                     return False
 
@@ -554,14 +553,14 @@ for node_row in nodes:
         print("")
         print("------------------------------------------------------------------")
 
-game.upgradeSettlement("N33", game.players[0], "CITY")
+game.upgradeSettlement("N33", game.players[0], Buildings.CITIES.value)
 print("After upgrading settlement to city:")
 for node_row in nodes:
         print("------------------------------------------------------------------")
         for node in node_row:
             if node is None:
                 print("Buf", end=" | ")
-            elif node.building == "CITY":
+            elif node.building == Buildings.CITIES.value:
                 print(Fore.RED + f"{node.id}({node.building})" + Style.RESET_ALL, end = " | ")
             else:
                 print(f"{node.id}", end = " | ")
@@ -608,6 +607,7 @@ game.assign_resources(6)
 
 for player in game.players:
     print(f"Player {player.name} Resources: {player.resource_cards}")
+'''
 '''
 for prop_name, prop_value in vars(node).items():
     print(f"{prop_name}: {type(prop_value)}")

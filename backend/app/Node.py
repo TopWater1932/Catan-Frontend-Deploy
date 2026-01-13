@@ -1,5 +1,6 @@
 from Settlement import Settlement
 from City import City
+from utils.Buildings import Buildings
 
 class Node:
     def __init__(self, id, occupiedBy=None, isBuildable=True, building=None, paths=None, port_type=None):
@@ -40,7 +41,7 @@ class Node:
                 
     def upgradeToCity(self,player):
         if self.occupiedBy == player:
-            self.building = 'CITY'
+            self.building = Buildings.CITIES.value
             player.victory_points += 1
             return True
         return False
