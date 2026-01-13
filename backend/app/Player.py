@@ -1,5 +1,9 @@
 from enum import Enum
-from Tile import TerrainType
+from utils.TerrainType import TerrainType
+from utils.Color import Color
+from utils.Buildings import Buildings
+from utils.DevCards import DevCards
+
 
 class Player:
     def __init__(self, id, name='', color=''):
@@ -47,6 +51,8 @@ class Player:
             self.resource_cards[resource_type] += amount
         else:
             print(f"[ERROR] Resource type {resource_type} not recognized.")
+            return False
+        return True
 
     def findRoadBuildCandidates(self):
         road_candidates = set()
@@ -54,10 +60,24 @@ class Player:
             for path in node.paths:
                 if path.owner is None:
                     road_candidates.add(path)
-        amount = int(amount)
-        self.resource_cards[resource_type] = self.resource_cards.get(resource_type, 0) + amount
+        
         return list(road_candidates)
 
+    def findSettlementBuildCandidates(self):
+        settlement_candidates = set()
+        for road in self.roads:
+            for node in road.connectedNodes:
+                if node.occupiedBY is None and node.isBuildable:
+                    settlement_candidates.add(node.id)
+        return list(settlement_candidates)
+    
+    def findCityUpgradeCandidates(self):
+        city_candidates = set()
+        for node in self.buildings:
+            if node.buildingType == Buildings.SETTLEMENTS.value:
+                city_candidates.add(node.id)
+        return list(city_candidates)
+    
     def takeResource(self, resource_type, amount):
 
         """
@@ -70,23 +90,3 @@ class Player:
         return True
 
         
-    
-class Colour(Enum):
-    RED = "Red"
-    BLUE = "Blue"
-    WHITE = "White"
-    ORANGE = "Orange"
-    GREEN = "Green"
-
-class DevCards(Enum):
-    KNIGHT = "knight"
-    VP = "victoryPoint"
-    ROAD_BUILDING = "roadBuilding"
-    YEAR_OF_PLENTY = "yearOfPlenty"
-    MONOPOLY = "monopoly"
-    KNIGHTS_PLAYED = "knightsPlayed"
-
-class Buildings(Enum):
-    ROADS = "roads"
-    SETTLEMENTS = "settlements"
-    CITIES = "cities"

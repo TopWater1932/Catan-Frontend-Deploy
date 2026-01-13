@@ -182,48 +182,90 @@ async def wsEndpoint(websocket: WebSocket):
                     await lobby.send_gamestate(game.players,'all','player-state')
 
 
-
-
-
                     # Implement logic to steal a card from the target player
 
                 elif data['actionType'] == 'end-turn':
                     lobby.game.nextTurn()
-                    await lobby.send_gamestate(lobby.game, 'all', 'new-turn')
+                    await lobby.send_gamestate(lobby.game, 'all', 'game-state')
 
-                elif data['actionCategory'] == 'build-settlement':
+                elif data['actionType'] == 'build-settlement':
                     nodeID = data['data']['nodeID']
                     node = lobby.game.findNodeByID(nodeID)
                     if lobby.game.setup_phase:
-                        success = lobby.game.setupBuildSettlement(nodeID)
+                        #Check if first or second settlement in setup phase
+                        if lobby.game.total_turns < len(lobby.game.players):
+                            success = lobby.game.buildSettlement(nodeID, isfree=True)
+                        else: 
+                            success = lobby.game.setupBuildSettlement(nodeID)
+                        await lobby.send_gamestate(node,'all','node-state')
                         #send back buildable paths for setup phase
                         await lobby.send(data=node.getPathIDs(),actionType='buildable-paths',recipient='me', me=websocket)
                     else:
                         success = lobby.game.buildSettlement(nodeID)
 
                     if success:
-                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
+                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn],'me','player-state', me=websocket)
+                        await lobby.send_gamestate(node,'all','node-state')
                     else:
                         #[TODO] handle failed build
                         pass
                         
-                elif data['actionCategory'] == 'build-road':
+                elif data['actionType'] == 'build-road':
                     pathID = data['data']['pathID']
-
-                    success = lobby.game.buildRoad(pathID)
+                    path = lobby.game.findPathByID(pathID)
+                    success = lobby.game.buildRoad(pathID, isfree=lobby.game.setup_phase)
                     if lobby.game.setup_phase:
                         lobby.game.nextSetupTurn()
                         if lobby.game.setup_phase == False:
                             #setup phase over
                             await lobby.send_gamestate(lobby.game,'all','setup-complete')
+                        #check if next player is bot and handle their setup turn
+                        if lobby.game.players[lobby.game.current_turn_index].is_bot:
+                            #[TODO] handle bot setup turn
+                            await lobby.game.handle_bot_setup_turn(lobby)
                     if success:
-                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
+                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn],'me','player-state', me=websocket)
+                        await lobby.send_gamestate(path,'all','path-state')
                     else:
                         #[TODO] handle failed build
                         pass
+        
+                elif data['actionType'] == 'upgrade-settle':
+                    nodeID = data['data']['nodeID']
+                    node = lobby.game.findNodeByID(nodeID)
+                    success = lobby.game.upgradeSettlement(nodeID)
+                    if success:
+                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn_index], 'me', 'player-state', me=websocket)
+                        await lobby.send_gamestate(node, 'all', 'node-state')
+                    else:
+                        #lobby.broadcast('error', 'Upgrade settlement failed.')
+                        #[TODO] handle failed build
+                        pass
 
-                    
-    
+                elif data['actionType'] == 'legal-paths':
+                    buildable_paths = lobby.game.getBuildablePathsForCurrentPlayer()
+                    #check if player has resources to build any roads
+                    if buildable_paths is False:
+                        await lobby.send_gamestate("Lacking resources to build any roads.",'me','legal-paths',me=websocket)
+                    await lobby.send_gamestate(buildable_paths,'me','legal-paths',me=websocket)
+
+                elif data['actionType'] == 'legal-nodes':
+                    buildable_nodes = lobby.game.getBuildablePathsForCurrentPlayer()
+                    #check if player has resources to build any settlements
+                    if buildable_nodes is False:
+                        await lobby.send_gamestate("Lacking resources to build any settlements.",'me','legal-nodes',me=websocket)
+                    await lobby.send_gamestate(buildable_nodes, 'me', 'legal-nodes', me=websocket)
+                
+                elif data['actionType'] == 'legal-upgrades':
+                    upgradeable_nodes = lobby.game.getUpgradeableSettlementsForCurrentPlayer()
+                    #check if player has resources to upgrade any settlements
+                    if upgradeable_nodes is False:
+                        await lobby.send_gamestate("Lacking resources to upgrade any settlements.",'me','legal-upgrades',me=websocket)
+
+                    await lobby.send_gamestate(upgradeable_nodes, 'me', 'legal-upgrades', me=websocket)
+                
+
+            
 
             
             # Insert logic on what to do with data when received

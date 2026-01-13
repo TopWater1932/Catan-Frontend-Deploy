@@ -1,6 +1,6 @@
-from enum import Enum
 from Node import Node
-
+from utils.TerrainType import TerrainType
+from utils.Buildings import Buildings
 class Tile:
     def __init__(self, id, x, y, terrain_type, resource, number_token, has_robber=False, associated_nodes=[]):
         self.id = id
@@ -18,15 +18,18 @@ class Tile:
         tileState['associated_nodes'] = [node.id for node in tileState['associated_nodes']]
         return tileState
 
-    def giveResoucetoPlayers(self):
+    def giveResourcetoPlayers(self):
         for node in self.associated_nodes:
             if node.occupiedBy != None:
-                if node.buildingType == "SETTLEMENT":
+                if node.building == Buildings.SETTLEMENTS.value:
                     amount = 1
-                elif node.buildingType == "CITY":
+                elif node.building == Buildings.CITIES.value:
                     amount = 2
                 player = node.occupiedBy
-                player.giveResource(self.resource, amount)
+                success = player.giveResource(self.resource, amount)
+                if not success:
+                    print(f"[ERROR] Failed to give resource {self.resource} to player {player.name}")
+        
 
     def findAssociatedPlayers(self,player_turn_id):
         playerIDs = set()
@@ -38,13 +41,3 @@ class Tile:
 
         return list(playerIDs)
 
-
-
-class TerrainType(Enum):
-    HILLS = "brick"
-    FOREST = "wood"
-    MOUNTAINS = "ore"
-    FIELDS = "wheat"
-    PASTURE = "sheep"
-    DESERT = None
-    
