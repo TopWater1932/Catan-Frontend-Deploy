@@ -1,55 +1,106 @@
 import { useState, useEffect } from 'react'
-import {Layer,RegularPolygon,Line,Circle,Rect,Text} from 'react-konva'
+import { useWebSocketContext } from '../../context/WebsocketContext'
+import {Layer,RegularPolygon,Line,Rect,Text} from 'react-konva'
 // import ValidPlacementLayers from './ValidPlacements.tsx'
-import initialiseVertexGrid from '../../utils/func-initialiseVertexGrid'
-import assignVertices from '../../utils/func-assignVertices'
-import generateVertexIDs from '../../utils/func-generateVertexIDs'
+import initialiseNodeGrid from '../../utils/func-initialiseNodeGrid'
+// import assignVertices from '../../utils/func-assignVertices'
+// import generateVertexIDs from '../../utils/func-generateVertexIDs'
 import generatePortCoords from '../../utils/func-generatePortCoords'
 import calcValidPlacements from '../../utils/func-calcValidPlacements'
-
+import Node from '../../classes/Node'
+import Path from '../../classes/Path'
 
 import {
-  StructuresArgs
+  StructuresArgs,
+  Coordinates
 } from '../../ts-contracts/interfaces'
 
-function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
- 
   // Port initialisation on backend data pending backend
   const ports = {
-    'port-3-1A':{'reqNumIn':3,'reqTypeIn':'any','vert':['V0','V1'],'text':`?\n3 : 1`},
-    'port-wh':{'reqNumIn':2,'reqTypeIn':'wh','vert':['V3','V4'],'text':`🌾\n2 : 1`},
-    'port-or':{'reqNumIn':2,'reqTypeIn':'or','vert':['V14','V15'],'text':`🪨\n2 : 1`},
-    'port-3-1B':{'reqNumIn':3,'reqTypeIn':'any','vert':['V26','V37'],'text':`?\n3 : 1`},
-    'port-sh':{'reqNumIn':2,'reqTypeIn':'sh','vert':['V46','V45'],'text':`🐑\n2 : 1`},
-    'port-3-1C':{'reqNumIn':3,'reqTypeIn':'any','vert':['V50','V51'],'text':`?\n3 : 1`},
-    'port-3-1D':{'reqNumIn':3,'reqTypeIn':'any','vert':['V47','V48'],'text':`?\n3 : 1`},
-    'port-br':{'reqNumIn':2,'reqTypeIn':'br','vert':['V28','V38'],'text':`🧱\n2 : 1`},
-    'port-wo':{'reqNumIn':2,'reqTypeIn':'wo','vert':['V7','V17'],'text':`🪵\n2 : 1`}
+    'port-3-1A':{'reqNumIn':3,'reqTypeIn':'any','vert':['N02','N03'],'text':`?\n3 : 1`},
+    'port-wh':{'reqNumIn':2,'reqTypeIn':'wh','vert':['N05','N06'],'text':`🌾\n2 : 1`},
+    'port-or':{'reqNumIn':2,'reqTypeIn':'or','vert':['N18','N19'],'text':`🪨\n2 : 1`},
+    'port-3-1B':{'reqNumIn':3,'reqTypeIn':'any','vert':['N210','N310'],'text':`?\n3 : 1`},
+    'port-sh':{'reqNumIn':2,'reqTypeIn':'sh','vert':['N48','N49'],'text':`🐑\n2 : 1`},
+    'port-3-1C':{'reqNumIn':3,'reqTypeIn':'any','vert':['N55','N56'],'text':`?\n3 : 1`},
+    'port-3-1D':{'reqNumIn':3,'reqTypeIn':'any','vert':['N52','N53'],'text':`?\n3 : 1`},
+    'port-br':{'reqNumIn':2,'reqTypeIn':'br','vert':['N31','N41'],'text':`🧱\n2 : 1`},
+    'port-wo':{'reqNumIn':2,'reqTypeIn':'wo','vert':['N11','N21'],'text':`🪵\n2 : 1`}
   };
 
-  // Vertex grid initialisation
-  const vertexGrid = initialiseVertexGrid(tilesMasterArray,tileRadius);
-  const vertexID = generateVertexIDs(vertexGrid) // Example array retrieved from backend
-  const verticesMasterArray = assignVertices(vertexGrid,ports,vertexID)
+function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
+
+  // Backend data
+  const {
+    sendJsonMessage,
+    nodes,setNodes,
+    paths,setPaths,
+    players
+  } = useWebSocketContext()
+ 
+
+
+  // Node grid initialisation
+  const nodeGrid = initialiseNodeGrid(tilesMasterArray,tileRadius);
+  const nodeMasterArray: Node[] = nodes.map((nodeData,i) => {
+    const node = new Node(
+      nodeData['py/state'].id,
+      nodeData['py/state'].occupiedBy,
+      nodeData['py/state'].isBuildable,
+      nodeData['py/state'].building,
+      nodeData['py/state'].paths,
+      nodeData['py/state'].port_type,
+      nodeGrid[i].x,
+      nodeGrid[i].y
+    )
+
+    return node
+  })
+  
+
+  // Path grid initialisation
+  const pathMasterArray: Path[] = paths.map((pathData) => {
+    const pathCoordinates: Coordinates[] = []
+    for (let nodeID of pathData.connectedNodes) {
+      const foundNode = nodeMasterArray.find(node => node.idNode === nodeID)
+
+      if (!foundNode) {
+        throw new Error('Connected Node ID in Path Data does not exist in Node Data.')
+      }
+
+      pathCoordinates.push({x:foundNode.xCoord,y:foundNode.yCoord})
+    }
+
+    const path = new Path(
+      pathData.id,
+      pathData.owner,
+      pathData.connectedNodes,
+      pathCoordinates[0].x,
+      pathCoordinates[0].y,
+      pathCoordinates[1].x,
+      pathCoordinates[1].y
+    )
+    return path
+  })
+
+  // const vertexID = generateVertexIDs(vertexGrid) // Example array retrieved from backend
+  // const verticesMasterArray = assignVertices(vertexGrid,ports,vertexID)
+
+
+
+
 
   // Assign port coordinates
-  generatePortCoords(ports,verticesMasterArray,tilesMasterArray);
+  generatePortCoords(ports,nodeMasterArray,tilesMasterArray);
 
+  // const [structuresGrid, setStructuresGrid] = useState(nodeMasterArray);
 
-  // Initialise structures grid object
-  // const initStrucsObj = {};
-  // for (const vert of verticesMasterArray) {
-  //   initStrucsObj[vert.id] = {...vert}
-  // };
+  // // Calc valid spaces
+  // useEffect(() => {
+  //   calcValidPlacements(structuresGrid);
+  // },[]);
 
-  const [structuresGrid, setStructuresGrid] = useState(verticesMasterArray);
-
-  // Calc valid spaces
-  useEffect(() => {
-    calcValidPlacements(structuresGrid);
-  },[]);
-
-  const [validPlacementsArray,setValidPlacementsArray] = useState()
+  // const [validPlacementsArray,setValidPlacementsArray] = useState()
   
 
 
@@ -86,28 +137,36 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
           />
         )}
       </Layer>
+        
+      <Layer id="structures" name="Structures">
+        {pathMasterArray.filter(path => path.owner !== null).map(path => 
+          <Line
+          key={'Label'+path.idPath}
+          points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
+          stroke={players[path.owner!].color}
+          strokeWidth={8}
+          lineCap='round'
+          />
+        )}
+
+        {nodeMasterArray.filter(node => node.occupiedBy !== null).map(node => 
+          <RegularPolygon
+            key={'Label'+node.idNode}
+            x={node.xCoord}
+            y={node.yCoord}
+            sides={5}
+            radius={tileRadius/5}
+            fill={players[node.occupiedBy!].color}
+            stroke={'black'}
+            strokeWidth={1}
+          />
+        )}
+      </Layer>
 
       <Layer id="validPlacement" name="ValidPlacement">
         {/* {validPlacementsArray.map(vert => 
           <Text
-            key={'Valid'+coord.id}
-            x={coord.x}
-            y={coord.y}
-            align="center"
-            verticalAlign="middle"
-            text={coord.id}
-            fontFamily="Times New Roman"
-            fontSize={10}
-            fontStyle="bold"
-            fill={'black'}
-          />
-        )} */}
-      </Layer>
-
-      <Layer id="structures" name="Structures">
-        {/* {verticesMasterArray.map(coord => 
-          <Text
-            key={'Label'+coord.id}
+            key={'Nalid'+coord.id}
             x={coord.x}
             y={coord.y}
             align="center"

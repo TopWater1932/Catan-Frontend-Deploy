@@ -34,9 +34,20 @@ export interface TileData {
     [key: string]: any;             // TBC
 }
 
+
 export interface NodeData {
-    [key: string]: any;             // TBC
+    'py/object': 'Node.Node';
+    'py/state': {
+        id: string;
+        occupiedBy: string | null;
+        isBuildable: boolean;
+        building:  'settlement' | 'city' | null;
+        paths: string[];
+        port_type: string | null;
+    }
 }
+
+export type NodeDataArray = (NodeData | null)[]
 
 export interface PathData {
     [key: string]: any;             // TBC
@@ -168,11 +179,11 @@ export interface TradeResourceSelectionArgs {
 
 // Board component
 export interface ResourceColors {
-  ORE: string;
-  LUMBER: string;
-  WOOL: string;
-  BRICK: string;
-  GRAIN: string;
+  ore: string;
+  wood: string;
+  sheep: string;
+  brick: string;
+  wheat: string;
   [key: string]: string;
 }
 

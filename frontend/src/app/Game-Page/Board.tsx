@@ -24,8 +24,6 @@ function Board() {
   const {
     sendJsonMessage,
     tiles, setTiles,
-    paths, setPaths,
-    nodes, setNodes,
     moveRobber, setMoveRobber
   } = useWebSocketContext()
   

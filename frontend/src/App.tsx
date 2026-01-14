@@ -13,7 +13,7 @@ import {
   PlayerNameColor,
   PlayerState, PlayerStateData,
   TileData,
-  NodeData,
+  NodeData, NodeDataArray,
   PathData
 } from './ts-contracts/interfaces'
 
@@ -111,9 +111,13 @@ function App() {
             tempPaths.push(path["py/state"])
           });
           
-          jsObj.data.board.nodes.forEach((node: NodeData) => {
-            if (node) {
-              tempNodes.push(node["py/state"])
+          jsObj.data.board.nodes.forEach((row: NodeDataArray) => {
+            for (let item of row) {
+              if (!item) {
+                continue
+              } else {
+                tempNodes.push(item)
+              }
             }
           });
 
