@@ -26,7 +26,7 @@ function ActionButtons() {
 
   // Action buttons
   const [disableActions,setDisableActions] = useState(false)
-  const [disableEndTurn,setDisableEndTurn] = useState(false)
+  // const [disableEndTurn,setDisableEndTurn] = useState(false)
 
   useEffect(() => {
     if (!myTurn || setupPhase || displayDice) {
@@ -35,11 +35,11 @@ function ActionButtons() {
       setDisableActions(false)
     }
 
-    if (!myTurn || displayDice) {
-      setDisableEndTurn(true)
-    } else {
-      setDisableEndTurn(false)
-    }
+    // if (!myTurn || displayDice) {
+    //   setDisableEndTurn(true)
+    // } else {
+    //   setDisableEndTurn(false)
+    // }
 
   },[myTurn, setupPhase, displayDice])
 
@@ -116,7 +116,7 @@ function ActionButtons() {
         <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setDCModalIsVisible(true)} disabled={disableActions}>Play Dev Card</button>
         <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setTradeModalIsVisible(true)} disabled={disableActions}>Trade</button>
         <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setBuyModalIsVisible(true)} disabled={disableActions}>Buy</button>
-        <button className={disableEndTurn ? "button disabled" : "button"} type="button" onClick={() => setEndModalIsVisible(true)} disabled={disableEndTurn}>End Turn</button>
+        <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setEndModalIsVisible(true)} disabled={disableActions}>End Turn</button>
       </div>
     </>
   )
