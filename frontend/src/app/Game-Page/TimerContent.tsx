@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react"
 
+interface TimerContentArgs {
+    message: string;
+}
 
-
-function TimerContent( ) {
+function TimerContent( {message}: TimerContentArgs) {
     
     const [timer,setTimer] = useState(0);
 
@@ -15,7 +17,7 @@ function TimerContent( ) {
 
     return (
         <>
-            <p>Waiting for other players to respond to your trade proposal:</p>
+            <p>{message}</p>
             <br/>
             <p>{`\n${timer}sec`}</p>
         </>

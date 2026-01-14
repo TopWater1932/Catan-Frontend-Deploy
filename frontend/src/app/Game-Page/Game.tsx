@@ -8,14 +8,21 @@ import LRLAIndicators from './LR-LA-indicator'
 import PlayerInfo from './PlayerInfo'
 import ActionButtons from './ActionButtons'
 import Board from './Board'
-import Dice from "./Dice"
+import Dice from './Dice'
+import Modal from './Modal'
+import ReconnectModalContent from './ReconnectModalContent'
 import { Link } from 'react-router'
 
 import {
   GamePagePositions
 } from '../../ts-contracts/interfaces'
 
-function Game() {
+interface GameArgs {
+  shouldReconnect: boolean;
+  connected: boolean;
+}
+
+function Game({shouldReconnect, connected}:GameArgs) {
   
   const { turn, players, missions, displayDice, setDisplayDice, playerID, lobbyInitialised } = useWebSocketContext();
 
@@ -26,13 +33,12 @@ function Game() {
     id === playerID ? positions['south'] = id : positions[pageLocations[i]] = id;
   });
 
-  
-
   useEffect(() => {
     if (playerID === turn) {
       setDisplayDice(true);
     }
   }, [playerID, turn]);
+
 
   if (!lobbyInitialised) {
     return (
@@ -47,6 +53,15 @@ function Game() {
       <div className='game-background'>
 
         <div className='app-content'>
+
+          <Modal
+            isVisible={shouldReconnect && !connected}
+            setIsVisible={() => null}
+            modalClassTypes='options-modal'
+            content={
+              <ReconnectModalContent />
+            }
+          />
 
           <LRLAIndicators missions={missions}/>
 

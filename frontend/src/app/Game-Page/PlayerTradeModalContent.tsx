@@ -30,7 +30,9 @@ function PlayerTradeModalContent( ) {
     if (waiting) {
         return (
             <>
-                <TimerContent />
+                <TimerContent
+                    message={'Waiting for other players to respond to your trade proposal:'}
+                />
             </>
         )
     } else {
