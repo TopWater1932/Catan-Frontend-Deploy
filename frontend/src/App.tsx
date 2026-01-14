@@ -181,9 +181,12 @@ function App() {
           setPlayers(updatedPlayers);
 
         } else if (jsObj.actionType === 'tile-state') {
-          const updatedTiles: TileData[] = [];
-          jsObj.data.forEach((tile: TileData) => {
-            updatedTiles.push(tile["py/state"])
+          const updatedTiles: TileData[] = tiles.map((tile) => {
+            if (tile.id === jsObj.data["py/state"].id) {
+              return jsObj.data["py/state"]
+            } else {
+              return {...tile}
+            }
           });
 
           setTiles(updatedTiles);
@@ -194,10 +197,36 @@ function App() {
         } else if (jsObj.actionType === 'steal-from') {
           setStealList(jsObj.data)
           setStealCard(true)
+
         } else if ((jsObj.actionType === 'turn-state')) {
           const playerArray = jsObj.data.players
           const currTurnIndex = jsObj.data.current_turn
           setTurn(playerArray[currTurnIndex]['py/state'].id)
+
+        } else if (jsObj.actionType === 'buildable-paths') {
+          setLegalPaths({...legalPaths,[turn]:jsObj.data})
+          setPickRoad(true)
+
+        } else if (jsObj.actionType === 'node-state') {
+          const updatedNodes: NodeData[] = nodes.map((node) => {
+            if (node["py/state"].id === jsObj.data["py/state"].id) {
+              return jsObj.data
+            } else {
+              return {...node}
+            }
+          });
+          setNodes(updatedNodes);
+
+        } else if (jsObj.actionType === 'path-state') {
+          const updatedPaths: PathData[] = paths.map((path) => {
+            if (path["py/state"].id === jsObj.data["py/state"].id) {
+              return jsObj.data
+            } else {
+              return {...path}
+            }
+          });
+          setPaths(updatedPaths);
+
         }
     }
   }

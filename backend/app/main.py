@@ -194,9 +194,10 @@ async def wsEndpoint(websocket: WebSocket):
                     tile_id = data['data']
                     game.board.move_robber(tile_id)
 
-                    await lobby.send_gamestate(game.board.tiles,'all','tile-state')
-
                     selected_tile = next((tile for tile in game.board.tiles if tile.id == tile_id), None)
+
+                    await lobby.send_gamestate(selected_tile,'all','tile-state')
+
 
                     if selected_tile is None:
                         print("Error: Selected tile not found.")
@@ -231,13 +232,14 @@ async def wsEndpoint(websocket: WebSocket):
                         else: 
                             success = lobby.game.setupBuildSettlement(nodeID)
                         await lobby.send_gamestate(node,'all','node-state')
+                        await lobby.send_gamestate(game.players,'me','player-state', me=websocket)
                         #send back buildable paths for setup phase
                         await lobby.send(data=node.getPathIDs(),actionType='buildable-paths',recipient='me', me=websocket)
                     else:
                         success = lobby.game.buildSettlement(nodeID)
 
                     if success:
-                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn],'me','player-state', me=websocket)
+                        await lobby.send_gamestate(game.players,'me','player-state', me=websocket)
                         await lobby.send_gamestate(node,'all','node-state')
                     else:
                         #[TODO] handle failed build
@@ -249,6 +251,9 @@ async def wsEndpoint(websocket: WebSocket):
                     success = lobby.game.buildRoad(pathID, isfree=lobby.game.setup_phase)
                     if lobby.game.setup_phase:
                         lobby.game.nextSetupTurn()
+                        await lobby.send_gamestate(lobby.game, 'all', 'turn-state')
+                        
+
                         if lobby.game.setup_phase == False:
                             #setup phase over
                             await lobby.send_gamestate(lobby.game,'all','setup-complete')
@@ -257,7 +262,7 @@ async def wsEndpoint(websocket: WebSocket):
                             #[TODO] handle bot setup turn
                             await lobby.game.handle_bot_setup_turn(lobby)
                     if success:
-                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn],'me','player-state', me=websocket)
+                        await lobby.send_gamestate(game.players,'me','player-state', me=websocket)
                         await lobby.send_gamestate(path,'all','path-state')
                     else:
                         #[TODO] handle failed build
@@ -268,7 +273,7 @@ async def wsEndpoint(websocket: WebSocket):
                     node = lobby.game.findNodeByID(nodeID)
                     success = lobby.game.upgradeSettlement(nodeID)
                     if success:
-                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn_index], 'me', 'player-state', me=websocket)
+                        await lobby.send_gamestate(game.players, 'me', 'player-state', me=websocket)
                         await lobby.send_gamestate(node, 'all', 'node-state')
                     else:
                         #lobby.broadcast('error', 'Upgrade settlement failed.')

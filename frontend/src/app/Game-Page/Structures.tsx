@@ -119,9 +119,21 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
 
     setPickSettlement(false)
 
-    if (setupPhase) {
-      setPickRoad(true)
-    }
+    // if (setupPhase) {
+    //   setPickRoad(true)
+    // }
+  }
+
+    const handleChooseRoad = (chosenID) => {
+    sendJsonMessage({
+      actionCategory:'game',
+      actionType:'build-road',
+      data: {
+        'pathID':chosenID
+      }
+    })
+
+    setPickRoad(false)
   }
   
 
