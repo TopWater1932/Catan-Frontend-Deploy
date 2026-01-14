@@ -22,7 +22,6 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     
     const navigate = useNavigate();
     useEffect(() => {
-        console.log(`nav useEffect activated: ${lobbyInitialised}`)
         
         if (lobbyInitialised) {
             navigate('/game');
@@ -76,7 +75,32 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
         }
     }
 
-    const colorOptions = ['red','blue','yellow','white']
+    const handleAddBot = () => {
+        const numberOfBots = playerList.filter(player => player.isBot === true).length
+
+        if (numberOfBots <= 4) {
+
+            const addBotBody = {
+                'actionCategory':'admin',
+                'actionType':'add-bot'
+            }
+            sendJsonMessage(addBotBody)
+        }
+    }
+
+    const handleRemoveBot = () => {
+        const numberOfBots = playerList.filter(player => player.isBot === true).length
+
+        if (numberOfBots > 0) {
+            const addRemoveBody = {
+                'actionCategory':'admin',
+                'actionType':'remove-bot'
+            }
+            sendJsonMessage(addRemoveBody)
+        }
+    }
+
+    const colorOptions = ['red','blue','orange','white']
 
     return (
         <div className='game-background'>
@@ -85,13 +109,15 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
 
                 {/* SETUP OPTIONS */}
                 <div className="panel-background setup-panel">
-                <h2>Setup Options</h2>
-
+                <h2>Bot Options (In Progress)</h2>
                 <div className="setup-row">
-                    <span>Number of Players:</span>
+                    <label htmlFor="add-bot">Add Bot:</label>
+                    <button className="button" type="button" onClick={handleAddBot} disabled={true}>{'Add'}</button>
                 </div>
-                <div className="setup-row">----</div>
-                <div className="setup-row">----</div>
+                <div className="setup-row">
+                    <label htmlFor="add-bot">Add Bot:</label>
+                    <button className="button" type="button" onClick={handleRemoveBot} disabled={true}>{'Remove'}</button>
+                </div>
                 </div>
 
                 {/* CREATE LOBBY */}

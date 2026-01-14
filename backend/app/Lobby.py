@@ -1,6 +1,9 @@
 import asyncio
 import jsonpickle as jp
 from Player import Player
+from Bot import Bot
+from utils.Color import Color
+from Bot import Bot
 from uuid import uuid4
 
 class Lobby:
@@ -8,19 +11,30 @@ class Lobby:
         self.name=name
         self.maxPlayers=4
         self.connections = {}
+        self.bots = []
         self.game = False
         self.lobbytimer_running = False
 
+    # Provides player list to Game during initialisation
     def getPlayerList(self):
         playerList = []
         for conn in self.connections.values():
             playerList.append(conn[1])
-        return playerList
 
+        for bot in self.bots:
+            playerList.append(bot)
+
+        return playerList
+    
+    # Provides player list to Frontend
     def getPlayerNameList(self):
         playerNameList = []
         for conn in self.connections.values():
-            playerNameList.append({'name':conn[1].name,'color':conn[1].color})
+            playerNameList.append({'name':conn[1].name,'color':conn[1].color,'isBot':conn[1].isBot})
+
+        for bot in self.bots:
+            playerNameList.append({'name':bot.name,'color':bot.color,'isBot':bot.isBot})
+
         return playerNameList
     
     async def sendInfoOnConnect(self,ws,message,playerObj):
@@ -76,7 +90,62 @@ class Lobby:
         
         return playerID
 
-    
+    async def addBot(self,ws):
+        if (len(self.bots) + len(self.connections)) < 4 and len(self.connections) >=1:
+            if self.game != False:
+                message = f'The game at {self.name} has already begun. Adding bot mid-way is not permitted.'
+                await ws.send_json({
+                    'actionCategory':'admin',
+                    'actionType':'message',
+                    'msg':message
+                })
+                return False
+
+            botID = str(uuid4())
+            botNum = len(self.bots) + 1
+            botName = f'Bot {botNum}'
+
+            playerNameList = self.getPlayerNameList()
+            chosenColors = [player['color'] for player in playerNameList]
+            remainingColors = [c.value for c in Color if c.value not in chosenColors]
+            botColor = remainingColors[1]
+
+            self.bots.append(Bot(botID,botName,botColor))
+
+            return True
+
+        else:
+            message = f'This lobby can accomodate up to 4 players total. To add a bot you need at least 1 human player connected.'
+            await ws.send_json({
+                'actionCategory':'admin',
+                'actionType':'message',
+                'msg':message
+            })
+            return False
+        
+    async def removeBot(self,ws):
+        if len(self.bots) > 0:
+            if self.game != False:
+                message = f'The game at {self.name} has already begun. Removing bot mid-way is not permitted.'
+                await ws.send_json({
+                    'actionCategory':'admin',
+                    'actionType':'message',
+                    'msg':message
+                })
+                return False
+            
+            self.bots.pop()
+            return True
+        else:
+            message = f'There are no bots to remove in this lobby.'
+            await ws.send_json({
+                'actionCategory':'admin',
+                'actionType':'message',
+                'msg':message
+            })
+            return False
+
+
     # Handle reconnecting users. Use only after game initialised.
     async def reconnectToLobby(self,ws,playerID,rejoiningPlayer):
         rejoiningPlayer.connected = True

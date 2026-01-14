@@ -131,9 +131,15 @@ async def wsEndpoint(websocket: WebSocket):
 
                 
                 elif data['actionType'] == 'pong':
+
                     # Keep alive pong response from client
                     print(f'Received pong from {playerID}')
                     await websocket_health_manager.reset_timeout()
+
+                elif data['actionType'] == 'add-bot':
+
+                    # Add a bot to the lobby
+                    
 
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':

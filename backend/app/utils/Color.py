@@ -1,8 +1,10 @@
 from enum import Enum
 
+# Lowercase to enable direct styling of UI elements with the backend enums. Up to 4 player only.
 class Color(Enum):
-    RED = "Red"
-    BLUE = "Blue"
-    WHITE = "White"
-    ORANGE = "Orange"
-    GREEN = "Green"
+    RED = "red"
+    BLUE = "blue"
+    WHITE = "white"
+    ORANGE = "orange"
+    # GREEN = "green"
+    # BROWN = "brown"

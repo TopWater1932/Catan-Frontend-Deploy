@@ -139,7 +139,6 @@ function App() {
           setPlayers(tempPlayers)
 
           setLobbyInitialised(true)
-          console.log(`Lobby initialised: ${lobbyInitialised}`)
 
         } else if (jsObj.actionType === 'player-state') {
 

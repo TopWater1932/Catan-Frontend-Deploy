@@ -38,6 +38,7 @@ class Player:
         self.built_structures = []
         self.longest_road_length = 0
         self.has_longest_road = False
+        self.isBot = False
 
 
     def __getattribute__(self, name):
