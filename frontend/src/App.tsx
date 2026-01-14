@@ -14,7 +14,8 @@ import {
   PlayerState, PlayerStateData,
   TileData,
   NodeData, NodeDataArray,
-  PathData
+  PathData,
+  LegalMoveLocations
 } from './ts-contracts/interfaces'
 
 function App() {
@@ -37,10 +38,15 @@ function App() {
   const [moveRobber,setMoveRobber] = useState(false);
   const [stealCard,setStealCard] = useState(false);
   const [stealList,setStealList] = useState<string[]>([]);
+  const [pickSettlement,setPickSettlement] = useState(true)
+  const [pickRoad,setPickRoad] = useState(false)
 
   const [tiles,setTiles] = useState<TileData[]>([]);
   const [paths,setPaths] = useState<PathData[]>([]);
   const [nodes,setNodes] = useState<NodeData[]>([]);
+
+  const [legalNodes, setLegalNodes] = useState({})
+  const [legalPaths, setLegalPaths] = useState({})
 
   const [socketURL,setSocketURL] = useState<SocketURL | null>(null)
   const [serverMsgs, setServerMsgs] = useState<string[]>(['Ready to create lobby'])
@@ -98,10 +104,13 @@ function App() {
           let tempPaths: PathData[] = []
           let tempNodes: NodeData[] = []
           let tempPlayers: PlayerState = {}
-
+          let tempLegalSettle: LegalMoveLocations = {}
+          let tempLegalRoad: LegalMoveLocations = {}
+          
           const playerArray = jsObj.data.players
           const currTurnIndex = jsObj.data.current_turn
-          setTurn(playerArray[currTurnIndex]['py/state'].id)
+          const firstTurnID = playerArray[currTurnIndex]['py/state'].id
+          setTurn(firstTurnID)
           
           jsObj.data.board.tiles.forEach((tile: TileData) => {
             tempTiles.push(tile["py/state"])
@@ -111,17 +120,6 @@ function App() {
             tempPaths.push(path["py/state"])
           });
           
-          jsObj.data.board.nodes.forEach((row: NodeDataArray) => {
-            for (let item of row) {
-              if (!item) {
-                continue
-              } else {
-                tempNodes.push(item)
-              }
-            }
-          });
-
-
           jsObj.data.players.forEach((player: PlayerStateData) => {
             const playerData = player['py/state']
             tempPlayers[playerData.id] = new Player(
@@ -136,19 +134,29 @@ function App() {
               playerData.ports,
               playerData.isBot
             )
+
+            tempLegalSettle[playerData.id] = []
+            tempLegalRoad[playerData.id] = []
           });
-
-
-          //   if (player.id === playerID) { 
-          //     setPlayerID(player.id)
-          //     debugger;
-          //   }
-          // });
+          
+          
+          jsObj.data.board.nodes.forEach((row: NodeDataArray) => {
+            for (let item of row) {
+              if (!item) {
+                continue
+              } else {
+                tempNodes.push(item)
+                tempLegalSettle[firstTurnID].push(item['py/state'].id)
+              }
+            }
+          });
 
           setPaths(tempPaths)
           setNodes(tempNodes)
           setTiles(tempTiles)
           setPlayers(tempPlayers)
+          setLegalNodes(tempLegalSettle)
+          setLegalPaths(tempLegalRoad)
 
           setLobbyInitialised(true)
 
@@ -242,14 +250,17 @@ function App() {
         playerID, playerName,setPlayerName,
         myTurn, setMyTurn,
         displayDice,setDisplayDice,
-        setupPhase,
+        setupPhase, setSetupPhase,
         moveRobber, setMoveRobber,
         stealCard, setStealCard, stealList,
+        pickSettlement,setPickSettlement,pickRoad,setPickRoad,
         players, setPlayers,
         turn, setTurn,
         tiles, setTiles,
         paths, setPaths,
         nodes, setNodes,
+        legalNodes, setLegalNodes,
+        legalPaths, setLegalPaths,
         missions
       }}
     >

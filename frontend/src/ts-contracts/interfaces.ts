@@ -200,6 +200,10 @@ export interface Missions {
     setLargestArmy: SetterFunction<string>;
 }
 
+export interface LegalMoveLocations {
+    [playerID: string] : string[]
+}
+
 export interface WebsocketContextShape {
   // WebSocket
   sendJsonMessage: (data: SendJSONFormatObj) => void;
@@ -224,11 +228,16 @@ export interface WebsocketContextShape {
   myTurn: boolean;
   setMyTurn: SetterFunction<boolean>;
   setupPhase: boolean;
+  setSetupPhase:  SetterFunction<boolean>;
   moveRobber: boolean;
   setMoveRobber: SetterFunction<boolean>;
   stealCard: boolean;
   setStealCard: SetterFunction<boolean>;
   stealList: string[];
+  pickSettlement: boolean;
+  setPickSettlement: SetterFunction<boolean>;
+  pickRoad: boolean;
+  setPickRoad: SetterFunction<boolean>;
 
   // Game state
   players: PlayerState;
@@ -241,6 +250,10 @@ export interface WebsocketContextShape {
   setPaths: SetterFunction<PathData[]>;
   nodes: NodeData[];
   setNodes: SetterFunction<NodeData[]>;
+  legalNodes: LegalMoveLocations;
+  setLegalNodes: SetterFunction<LegalMoveLocations>
+  legalPaths: LegalMoveLocations;
+  setLegalPaths: SetterFunction<LegalMoveLocations>
 
   // Missions
   missions: Missions

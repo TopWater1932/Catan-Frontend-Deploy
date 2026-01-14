@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useWebSocketContext } from '../../context/WebsocketContext'
-import {Layer,RegularPolygon,Line,Rect,Text} from 'react-konva'
+import {Layer,RegularPolygon,Line,Circle,Rect,Text} from 'react-konva'
 // import ValidPlacementLayers from './ValidPlacements.tsx'
 import initialiseNodeGrid from '../../utils/func-initialiseNodeGrid'
 // import assignVertices from '../../utils/func-assignVertices'
@@ -33,9 +33,15 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
   // Backend data
   const {
     sendJsonMessage,
+    playerID,
     nodes,setNodes,
     paths,setPaths,
-    players
+    players,turn,
+    setupPhase,
+    legalNodes,setLegalNodes,
+    legalPaths, setLegalPaths,
+    pickSettlement,setPickSettlement,
+    pickRoad,setPickRoad
   } = useWebSocketContext()
  
 
@@ -101,6 +107,22 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
   // },[]);
 
   // const [validPlacementsArray,setValidPlacementsArray] = useState()
+
+  const handleChooseSettle = (chosenID) => {
+    sendJsonMessage({
+      actionCategory:'game',
+      actionType:'build-settlement',
+      data: {
+        'nodeID':chosenID
+      }
+    })
+
+    setPickSettlement(false)
+
+    if (setupPhase) {
+      setPickRoad(true)
+    }
+  }
   
 
 
@@ -141,7 +163,7 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
       <Layer id="structures" name="Structures">
         {pathMasterArray.filter(path => path.owner !== null).map(path => 
           <Line
-          key={'Label'+path.idPath}
+          key={'Path'+path.idPath}
           points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
           stroke={players[path.owner!].color}
           strokeWidth={8}
@@ -151,7 +173,7 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
 
         {nodeMasterArray.filter(node => node.occupiedBy !== null).map(node => 
           <RegularPolygon
-            key={'Label'+node.idNode}
+            key={'Node'+node.idNode}
             x={node.xCoord}
             y={node.yCoord}
             sides={5}
@@ -164,20 +186,28 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
       </Layer>
 
       <Layer id="validPlacement" name="ValidPlacement">
-        {/* {validPlacementsArray.map(vert => 
-          <Text
-            key={'Nalid'+coord.id}
-            x={coord.x}
-            y={coord.y}
-            align="center"
-            verticalAlign="middle"
-            text={coord.id}
-            fontFamily="Times New Roman"
-            fontSize={10}
-            fontStyle="bold"
-            fill={'black'}
+        {pickRoad && pathMasterArray.filter(path => legalPaths[playerID].includes(path.idPath)).map(path => 
+          <Line
+          key={'LegalPath'+path.idPath}
+          points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
+          stroke={players[path.owner!].color}
+          strokeWidth={6}
+          lineCap='round'
+          dash={[tileRadius/8,tileRadius/10]}
           />
-        )} */}
+        )}
+
+        {pickSettlement && nodeMasterArray.filter(node => legalNodes[playerID].includes(node.idNode)).map(node => 
+          <Circle
+            key={'LegalNode'+node.idNode}
+            x={node.xCoord}
+            y={node.yCoord}
+            radius={tileRadius/4.5}
+            stroke={'red'}
+            strokeWidth={3}
+            onClick={() => handleChooseSettle(node.idNode)}
+          />
+        )}
       </Layer>
 
     </>
