@@ -66,7 +66,7 @@ class Lobby:
                     'msg':message
                 })
             await ws.close(code=1000)
-            return None
+            return
         
         newPlayer = Player(playerID,data['name'],data['color'])
         self.connections[playerID] = [ws,newPlayer]
@@ -84,6 +84,7 @@ class Lobby:
 
         message = "You were successfully reconnected to lobby."
         await self.sendInfoOnConnect(ws,message,rejoiningPlayer)
+        return True
 
     # Handle users disconnecting
     async def disconnected(self,lobbies,playerID,playerName):

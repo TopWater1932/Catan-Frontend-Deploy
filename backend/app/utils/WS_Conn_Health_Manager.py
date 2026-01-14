@@ -68,5 +68,3 @@ class WS_Conn_Health_Manager:
                 await self.timeout_task
             except asyncio.CancelledError:
                 pass
-        
-        await self.websocket.close(code=1001)

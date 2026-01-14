@@ -196,10 +196,14 @@ function App() {
 
       onMessage: onMessageCallback,
 
-      onClose: () => {
+      onClose: (event) => {
         setServerMsgs(prevMsgs => [...prevMsgs,'You have been disconnected.'])
         setPlayerList([])
         setCurrentLobby('[Join a Lobby]')
+        if (event.code === 1000) {
+          setSocketURL(null)
+          setShouldReconnect(false)
+        }
       },
 
       shouldReconnect: (closeEvent: CloseEvent) => {
