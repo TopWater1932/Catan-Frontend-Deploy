@@ -13,7 +13,7 @@ import { TradeContext } from '../../context/TradeContext'
 
 function ActionButtons() {
 
-  const {displayDice} = useWebSocketContext()
+  const {myTurn} = useWebSocketContext()
   
   const [dcModalIsVisible,setDCModalIsVisible] = useState(false)
   const [tradeModalIsVisible,setTradeModalIsVisible] = useState(false)
@@ -94,10 +94,10 @@ function ActionButtons() {
       />
 
       <div id="action-buttons" className="buttons">
-        <button className={displayDice ? "button disabled" : "button"} type="button" onClick={() => setDCModalIsVisible(true)} disabled={displayDice}>Play Dev Card</button>
-        <button className={displayDice ? "button disabled" : "button"} type="button" onClick={() => setTradeModalIsVisible(true)} disabled={displayDice}>Trade</button>
-        <button className={displayDice ? "button disabled" : "button"} type="button" onClick={() => setBuyModalIsVisible(true)} disabled={displayDice}>Buy</button>
-        <button className={displayDice ? "button disabled" : "button"} type="button" onClick={() => setEndModalIsVisible(true)} disabled={displayDice}>End Turn</button>
+        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setDCModalIsVisible(true)} disabled={!myTurn}>Play Dev Card</button>
+        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setTradeModalIsVisible(true)} disabled={!myTurn}>Trade</button>
+        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setBuyModalIsVisible(true)} disabled={!myTurn}>Buy</button>
+        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setEndModalIsVisible(true)} disabled={!myTurn}>End Turn</button>
       </div>
     </>
   )

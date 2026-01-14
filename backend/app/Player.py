@@ -46,6 +46,9 @@ class Player:
 
     def __setattr__(self, name, value):
         super().__setattr__(name, value)
+
+    def __getstate__(self):
+        return self.__dict__.copy()
     
     def giveResource(self, resource_type, amount):
         if resource_type in self.resource_cards:

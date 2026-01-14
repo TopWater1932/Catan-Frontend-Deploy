@@ -24,7 +24,7 @@ interface GameArgs {
 
 function Game({shouldReconnect, connected}:GameArgs) {
   
-  const { turn, players, missions, displayDice, setDisplayDice, playerID, lobbyInitialised } = useWebSocketContext();
+  const { turn, players, missions, myTurn, setMyTurn, playerID, lobbyInitialised } = useWebSocketContext();
 
   const pageLocations: string[] = ['west','north','east'];
   const positions: GamePagePositions = {};
@@ -35,7 +35,7 @@ function Game({shouldReconnect, connected}:GameArgs) {
 
   useEffect(() => {
     if (playerID === turn) {
-      setDisplayDice(true);
+      setMyTurn(true);
     }
   }, [playerID, turn]);
 
@@ -89,7 +89,7 @@ function Game({shouldReconnect, connected}:GameArgs) {
             
             <Board />
 
-            {displayDice && <Dice />}
+            {myTurn && <Dice />}
             
             <PlayerInfo />
 

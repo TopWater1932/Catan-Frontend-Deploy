@@ -11,11 +11,13 @@ interface EndTurnModalContentArgs {
 
 function EndTurnModalContent({setEndModalIsVisible}: EndTurnModalContentArgs) {
     
-    const { turn, setTurn } = useWebSocketContext();
+    const { sendJsonMessage } = useWebSocketContext();
 
     const handleClick = () => {
-        
-        // setTurn();
+        sendJsonMessage({
+            actionCategory: 'game',
+            actionType: 'end-turn'
+        })
         setEndModalIsVisible(false);
     }
     
