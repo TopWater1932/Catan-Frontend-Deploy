@@ -24,7 +24,7 @@ interface GameArgs {
 
 function Game({shouldReconnect, connected}:GameArgs) {
   
-  const { turn, players, missions, myTurn, setMyTurn, playerID, lobbyInitialised } = useWebSocketContext();
+  const { turn, players, missions, displayDice, playerID, lobbyInitialised } = useWebSocketContext();
 
   const pageLocations: string[] = ['west','north','east'];
   const positions: GamePagePositions = {};
@@ -33,11 +33,11 @@ function Game({shouldReconnect, connected}:GameArgs) {
     id === playerID ? positions['south'] = id : positions[pageLocations[i]] = id;
   });
 
-  useEffect(() => {
-    if (playerID === turn) {
-      setMyTurn(true);
-    }
-  }, [playerID, turn]);
+  // useEffect(() => {
+  //   if (playerID === turn) {
+  //     setMyTurn(true);
+  //   }
+  // }, [playerID, turn]);
 
 
   if (!lobbyInitialised) {
@@ -89,7 +89,7 @@ function Game({shouldReconnect, connected}:GameArgs) {
             
             <Board />
 
-            {myTurn && <Dice />}
+            {displayDice && <Dice />}
             
             <PlayerInfo />
 

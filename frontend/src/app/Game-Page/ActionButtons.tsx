@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../../styles/buttons.css'
 import { useWebSocketContext } from '../../context/WebsocketContext'
 import Modal from './Modal'
@@ -13,7 +13,7 @@ import { TradeContext } from '../../context/TradeContext'
 
 function ActionButtons() {
 
-  const {myTurn} = useWebSocketContext()
+  const {myTurn, setupPhase, displayDice} = useWebSocketContext()
   
   const [dcModalIsVisible,setDCModalIsVisible] = useState(false)
   const [tradeModalIsVisible,setTradeModalIsVisible] = useState(false)
@@ -23,6 +23,25 @@ function ActionButtons() {
   // Trade Modals
   const [marTradeModalIsVisible,setMarTradeModalIsVisible] = useState(false)
   const [playerTradeModalIsVisible,setPlayerTradeModalIsVisible] = useState(false)
+
+  // Action buttons
+  const [disableActions,setDisableActions] = useState(false)
+  const [disableEndTurn,setDisableEndTurn] = useState(false)
+
+  useEffect(() => {
+    if (!myTurn || setupPhase || displayDice) {
+      setDisableActions(true)
+    } else {
+      setDisableActions(false)
+    }
+
+    if (!myTurn || displayDice) {
+      setDisableEndTurn(true)
+    } else {
+      setDisableEndTurn(false)
+    }
+
+  },[myTurn, setupPhase, displayDice])
 
   
 
@@ -94,10 +113,10 @@ function ActionButtons() {
       />
 
       <div id="action-buttons" className="buttons">
-        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setDCModalIsVisible(true)} disabled={!myTurn}>Play Dev Card</button>
-        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setTradeModalIsVisible(true)} disabled={!myTurn}>Trade</button>
-        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setBuyModalIsVisible(true)} disabled={!myTurn}>Buy</button>
-        <button className={myTurn ? "button disabled" : "button"} type="button" onClick={() => setEndModalIsVisible(true)} disabled={!myTurn}>End Turn</button>
+        <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setDCModalIsVisible(true)} disabled={disableActions}>Play Dev Card</button>
+        <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setTradeModalIsVisible(true)} disabled={disableActions}>Trade</button>
+        <button className={disableActions ? "button disabled" : "button"} type="button" onClick={() => setBuyModalIsVisible(true)} disabled={disableActions}>Buy</button>
+        <button className={disableEndTurn ? "button disabled" : "button"} type="button" onClick={() => setEndModalIsVisible(true)} disabled={disableEndTurn}>End Turn</button>
       </div>
     </>
   )

@@ -32,6 +32,8 @@ function App() {
   const [playerList, setPlayerList] = useState<PlayerNameColor[]>([])
   
   const [myTurn,setMyTurn] = useState(false);
+  const [displayDice,setDisplayDice] = useState(false);
+  const [setupPhase,setSetupPhase] = useState(true);
   const [moveRobber,setMoveRobber] = useState(false);
   const [stealCard,setStealCard] = useState(false);
   const [stealList,setStealList] = useState<string[]>([]);
@@ -235,6 +237,8 @@ function App() {
         lobbyInitialised, setLobbyInitialised, currentLobby, setCurrentLobby, setPlayerList,
         playerID, playerName,setPlayerName,
         myTurn, setMyTurn,
+        displayDice,setDisplayDice,
+        setupPhase,
         moveRobber, setMoveRobber,
         stealCard, setStealCard, stealList,
         players, setPlayers,
