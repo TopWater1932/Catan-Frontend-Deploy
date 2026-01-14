@@ -19,6 +19,9 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
         sendJsonMessage,
         lobbyInitialised,currentLobby, setShouldReconnect,
     } = useWebSocketContext()
+
+    const [canAddBot,setCanAddBot] = useState(false)
+    const [canRemBot,setCanRemBot] = useState(false)
     
     const navigate = useNavigate();
     useEffect(() => {
@@ -27,6 +30,26 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
             navigate('/game');
         }
     }, [lobbyInitialised, navigate]);
+
+    useEffect(() => {
+        const numberOfHumans = playerList.filter(player => player.isBot === false).length
+        const numberOfBots = playerList.length - numberOfHumans
+
+        if (playerList.length < 4 && numberOfHumans >=1) {
+            setCanAddBot(true)
+        } else {
+            setCanAddBot(false)
+        }
+
+        if (numberOfBots > 0) {
+            setCanRemBot(true)
+        } else {
+            setCanRemBot(false)
+        }
+
+
+
+    },[playerList])
             
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
@@ -48,24 +71,19 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     const handleJoinLobby = (e: ReactMouseEvent) => {
         e.preventDefault()
         setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
-
-        // Add logic to handle a lobby that's already initialised
     }
     
     const handleStart = () => {
-        // if (playerList.length < 3) {
-            //     setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
-            //     return
-            // }
-            
+        if (playerList.length < 3) {
+                setServerMsgs(prevMsgs => [...prevMsgs,'You need at least 3 players to play.'])
+                return
+            }
+
             const initialiseBody = {
                 'actionCategory':'game',
                 'actionType':'initialise'
             }
-            
             sendJsonMessage(initialiseBody)
-            // navigate('/game');
-            // console.log('nav from button')
     }
 
     const handleLeaveLobby = () => {
@@ -76,10 +94,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     }
 
     const handleAddBot = () => {
-        const numberOfBots = playerList.filter(player => player.isBot === true).length
-
-        if (numberOfBots <= 4) {
-
+        if (canAddBot) {
             const addBotBody = {
                 'actionCategory':'admin',
                 'actionType':'add-bot'
@@ -89,9 +104,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     }
 
     const handleRemoveBot = () => {
-        const numberOfBots = playerList.filter(player => player.isBot === true).length
-
-        if (numberOfBots > 0) {
+        if (canRemBot) {
             const addRemoveBody = {
                 'actionCategory':'admin',
                 'actionType':'remove-bot'
@@ -111,12 +124,12 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <div className="panel-background setup-panel">
                 <h2>Bot Options (In Progress)</h2>
                 <div className="setup-row">
-                    <label htmlFor="add-bot">Add Bot:</label>
-                    <button className="button" type="button" onClick={handleAddBot} disabled={true}>{'Add'}</button>
+                    <label htmlFor="add-bot">Add Bot: </label>
+                    <button className="button" type="button" onClick={handleAddBot} disabled={!canAddBot}>{'Add'}</button>
                 </div>
                 <div className="setup-row">
-                    <label htmlFor="add-bot">Add Bot:</label>
-                    <button className="button" type="button" onClick={handleRemoveBot} disabled={true}>{'Remove'}</button>
+                    <label htmlFor="add-bot">Remove Bot: </label>
+                    <button className="button" type="button" onClick={handleRemoveBot} disabled={!canRemBot}>{'Remove'}</button>
                 </div>
                 </div>
 
@@ -175,7 +188,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
                 <ServerMsgsWindow messages={serverMsgs}/>
 
                 <Link className="button" to="/">Back</Link>
-                <button className={playerList.length >= 1 ? "button" : "button link-disabled"} id='play-now' type="button" onClick={handleStart} disabled={playerList.length >= 1 ? false : true}>START GAME</button>
+                <button className={playerList.length >= 3 ? "button" : "button link-disabled"} id='play-now' type="button" onClick={handleStart} disabled={playerList.length >= 3 ? false : true}>START GAME</button>
             </div>
         </div>
     )

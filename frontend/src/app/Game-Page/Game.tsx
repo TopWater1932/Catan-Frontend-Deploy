@@ -26,6 +26,8 @@ function Game() {
     id === playerID ? positions['south'] = id : positions[pageLocations[i]] = id;
   });
 
+  
+
   useEffect(() => {
     if (playerID === turn) {
       setDisplayDice(true);

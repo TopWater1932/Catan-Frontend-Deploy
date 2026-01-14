@@ -37,6 +37,13 @@ class Lobby:
 
         return playerNameList
     
+    def getRemainingColors(self):
+        playerNameList = self.getPlayerNameList()
+        chosenColors = [player['color'] for player in playerNameList]
+
+        return [c.value for c in Color if c.value not in chosenColors]
+
+    
     async def sendInfoOnConnect(self,ws,message,playerObj):
         playerNameList = self.getPlayerNameList()
         gameIsInit = False if self.game == False else True
@@ -61,13 +68,14 @@ class Lobby:
 
         playerNameList = self.getPlayerNameList()
 
-        if len(self.connections) >= self.maxPlayers:
+        if (len(self.connections) + len(self.bots)) >= self.maxPlayers:
             inputError = True
             message = "Sorry, this lobby already has 4 players. You have not been added."
 
         elif any(data['color'] in player['color'] for player in playerNameList):
             inputError = True
-            message = f"Color '{data['color'].capitalize()}' has already been taken."
+            remainingColors = [color.capitalize() for color in self.getRemainingColors()]
+            message = f"Color '{data['color'].capitalize()}' has already been taken. {', '.join(remainingColors)} remaining."
 
         elif any(data['name'] in player['name'] for player in playerNameList):
             inputError = True
@@ -99,20 +107,18 @@ class Lobby:
                     'actionType':'message',
                     'msg':message
                 })
-                return False
+                return
 
             botID = str(uuid4())
             botNum = len(self.bots) + 1
             botName = f'Bot {botNum}'
 
-            playerNameList = self.getPlayerNameList()
-            chosenColors = [player['color'] for player in playerNameList]
-            remainingColors = [c.value for c in Color if c.value not in chosenColors]
-            botColor = remainingColors[1]
+            remainingColors = self.getRemainingColors()
+            botColor = remainingColors[0]
 
             self.bots.append(Bot(botID,botName,botColor))
 
-            return True
+            return botName
 
         else:
             message = f'This lobby can accomodate up to 4 players total. To add a bot you need at least 1 human player connected.'
@@ -121,7 +127,7 @@ class Lobby:
                 'actionType':'message',
                 'msg':message
             })
-            return False
+            return
         
     async def removeBot(self,ws):
         if len(self.bots) > 0:
@@ -132,7 +138,7 @@ class Lobby:
                     'actionType':'message',
                     'msg':message
                 })
-                return False
+                return
             
             self.bots.pop()
             return True
@@ -143,7 +149,7 @@ class Lobby:
                 'actionType':'message',
                 'msg':message
             })
-            return False
+            return
 
 
     # Handle reconnecting users. Use only after game initialised.

@@ -114,18 +114,26 @@ function App() {
 
 
           jsObj.data.players.forEach((player: PlayerStateData) => {
-            tempPlayers[player.id] = new Player(
-              player.id,
-              player.name,
-              player.color,
-              player.id === turn? true:false,
-              player.resource_cards,
-              player.development_cards,
-              player.buildings,
-              player.victory_points,
-              player.ports
+            let playerData
+            if ('py/state' in player) {
+              playerData = player['py/state']
+            } else {
+              playerData = player
+            }
+            tempPlayers[playerData.id] = new Player(
+              playerData.id,
+              playerData.name,
+              playerData.color,
+              playerData.id === turn? true:false,
+              playerData.resource_cards,
+              playerData.development_cards,
+              playerData.buildings,
+              playerData.victory_points,
+              playerData.ports,
+              playerData.isBot
             )
           });
+
 
           //   if (player.id === playerID) { 
           //     setPlayerID(player.id)
@@ -153,7 +161,8 @@ function App() {
               player.development_cards,
               player.buildings,
               player.victory_points,
-              player.ports
+              player.ports,
+              player.isBot
             );
           });
           setPlayers(updatedPlayers);
