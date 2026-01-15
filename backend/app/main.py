@@ -15,6 +15,7 @@ app = FastAPI()
 
 origins = [
     "http://localhost:5173",  # Allow Vite development server
+    "https://catan-backend-deploy.onrender.com",  # Allow Render prod server
 ]
 
 app.add_middleware(
