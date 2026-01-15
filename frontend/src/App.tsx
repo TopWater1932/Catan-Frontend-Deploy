@@ -43,6 +43,7 @@ function App() {
   const [socketURL,setSocketURL] = useState<SocketURL | null>(null)
   const [serverMsgs, setServerMsgs] = useState<string[]>(['Ready to create lobby'])
   const [lobbyInitialised,setLobbyInitialised] = useState(false)
+  const [connected, setConnected] = useState(false)
   const [shouldReconnect,setShouldReconnect] = useState(true)
   const [currentLobby,setCurrentLobby] = useState<string>('[Join a Lobby]')
   
@@ -114,18 +115,26 @@ function App() {
 
 
           jsObj.data.players.forEach((player: PlayerStateData) => {
-            tempPlayers[player.id] = new Player(
-              player.id,
-              player.name,
-              player.color,
-              player.id === turn? true:false,
-              player.resource_cards,
-              player.development_cards,
-              player.buildings,
-              player.victory_points,
-              player.ports
+            let playerData
+            if ('py/state' in player) {
+              playerData = player['py/state']
+            } else {
+              playerData = player
+            }
+            tempPlayers[playerData.id] = new Player(
+              playerData.id,
+              playerData.name,
+              playerData.color,
+              playerData.id === turn? true:false,
+              playerData.resource_cards,
+              playerData.development_cards,
+              playerData.buildings,
+              playerData.victory_points,
+              playerData.ports,
+              playerData.isBot
             )
           });
+
 
           //   if (player.id === playerID) { 
           //     setPlayerID(player.id)
@@ -139,22 +148,28 @@ function App() {
           setPlayers(tempPlayers)
 
           setLobbyInitialised(true)
-          console.log(`Lobby initialised: ${lobbyInitialised}`)
 
         } else if (jsObj.actionType === 'player-state') {
 
           const updatedPlayers: PlayerState = {};
           jsObj.data.forEach((player: PlayerStateData) => {
-            updatedPlayers[player.id] = new Player(
-              player.id,
-              player.name,
-              player.color,
-              player.id === turn? true:false,
-              player.resource_cards,
-              player.development_cards,
-              player.buildings,
-              player.victory_points,
-              player.ports
+            let playerData
+            if ('py/state' in player) {
+              playerData = player['py/state']
+            } else {
+              playerData = player
+            }
+            updatedPlayers[playerData.id] = new Player(
+              playerData.id,
+              playerData.name,
+              playerData.color,
+              playerData.id === turn? true:false,
+              playerData.resource_cards,
+              playerData.development_cards,
+              playerData.buildings,
+              playerData.victory_points,
+              playerData.ports,
+              playerData.isBot
             );
           });
           setPlayers(updatedPlayers);
@@ -190,6 +205,7 @@ function App() {
   const {sendJsonMessage, readyState} = useWebSocket(socketURL,
     {
       onOpen: () => {
+        setConnected(true)
         setShouldReconnect(true)
         sendJsonMessage(joinLobbyBody)
       },
@@ -197,6 +213,7 @@ function App() {
       onMessage: onMessageCallback,
 
       onClose: (event) => {
+        setConnected(false)
         setServerMsgs(prevMsgs => [...prevMsgs,'You have been disconnected.'])
         setPlayerList([])
         setCurrentLobby('[Join a Lobby]')
@@ -244,7 +261,10 @@ function App() {
             setPlayerColor={setPlayerColor}
             playerList={playerList}
           />} />
-          <Route path="/game" element={<Game />} />
+          <Route path="/game" element={<Game
+            shouldReconnect={shouldReconnect}
+            connected={connected}
+          />} />
 
         </Routes>
       </BrowserRouter>

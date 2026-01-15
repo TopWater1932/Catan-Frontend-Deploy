@@ -131,9 +131,35 @@ async def wsEndpoint(websocket: WebSocket):
 
                 
                 elif data['actionType'] == 'pong':
+
                     # Keep alive pong response from client
                     print(f'Received pong from {playerID}')
                     await websocket_health_manager.reset_timeout()
+
+                elif data['actionType'] == 'add-bot':
+
+                    # Add a bot to the lobby
+                    botName = await lobby.addBot(websocket)
+
+                    if botName is None:
+                        return
+                    
+                    playerNameList = lobby.getPlayerNameList()
+                    await lobby.broadcast('player-joined',f'{botName} has joined the game.',data=playerNameList)
+                
+                elif data['actionType'] == 'remove-bot':
+
+                    # Add a bot to the lobby
+                    success = await lobby.removeBot(websocket)
+
+                    if success is None:
+                        return
+                    
+                    playerNameList = lobby.getPlayerNameList()
+                    await lobby.broadcast('disconnected',f'{botName} has been removed',data=playerNameList)
+
+
+
 
             # Undertake actions to do with the game.
             elif data['actionCategory'] == 'game':
@@ -142,10 +168,11 @@ async def wsEndpoint(websocket: WebSocket):
                     # Create a new game instance and intialise it. Only do it once, otherwise provide the same info.
                     if lobby.game == False:
                         playerList = lobby.getPlayerList()
-                        game = Game(None, playerList)
+                        game = Game(playerList)
                         game.setup()
                         lobby.game = game
                         intialisedPackage = game
+                        print(game.players)
                         await lobby.send_gamestate(intialisedPackage,'all','initialised')
                     else:
                         gameState = lobby.game

@@ -27,6 +27,7 @@ export interface PlayerState {
 export interface PlayerNameColor {
     name: string;
     color: string;
+    isBot: boolean;
 }
 
 export interface TileData {

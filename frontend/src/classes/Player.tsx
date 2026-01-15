@@ -15,6 +15,7 @@ export default class Player {
     public structures: PlayerStrucMap;
     public vps: number;
     public ports: string[]; // List of port types/IDs owned
+    public isBot: boolean;
 
     constructor(
         id: string,
@@ -25,7 +26,8 @@ export default class Player {
         devCards: DevCardsMap,
         structures: PlayerStrucMap,
         vps: number = 0,
-        ports: string[] = []
+        ports: string[] = [],
+        isBot: boolean
     ) {
         this.id = id;
         this.name = name;
@@ -36,6 +38,7 @@ export default class Player {
         this.structures = structures;
         this.vps = vps;
         this.ports = ports;
+        this.isBot = isBot
     }
 
     /**
