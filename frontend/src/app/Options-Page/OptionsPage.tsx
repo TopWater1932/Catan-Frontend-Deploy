@@ -12,6 +12,9 @@ import {
     ReactChangeEvent
 } from '../../ts-contracts/interfaces'
 
+const domain = 'catan-backend-deploy.onrender.com'
+// const domain = '127.0.0.1:8000'
+
 function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPlayerColor,playerList}: OptionsPageProps) {
     
     const {
@@ -54,7 +57,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     const [createLobbyName,setCreateLobbyName] = useState('')
     const [joinLobbyName,setJoinLobbyName] = useState('')
 
-    const createLobbyURL = 'http://127.0.0.1:8000/lobbies'
+    const createLobbyURL = `https://${domain}/lobbies`
     const createLobbyBody = {'name':createLobbyName}
     const [createLobMsg,createLobLoading,createLobError,createLobbyFetch] = 
         useFetch({url:createLobbyURL,
@@ -70,7 +73,7 @@ function OptionsPage({setSocketURL,serverMsgs, setServerMsgs,playerColor, setPla
     
     const handleJoinLobby = (e: ReactMouseEvent) => {
         e.preventDefault()
-        setSocketURL(`ws://127.0.0.1:8000/ws/?lobby_name=${joinLobbyName}`)
+        setSocketURL(`wss://${domain}/ws/?lobby_name=${joinLobbyName}`)
     }
     
     const handleStart = () => {
