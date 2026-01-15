@@ -9,6 +9,7 @@ from BoardSetUp import BoardSetUp
 from Dice import Dice
 from utils.Buildings import Buildings
 import random
+import asyncio
 
 class Game:
     def __init__(self, players, current_turn=0, longest_road_holder=None, largest_army_holder=None):
@@ -414,7 +415,7 @@ class Game:
         print("Node with ID " + nodeID + " not found.")
         return None
     
-    def findPathbyID(self, pathID:str):
+    def findPathByID(self, pathID:str):
         for path in self.board.paths:
             if path.id == pathID:
                 return path
@@ -432,7 +433,7 @@ class Game:
 
         if self.total_turns == len(self.players) * 2:
             self.setup_phase = False
-            self.current_turn = 0
+            self.current_turn = 1
             self.total_turns = 0
             return False
         elif self.total_turns < len(self.players):
@@ -441,6 +442,37 @@ class Game:
             self.current_turn = len(self.players) * 2 - 1 - self.total_turns
         
         return True
+    
+    def setupPhaseLegalSettlements(self):
+        '''
+        Function to find all locations a player can legally place settlements during the setup phase.
+
+        RETURNS
+        - list: Contains IDs of all nodes that have isBuildable = True during the setup phase.
+        '''
+        if self.board.nodes:
+            nodes = self.board.nodes
+            setupPhaseLegalPlacements = []
+            for row in nodes:
+                for node in row:
+                    if node:
+                        if node.isBuildable == True:
+                            setupPhaseLegalPlacements.append(node.id)
+            return setupPhaseLegalPlacements
+        return False
+    
+    async def handle_bot_setup_turn(self):
+        print('bot having their turn')
+        await asyncio.sleep(1)
+        print('bot had their turn')
+        self.nextSetupTurn()
+
+        if self.setup_phase == False or not self.players[self.current_turn].isBot:
+            return False
+
+        return True
+
+
 
     def upgradeSettlement(self, nodeID:str, player:Player=None, building_type:str=Buildings.CITIES.value):
         '''

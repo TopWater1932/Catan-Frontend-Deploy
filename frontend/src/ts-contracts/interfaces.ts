@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import Konva from 'konva';
 import Tile from '../classes/Tile'
+import Player from  '../classes/Player'
 
 // All setter functions
 export type SetterFunction<T> = Dispatch<SetStateAction<T>>;
@@ -21,7 +22,7 @@ export interface PlayerStateData {
 }
 
 export interface PlayerState {
-    [key: string]: PlayerStateData;
+    [key: string]: Player;
 }
 
 export interface PlayerNameColor {
@@ -49,8 +50,14 @@ export interface NodeData {
 
 export type NodeDataArray = (NodeData | null)[]
 
+export interface RawPaths {
+    'py/object': 'Path.Path'
+    'py/state': PathData
+}
 export interface PathData {
-    [key: string]: any;             // TBC
+    id: string;
+    owner: string;
+    connectedNodes: string[];
 }
 
 export interface Port {
@@ -220,6 +227,7 @@ export interface WebsocketContextShape {
   // Player identity
   playerID: string;
   playerName: string;
+  playerColor: string;
   setPlayerName: SetterFunction<string>;
 
   // UI flags
@@ -238,6 +246,8 @@ export interface WebsocketContextShape {
   setPickSettlement: SetterFunction<boolean>;
   pickRoad: boolean;
   setPickRoad: SetterFunction<boolean>;
+  pickCity: boolean;
+  setPickCity: SetterFunction<boolean>;
 
   // Game state
   players: PlayerState;

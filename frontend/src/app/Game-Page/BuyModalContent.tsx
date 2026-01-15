@@ -26,10 +26,15 @@ interface BuyModalContentArgs {
 
 function BuyModalContent({setBuyModalIsVisible}: BuyModalContentArgs) {
     
-    const {players,setPlayers,turn} = useWebSocketContext();
+    const {
+        players,setPlayers,turn,
+        setPickRoad,setPickSettlement,setPickCity
+    } = useWebSocketContext();
     const {resIcons} = useGameContext();
     const {resources,structures,devCards,vps} = players[turn];
     const {woodIcon,brickIcon,wheatIcon,sheepIcon,oreIcon} = resIcons;
+
+    
 
 
     const resRequirementLabels = {
@@ -45,13 +50,21 @@ function BuyModalContent({setBuyModalIsVisible}: BuyModalContentArgs) {
                 return false;
             }
         }
-        return true; 
+        return true;
     }
 
-    const handleUseClick = (e, structure: BuildableItem) => {
-
-        console.log(`${structure} Send json to backend for buying resource`)
+    const handleUseClick = (structure: BuildableItem) => {
         setBuyModalIsVisible(false);
+
+        if (structure === 'Road') {
+            setPickRoad(true)
+        } else if (structure === 'Settlement') {
+            setPickSettlement(true)
+        } else if (structure === 'City') {
+            console.log('Send backend command to upgrade settlement')
+        } else {
+            console.log('Send backend command to buy devcard')
+        }
     };
 
     return (
@@ -66,7 +79,7 @@ function BuyModalContent({setBuyModalIsVisible}: BuyModalContentArgs) {
                         <button
                             className='button'
                             type="button"
-                            onClick={(e: ReactMouseEvent) => handleUseClick(e,structure)}
+                            onClick={() => handleUseClick(structure)}
                             disabled={!hasEnoughResources(structure)}
                         >
                             Use

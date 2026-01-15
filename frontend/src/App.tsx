@@ -14,7 +14,7 @@ import {
   PlayerState, PlayerStateData,
   TileData,
   NodeData, NodeDataArray,
-  PathData,
+  PathData, RawPaths,
   LegalMoveLocations
 } from './ts-contracts/interfaces'
 
@@ -40,6 +40,7 @@ function App() {
   const [stealList,setStealList] = useState<string[]>([]);
   const [pickSettlement,setPickSettlement] = useState(true)
   const [pickRoad,setPickRoad] = useState(false)
+  const [pickCity,setPickCity] = useState(false)
 
   const [tiles,setTiles] = useState<TileData[]>([]);
   const [paths,setPaths] = useState<PathData[]>([]);
@@ -116,7 +117,7 @@ function App() {
             tempTiles.push(tile["py/state"])
           });
           
-          jsObj.data.board.paths.forEach((path: PathData) => {
+          jsObj.data.board.paths.forEach((path: RawPaths) => {
             tempPaths.push(path["py/state"])
           });
           
@@ -203,9 +204,19 @@ function App() {
           const currTurnIndex = jsObj.data.current_turn
           setTurn(playerArray[currTurnIndex]['py/state'].id)
 
-        } else if (jsObj.actionType === 'buildable-paths') {
-          setLegalPaths({...legalPaths,[turn]:jsObj.data})
-          setPickRoad(true)
+          if (playerArray[currTurnIndex]['py/state'].id === playerID) {
+            setMyTurn(true)
+            if (setupPhase) {
+              sendJsonMessage({
+                actionCategory: 'game',
+                actionType: 'legal-nodes'
+              })
+            } else if (!setupPhase) {
+              setDisplayDice(true)
+            }
+          } else {
+            setMyTurn(false)
+          }
 
         } else if (jsObj.actionType === 'node-state') {
           const updatedNodes: NodeData[] = nodes.map((node) => {
@@ -219,13 +230,29 @@ function App() {
 
         } else if (jsObj.actionType === 'path-state') {
           const updatedPaths: PathData[] = paths.map((path) => {
-            if (path["py/state"].id === jsObj.data["py/state"].id) {
-              return jsObj.data
+            if (path.id === jsObj.data["py/state"].id) {
+              return jsObj.data["py/state"]
             } else {
               return {...path}
             }
           });
           setPaths(updatedPaths);
+
+        } else if (jsObj.actionType === 'legal-nodes') {
+          setLegalNodes({
+            ...legalNodes,
+            [playerID]:jsObj.data
+          })
+          setPickSettlement(true)
+
+        } else if (jsObj.actionType === 'legal-paths') {
+          setLegalPaths({...legalPaths,[turn]:jsObj.data})
+          setPickRoad(true)
+
+        } else if (jsObj.actionType === 'setup-complete') {
+          setSetupPhase(false)
+          // Update turn state. Begin requesting inputs for regular gameplay.
+          console.log('setup phase finished')
 
         }
     }
@@ -276,13 +303,13 @@ function App() {
       value={{
         sendJsonMessage, setShouldReconnect, setSocketURL,
         lobbyInitialised, setLobbyInitialised, currentLobby, setCurrentLobby, setPlayerList,
-        playerID, playerName,setPlayerName,
+        playerID, playerColor, playerName,setPlayerName,
         myTurn, setMyTurn,
         displayDice,setDisplayDice,
         setupPhase, setSetupPhase,
         moveRobber, setMoveRobber,
         stealCard, setStealCard, stealList,
-        pickSettlement,setPickSettlement,pickRoad,setPickRoad,
+        pickSettlement,setPickSettlement,pickRoad,setPickRoad,pickCity,setPickCity,
         players, setPlayers,
         turn, setTurn,
         tiles, setTiles,

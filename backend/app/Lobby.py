@@ -37,6 +37,12 @@ class Lobby:
 
         return playerNameList
     
+    def currentPlayerWS(self):
+        currentPlayerTurnID = self.game.players[self.game.current_turn].id
+        currentPlayerTurnWS = self.connections[currentPlayerTurnID][0]
+        return currentPlayerTurnWS
+
+    
     def getRemainingColors(self):
         playerNameList = self.getPlayerNameList()
         chosenColors = [player['color'] for player in playerNameList]

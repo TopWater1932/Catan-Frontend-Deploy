@@ -12,7 +12,8 @@ import Path from '../../classes/Path'
 
 import {
   StructuresArgs,
-  Coordinates
+  Coordinates,
+  PathData
 } from '../../ts-contracts/interfaces'
 
   // Port initialisation on backend data pending backend
@@ -33,7 +34,7 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
   // Backend data
   const {
     sendJsonMessage,
-    playerID,
+    playerID, playerColor,
     nodes,setNodes,
     paths,setPaths,
     players,turn,
@@ -41,13 +42,15 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
     legalNodes,setLegalNodes,
     legalPaths, setLegalPaths,
     pickSettlement,setPickSettlement,
-    pickRoad,setPickRoad
+    pickRoad,setPickRoad,
+    pickCity,setPickCity
   } = useWebSocketContext()
  
 
+  
 
-  // Node grid initialisation
   const nodeGrid = initialiseNodeGrid(tilesMasterArray,tileRadius);
+  // Node grid initialisation
   const nodeMasterArray: Node[] = nodes.map((nodeData,i) => {
     const node = new Node(
       nodeData['py/state'].id,
@@ -62,10 +65,9 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
 
     return node
   })
-  
 
   // Path grid initialisation
-  const pathMasterArray: Path[] = paths.map((pathData) => {
+  const pathMasterArray: Path[] = paths.map((pathData: PathData) => {
     const pathCoordinates: Coordinates[] = []
     for (let nodeID of pathData.connectedNodes) {
       const foundNode = nodeMasterArray.find(node => node.idNode === nodeID)
@@ -89,15 +91,15 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
     return path
   })
 
+  // Assign port coordinates
+  generatePortCoords(ports,nodeMasterArray,tilesMasterArray);
+
   // const vertexID = generateVertexIDs(vertexGrid) // Example array retrieved from backend
   // const verticesMasterArray = assignVertices(vertexGrid,ports,vertexID)
 
 
 
 
-
-  // Assign port coordinates
-  generatePortCoords(ports,nodeMasterArray,tilesMasterArray);
 
   // const [structuresGrid, setStructuresGrid] = useState(nodeMasterArray);
 
@@ -108,7 +110,7 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
 
   // const [validPlacementsArray,setValidPlacementsArray] = useState()
 
-  const handleChooseSettle = (chosenID) => {
+  const handleChooseSettle = (chosenID: string) => {
     sendJsonMessage({
       actionCategory:'game',
       actionType:'build-settlement',
@@ -116,15 +118,10 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
         'nodeID':chosenID
       }
     })
-
     setPickSettlement(false)
-
-    // if (setupPhase) {
-    //   setPickRoad(true)
-    // }
   }
 
-    const handleChooseRoad = (chosenID) => {
+    const handleChooseRoad = (chosenID: string) => {
     sendJsonMessage({
       actionCategory:'game',
       actionType:'build-road',
@@ -135,7 +132,18 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
 
     setPickRoad(false)
   }
-  
+
+  const handleChooseCity = (chosenID: string) => {
+    sendJsonMessage({
+      actionCategory:'game',
+      actionType:'build-road',
+      data: {
+        'pathID':chosenID
+      }
+    })
+
+    setPickRoad(false)
+  }
 
 
   return (
@@ -175,11 +183,11 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
       <Layer id="structures" name="Structures">
         {pathMasterArray.filter(path => path.owner !== null).map(path => 
           <Line
-          key={'Path'+path.idPath}
-          points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
-          stroke={players[path.owner!].color}
-          strokeWidth={8}
-          lineCap='round'
+            key={'Path'+path.idPath}
+            points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
+            stroke={players[path.owner].color}
+            strokeWidth={8}
+            lineCap='round'
           />
         )}
 
@@ -190,7 +198,7 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
             y={node.yCoord}
             sides={5}
             radius={tileRadius/5}
-            fill={players[node.occupiedBy!].color}
+            fill={players[node.occupiedBy].color}
             stroke={'black'}
             strokeWidth={1}
           />
@@ -200,12 +208,13 @@ function Structures({tilesMasterArray,tileRadius}: StructuresArgs) {
       <Layer id="validPlacement" name="ValidPlacement">
         {pickRoad && pathMasterArray.filter(path => legalPaths[playerID].includes(path.idPath)).map(path => 
           <Line
-          key={'LegalPath'+path.idPath}
-          points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
-          stroke={players[path.owner!].color}
-          strokeWidth={6}
-          lineCap='round'
-          dash={[tileRadius/8,tileRadius/10]}
+            key={'LegalPath'+path.idPath}
+            points={[path.p1xCoord,path.p1yCoord,path.p2xCoord,path.p2yCoord]}
+            stroke={playerColor}
+            strokeWidth={6}
+            lineCap='round'
+            dash={[tileRadius/8,tileRadius/8]}
+            onClick={() => handleChooseRoad(path.idPath)}
           />
         )}
 
