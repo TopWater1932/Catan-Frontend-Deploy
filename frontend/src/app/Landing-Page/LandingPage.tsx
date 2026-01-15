@@ -240,6 +240,7 @@ function LandingPage() {
             <h2>Planned Future Work</h2>
             <ul>
               <li>Improve bot performance using gameplay data-driven heuristic tuning.</li>
+              <li>Implement responsiveness for mobile devices</li>
               <li>Scale the game to support up to 6 players.</li>
               <li>Refactor and polish backend code using common design patterns.</li>
               <li>Implement ports, development cards, and the Largest Army feature.</li>
