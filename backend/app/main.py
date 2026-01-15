@@ -200,8 +200,8 @@ async def wsEndpoint(websocket: WebSocket):
 
                     if selected_tile is None:
                         print("Error: Selected tile not found.")
-
-                    associated_player_ids = selected_tile.findAssociatedPlayers()
+                    currentPlayerTurnID = lobby.game.players[lobby.game.current_turn].id
+                    associated_player_ids = selected_tile.findAssociatedPlayers(currentPlayerTurnID)
 
                     if len(associated_player_ids) > 0:
                         await lobby.send_gamestate(associated_player_ids,'me','steal-from',me=websocket)
@@ -213,9 +213,6 @@ async def wsEndpoint(websocket: WebSocket):
 
 
                     await lobby.send_gamestate(lobby.game.players,'all','player-state')
-
-
-                    # Implement logic to steal a card from the target player
 
                 elif data['actionType'] == 'end-turn':
                     lobby.game.nextTurn()

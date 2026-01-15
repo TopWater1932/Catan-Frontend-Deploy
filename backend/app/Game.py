@@ -342,6 +342,11 @@ class Game:
         if node.build(player, Buildings.SETTLEMENTS.value):
             player.built_structures.append(node)
             player.buildings[Buildings.SETTLEMENTS.value] -= 1
+            if not isfree:
+                player.resource_cards[TerrainType.FOREST.value] -= 1
+                player.resource_cards[TerrainType.HILLS.value] -= 1
+                player.resource_cards[TerrainType.FIELDS.value] -= 1
+                player.resource_cards[TerrainType.PASTURE.value] -= 1
             player.victory_points += 1
             return True
         else:
@@ -376,6 +381,9 @@ class Game:
         if path.build(player):
             player.roads.append(path)
             player.buildings['roads'] -= 1
+            if not isfree:
+                player.resource_cards[TerrainType.FOREST.value] -= 1
+                player.resource_cards[TerrainType.HILLS.value] -= 1
             return True
         print("Failed to build road on path " + path.id)
         return False

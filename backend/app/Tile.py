@@ -35,7 +35,7 @@ class Tile:
         playerIDs = set()
         for node in self.associated_nodes:
             if node.occupiedBy is not None:
-                playerIDs.add(node.occupiedBy)
+                playerIDs.add(node.occupiedBy.id)
         
         playerIDs = set(id for id in playerIDs if id != player_turn_id)
 
