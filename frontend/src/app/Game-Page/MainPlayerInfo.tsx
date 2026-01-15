@@ -33,7 +33,7 @@ function MainPlayerInfo({id, position}: MainPlayerInfoArgs) {
   }
 
   return (
-      <div id={position} className={turn === id ? "current-turn player" : "player"}>
+      <div id={position} className="player">
         <div className="cardsAndName">
           <div className="cards">
 
@@ -46,7 +46,7 @@ function MainPlayerInfo({id, position}: MainPlayerInfoArgs) {
           
           <div className="player-name">
             <span className="player-color" aria-hidden="true" style={{color}}>&#x25CF;</span>
-            <h3 className="panel-background">
+            <h3 className={turn === id ? "current-turn panel-background" : "panel-background"}>
               {name + " "}
               {longestRoad===name? '🛣️' : ''}
               {largestArmy===name? '🗡️' : ''}

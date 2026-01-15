@@ -210,6 +210,9 @@ export interface WebsocketContextShape {
   // UI flags
   displayDice: boolean;
   setDisplayDice: SetterFunction<boolean>;
+  myTurn: boolean;
+  setMyTurn: SetterFunction<boolean>;
+  setupPhase: boolean;
   moveRobber: boolean;
   setMoveRobber: SetterFunction<boolean>;
   stealCard: boolean;

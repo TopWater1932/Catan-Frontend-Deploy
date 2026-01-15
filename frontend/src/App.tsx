@@ -31,7 +31,9 @@ function App() {
   const [players,setPlayers] = useState<PlayerState>({});
   const [playerList, setPlayerList] = useState<PlayerNameColor[]>([])
   
+  const [myTurn,setMyTurn] = useState(false);
   const [displayDice,setDisplayDice] = useState(false);
+  const [setupPhase,setSetupPhase] = useState(true);
   const [moveRobber,setMoveRobber] = useState(false);
   const [stealCard,setStealCard] = useState(false);
   const [stealList,setStealList] = useState<string[]>([]);
@@ -97,7 +99,9 @@ function App() {
           let tempNodes: NodeData[] = []
           let tempPlayers: PlayerState = {}
 
-          setTurn(jsObj.data.players[jsObj.data.current_turn].id)
+          const playerArray = jsObj.data.players
+          const currTurnIndex = jsObj.data.current_turn
+          setTurn(playerArray[currTurnIndex]['py/state'].id)
           
           jsObj.data.board.tiles.forEach((tile: TileData) => {
             tempTiles.push(tile["py/state"])
@@ -115,12 +119,7 @@ function App() {
 
 
           jsObj.data.players.forEach((player: PlayerStateData) => {
-            let playerData
-            if ('py/state' in player) {
-              playerData = player['py/state']
-            } else {
-              playerData = player
-            }
+            const playerData = player['py/state']
             tempPlayers[playerData.id] = new Player(
               playerData.id,
               playerData.name,
@@ -153,12 +152,7 @@ function App() {
 
           const updatedPlayers: PlayerState = {};
           jsObj.data.forEach((player: PlayerStateData) => {
-            let playerData
-            if ('py/state' in player) {
-              playerData = player['py/state']
-            } else {
-              playerData = player
-            }
+            const playerData = player['py/state']
             updatedPlayers[playerData.id] = new Player(
               playerData.id,
               playerData.name,
@@ -188,6 +182,10 @@ function App() {
         } else if (jsObj.actionType === 'steal-from') {
           setStealList(jsObj.data)
           setStealCard(true)
+        } else if ((jsObj.actionType === 'turn-state')) {
+          const playerArray = jsObj.data.players
+          const currTurnIndex = jsObj.data.current_turn
+          setTurn(playerArray[currTurnIndex]['py/state'].id)
         }
     }
   }
@@ -238,7 +236,9 @@ function App() {
         sendJsonMessage, setShouldReconnect, setSocketURL,
         lobbyInitialised, setLobbyInitialised, currentLobby, setCurrentLobby, setPlayerList,
         playerID, playerName,setPlayerName,
-        displayDice, setDisplayDice,
+        myTurn, setMyTurn,
+        displayDice,setDisplayDice,
+        setupPhase,
         moveRobber, setMoveRobber,
         stealCard, setStealCard, stealList,
         players, setPlayers,
