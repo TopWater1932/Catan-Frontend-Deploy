@@ -1,0 +1,68 @@
+.player {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 15.5em;
+}
+
+.cardAndNames {
+  display: flex;
+  flex-direction: column;
+}
+
+.player .cards {
+  display: flex;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  width: 20px;
+  height: 30px;
+  border-radius: 5px;
+  color: white;
+  border: 1px solid black;
+  font-size: 0.9em;
+}
+
+.res {
+  background-color: rgb(141, 108, 65);
+}
+
+.dev {
+  background-color: rgb(109, 132, 235);
+}
+
+.player-name {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.player-color {
+  position: relative;
+  top: -0.05em;
+  color: black;
+  line-height: 0px;
+  font-size: 4em;
+  
+}
+
+.current-turn {
+  box-shadow: 0 0 10px 4px red;
+  border-radius: 5px;
+}
+
+.choose-steal {
+  box-shadow: 0 0 5px 2px red;
+  border-radius: 5px;
+}
+
+.choose-steal:hover {
+  cursor: pointer;
+  width: 25px;
+  height: 35px;
+}

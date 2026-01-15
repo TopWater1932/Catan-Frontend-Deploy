@@ -1,0 +1,566 @@
+from platform import node
+from Board import Board
+from Tile import Tile
+from Node import Node
+from Path import Path
+from Player import Player
+from utils.TerrainType import TerrainType
+from BoardSetUp import BoardSetUp
+from Dice import Dice
+from utils.Buildings import Buildings
+import random
+import asyncio
+
+class Game:
+    def __init__(self, players, current_turn=0, longest_road_holder=None, largest_army_holder=None):
+        self.board = None
+        self.players = players
+        self.total_turns = 0
+        self.current_turn = current_turn
+        self.longest_road_holder = longest_road_holder
+        self.largest_army_holder = largest_army_holder
+        self.setup_phase = True
+
+    
+    def setup(self):
+        '''
+        Set up the initial game state, including board configuration and player order.
+        
+        RETURNS
+        - board: Board object containing tiles, nodes and paths 
+        - tiles: list of Tile objects 
+        - nodes: 3D list of node objects 
+        - paths: list of Path objects 
+        '''
+        # Add tiles
+        available_tiles = {
+            TerrainType.FOREST.name: 4,
+            TerrainType.HILLS.name: 3,
+            TerrainType.MOUNTAINS.name: 3,
+            TerrainType.FIELDS.name: 4,
+            TerrainType.PASTURE.name: 4,
+            TerrainType.DESERT.name: 1 
+        }
+        available_numbers = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
+        resource_dictionary = {
+            TerrainType.FOREST.name: TerrainType.FOREST.value,
+            TerrainType.HILLS.name: TerrainType.HILLS.value,
+            TerrainType.MOUNTAINS.name: TerrainType.MOUNTAINS.value,
+            TerrainType.FIELDS.name: TerrainType.FIELDS.value,
+            TerrainType.PASTURE.name: TerrainType.PASTURE.value,
+            TerrainType.DESERT.name: TerrainType.DESERT.value
+        }
+
+        Tiles = BoardSetUp.setupTiles(available_tiles=available_tiles, available_numbers=available_numbers, resource_dictionary=resource_dictionary)
+        Nodes = BoardSetUp.setupNodes(board_hex_height=5, board_hex_width=5, initial_offset=2)
+        Paths = BoardSetUp.setup_paths(Nodes)
+
+        BoardSetUp.findAllHexNodes(Nodes, Tiles)
+
+        updated_board = Board(tiles=Tiles, nodes=Nodes, paths=Paths)
+
+        self.board = updated_board
+        return Tiles, Nodes, Paths
+    
+    def nextTurn(self):
+            self.current_turn = (self.current_turn + 1) % len(self.players)
+            self.total_turns += 1
+            
+    def _normalize_trade_list(self, items):
+        if items is None:
+            return []
+        out = []
+        for it in items:
+            if it is None:
+                continue
+            if isinstance(it, (list, tuple)) and len(it) == 2:
+                res, amt = it
+                amt = int(amt)
+                if amt <= 0:
+                    return None
+                out.append((res, amt))
+            else:
+                return None
+        return out
+
+    def _player_has_resources(self, player, items):
+        for res, amt in items:
+            if player.resource_cards.get(res, 0) < amt:
+                return False
+        return True
+
+    def _transfer_resources(self, from_player, to_player, items):
+        for res, amt in items:
+            from_player.resource_cards[res] = from_player.resource_cards.get(res, 0) - amt
+            to_player.resource_cards[res] = to_player.resource_cards.get(res, 0) + amt
+
+    def domestic_trade(self, player1, player2, offer, request):
+        offer_list = self._normalize_trade_list(offer)
+        request_list = self._normalize_trade_list(request)
+
+        if offer_list is None or request_list is None:
+            return False, "Invalid trade format."
+        if player1 is player2:
+            return False, "Cannot trade with self."
+        if len(offer_list) == 0 and len(request_list) == 0:
+            return False, "Empty trade."
+
+        if not self._player_has_resources(player1, offer_list):
+            return False, f"{player1.name} lacks resources to offer."
+        if not self._player_has_resources(player2, request_list):
+            return False, f"{player2.name} lacks resources to give requested items."
+
+        self._transfer_resources(player1, player2, offer_list)
+        self._transfer_resources(player2, player1, request_list)
+        return True, "Trade executed."
+    def player_port_ownership(self, player):
+        owned = {}
+
+        if self.board is None or self.board.nodes is None:
+            return owned
+
+        for row in self.board.nodes:
+            for node in row:
+                if node is None:
+                    continue
+
+                port = getattr(node, "port_type", None)
+                if not port:
+                    continue
+
+                if getattr(node, "occupiedBy", None) is player:
+                    owned[port] = True
+
+        return owned
+
+    def valid_trade_rates(self, player):
+        ports = self.player_port_ownership(player)
+
+        any_rate = 4
+        if ports.get("3-1", False):
+            any_rate = 3
+
+        rates = {"ANY": any_rate}
+
+        for port_type, owned in ports.items():
+            if owned and port_type != "3-1":
+                rates[port_type] = 2
+
+        return rates
+
+    def maritime_trade(self, player, give_resource, give_amount, get_resource, get_amount=1):
+        give_amount = int(give_amount)
+        get_amount = int(get_amount)
+
+        if give_amount <= 0 or get_amount <= 0:
+            return False, "Trade amounts must be positive."
+        if give_resource == get_resource:
+            return False, "Cannot trade a resource for itself."
+
+        rates = self.valid_trade_rates(player)
+        required_rate = rates.get(give_resource, rates["ANY"])
+
+        if give_amount != required_rate * get_amount:
+            return False, f"Invalid maritime trade ratio. Required {required_rate}:1 for {give_resource}."
+
+        if player.resource_cards.get(give_resource, 0) < give_amount:
+            return False, f"{player.name} lacks enough {give_resource}."
+
+        player.resource_cards[give_resource] = player.resource_cards.get(give_resource, 0) - give_amount
+        player.resource_cards[get_resource] = player.resource_cards.get(get_resource, 0) + get_amount
+
+        return True, "Maritime trade executed."
+
+    def assign_resources(self, dice_roll):
+        print(f"Assigning resources for dice roll: {dice_roll}")
+        for tile in self.board.tiles:
+            if tile.number_token == dice_roll and not tile.has_robber:
+                tile.giveResourcetoPlayers()
+
+    # Longest Road
+    def _node_blocks_player(self, node, player):
+
+        occ = getattr(node, "occupiedBy", None)
+        return (occ is not None) and (occ is not player)
+
+    def _player_owned_paths(self, player):
+        """Return list of Path objects owned by player"""
+        if self.board is None:
+            return []
+        return [p for p in self.board.paths if getattr(p, "owner", None) is player]
+
+    def _build_road_adjacency(self, player):
+        """
+        Build adjacency list from the player's owned roads:
+          adj[node_id] - list of (neighbor_node, path_id)
+        """
+        owned_paths = self._player_owned_paths(player)
+        adj = {}
+        nodes_by_id = {}
+
+        for path in owned_paths:
+            a, b = path.connectedNodes
+            nodes_by_id[a.id] = a
+            nodes_by_id[b.id] = b
+
+            adj.setdefault(a.id, []).append((b, path.id))
+            adj.setdefault(b.id, []).append((a, path.id))
+
+        return adj, nodes_by_id
+
+    def longest_road_length(self, player):
+        """
+        compute longest road length for player, (max number of edges in a valid continuous road, without reuisng any segment
+        """
+        adj, nodes_by_id = self._build_road_adjacency(player)
+        if not adj:
+            return 0
+
+        def dfs(current_node_id, used_paths):
+            # If we are trying to cont from a blocked node - must stop.
+            current_node = nodes_by_id[current_node_id]
+            if self._node_blocks_player(current_node, player) and len(used_paths) > 0:
+                return 0
+
+            best = 0
+            for nbr_node, path_id in adj.get(current_node_id, []):
+                if path_id in used_paths:
+                    continue
+
+                used_paths.add(path_id)
+                candidate = 1 + dfs(nbr_node.id, used_paths)
+                used_paths.remove(path_id)
+
+                if candidate > best:
+                    best = candidate
+
+            return best
+
+        overall_best = 0
+        for start_node_id in adj.keys():
+            length = dfs(start_node_id, set())
+            if length > overall_best:
+                overall_best = length
+
+        return overall_best
+
+    def update_player_longest_road(self, player):
+        """recompute and store player.longest_road_length."""
+        player.longest_road_length = self.longest_road_length(player)
+        return player.longest_road_length
+
+    def update_longest_road_holder(self):
+        """
+        dfetermine who holds Longest Road and update  add 2 VP accordingly.
+        rules:
+        -must be >= 5 to claim
+        -ties do NOT change holder
+        -if a new player strictly exceeds, they take 
+        """
+        # Compute lengths
+        best_len = 0
+        best_players = []
+
+        for p in self.players:
+            length = self.update_player_longest_road(p)
+            if length > best_len:
+                best_len = length
+                best_players = [p]
+            elif length == best_len and length != 0:
+                best_players.append(p)
+        # Decide new holder
+        new_holder = None
+        if best_len >= 5 and len(best_players) == 1:
+            new_holder = best_players[0]
+
+        old_holder = self.longest_road_holder
+        # If tied or nobody qualifies, keep current holder 
+        if new_holder is None:
+            return old_holder
+        # If no change, nothing to do
+        if new_holder is old_holder:
+            return old_holder
+        # Remove award and VP from old holder
+        if old_holder is not None:
+            old_holder.has_longest_road = False
+            old_holder.victory_points -= 2
+        # Give awared and Vp to new holder
+        new_holder.has_longest_road = True
+        new_holder.victory_points += 2
+        self.longest_road_holder = new_holder
+
+        return new_holder
+
+    def build_road(self, path, player):
+        """
+        Use this to build roads, will make sure this always stays updated and works
+        """
+        ok = path.build(player)
+        if ok:
+            self.update_longest_road_holder()
+        return ok
+    
+    def steal(self, from_player_ID, to_player_ID):
+        from_player = next((p for p in self.players if p.id == from_player_ID), None)
+        to_player = next((p for p in self.players if p.id == to_player_ID), None)
+
+        if from_player is None or to_player is None:
+            return False, "Invalid player IDs."
+
+        available_resources = [res for res, amt in from_player.resource_cards.items() if amt > 0]
+        if not available_resources:
+            return False, f"{from_player.name} has no resources to steal."
+
+        stolen_resource = random.choice(available_resources)
+        from_player.resource_cards[stolen_resource] -= 1
+        to_player.resource_cards[stolen_resource] += 1
+
+        return True, f"{to_player.name} stole 1 {stolen_resource} from {from_player.name}."
+
+    
+    def buildSettlement(self, nodeID:str, player:Player=None, isfree:bool=False):
+        '''
+        Function to handle building a settlement at a given node for a player
+        '''
+        node = self.findNodeByID(nodeID)
+
+        if player is None:
+            player = self.players[self.current_turn]
+        if node is None:
+           return False
+        #Check player has required resources to build settlement 
+        if not isfree:
+            if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 1 or player.resource_cards.get(TerrainType.PASTURE.value, 0) < 1:
+                print("Player " + player.name + " cannot afford to build a settlement.")
+                return False
+        #Check player has settlements left to build
+        if player.buildings[Buildings.SETTLEMENTS.value] <= 0:
+            print("Player " + player.name + " has no settlements left to build.")
+            return False
+        
+        #Try Build settlement
+        if node.build(player, Buildings.SETTLEMENTS.value):
+            player.built_structures.append(node)
+            player.buildings[Buildings.SETTLEMENTS.value] -= 1
+            if not isfree:
+                player.resource_cards[TerrainType.FOREST.value] -= 1
+                player.resource_cards[TerrainType.HILLS.value] -= 1
+                player.resource_cards[TerrainType.FIELDS.value] -= 1
+                player.resource_cards[TerrainType.PASTURE.value] -= 1
+            player.victory_points += 1
+            return True
+        else:
+            print("Failed to build settlment on node " + node.id)
+            return False
+    
+    def buildRoad(self, pathID:str, player:Player=None, isfree:bool=False):
+        '''
+        Function to handle building a road at a given path for a player
+        '''
+        if player is None:
+             player = self.players[self.current_turn]
+        path = None
+        #find path by ID
+        for p in self.board.paths:
+            if p.id == pathID:
+                path = p
+                break
+        if path is None:
+            return False
+        #Check player has required resources to build road
+        if not isfree:
+            if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1:
+                print("Player " + player.name + " cannot afford to build a road.")
+                return False
+        #Check player has roads left to build
+        if player.buildings['roads'] <= 0:
+            print("Player " + player.name + " has no roads left to build.")
+            return False
+        
+        #Try build road
+        if path.build(player):
+            player.roads.append(path)
+            player.buildings['roads'] -= 1
+            if not isfree:
+                player.resource_cards[TerrainType.FOREST.value] -= 1
+                player.resource_cards[TerrainType.HILLS.value] -= 1
+            return True
+        print("Failed to build road on path " + path.id)
+        return False
+    
+    def setupBuildSettlement(self, nodeID:str, player:Player=None):
+        '''
+        Funtion to build settlements for game setup
+
+        NOTE
+        only to be called during setup phase of game
+        '''
+        node = self.findNodeByID(nodeID)
+        if player is None:
+             player = self.players[self.current_turn]
+        if node is None:
+            print("Node not found during setup phase")
+            return False
+        elif not self.setup_phase:
+            print("Not in setup phase, cannot build settlement using setupBuildSettlement")
+            return False
+        
+        if self.buildSettlement(nodeID, player, isfree=True):
+            for tile in self.board.tiles:   
+                if tile.resource != TerrainType.DESERT.value and node in tile.associated_nodes:
+                    print(f"Giving 1 {tile.resource} to player {player.name} for settlement at node {nodeID} during setup phase")
+                    player.giveResource(tile.resource, 1)
+            return True
+        else:
+            print("Failed to build settlement during setup phase")
+            return False
+
+    def findNodeByID(self, nodeID:str):
+        for row in self.board.nodes:
+            for node in row:
+                if node is not None and node.id == nodeID:
+                    return node
+        print("Node with ID " + nodeID + " not found.")
+        return None
+    
+    def findPathByID(self, pathID:str):
+        for path in self.board.paths:
+            if path.id == pathID:
+                return path
+        print(f"Path with ID {pathID} not found")
+        return None
+    
+    def nextSetupTurn(self):
+        '''
+        Function to handle the next turn during the setup phase of the game
+
+        RETURNS
+        - bool: True if there are more setup turns remaining, False if setup phase is complete
+        '''
+        self.total_turns += 1
+
+        if self.total_turns == len(self.players) * 2:
+            self.setup_phase = False
+            self.current_turn = 1
+            self.total_turns = 0
+            return False
+        elif self.total_turns < len(self.players):
+            self.current_turn = self.total_turns
+        else:
+            self.current_turn = len(self.players) * 2 - 1 - self.total_turns
+        
+        return True
+    
+    def setupPhaseLegalSettlements(self):
+        '''
+        Function to find all locations a player can legally place settlements during the setup phase.
+
+        RETURNS
+        - list: Contains IDs of all nodes that have isBuildable = True during the setup phase.
+        '''
+        if self.board.nodes:
+            nodes = self.board.nodes
+            setupPhaseLegalPlacements = []
+            for row in nodes:
+                for node in row:
+                    if node:
+                        if node.isBuildable == True:
+                            setupPhaseLegalPlacements.append(node.id)
+            return setupPhaseLegalPlacements
+        return False
+    
+    async def handle_bot_setup_turn(self):
+        print('bot having their turn')
+        await asyncio.sleep(1)
+        print('bot had their turn')
+        self.nextSetupTurn()
+
+        if self.setup_phase == False or not self.players[self.current_turn].isBot:
+            return False
+
+        return True
+
+
+
+    def upgradeSettlement(self, nodeID:str, player:Player=None, building_type:str=Buildings.CITIES.value):
+        '''
+        Function to upgrade a settlement at a given node for a player
+        '''
+        node = self.findNodeByID(nodeID)
+        if player is None:
+            player = self.players[self.current_turn]
+        if node is None:
+            print("Node not found during upgrade to city")
+            return False
+        
+        if node.building == Buildings.SETTLEMENTS.value:
+            #Check building type to upgrade to
+            if building_type == Buildings.CITIES.value:
+                #Check player has required resources to upgrade settlement  
+                if player.resource_cards.get(TerrainType.MOUNTAINS.value, 0) < 3 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 2:
+                    print("Player " + player.name + " does not have enough resources to upgrade settlement to city.")
+                    return False
+
+                else:
+                    #Deduct resources from player
+                    player.takeResource(TerrainType.MOUNTAINS.value, 3)
+                    player.takeResource(TerrainType.FIELDS.value, 2)
+                
+                #add more building types here in future 
+            else:
+                print("Invalid building type for upgrade.")
+                return False
+            
+            #Try upgrade settlement
+            if node.upgradeToCity(player):
+                return True
+            else:
+                print(f"Failed to upgrade settlement on node {nodeID}")
+                return False
+        else:
+            print("No settlement found on node " + nodeID + " to upgrade.")
+            return False
+            
+    def getBuildablePathsForCurrentPlayer(self, player:Player=None):
+        '''
+        Function to get all buildable paths for the current player
+
+        RETURNS
+        - list: List of path IDs that the current player can build on
+        '''
+        if player is None:
+            player = self.players[self.current_turn]
+        if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1:
+            print("Player " + player.name + " cannot afford to build a road.")
+            return False
+        return player.findRoadBuildCandidates()
+    
+    def getBuildableNodesForCurrentPlayer(self, player:Player=None):
+        '''
+        Function to get all buildable nodes for the current player
+
+        RETURNS
+        - list: List of node IDs that the current player can build settlements on
+        '''
+        if player is None:
+            player = self.players[self.current_turn]
+        if player.resource_cards.get(TerrainType.FOREST.value, 0) < 1 or player.resource_cards.get(TerrainType.HILLS.value, 0) < 1 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 1 or player.resource_cards.get(TerrainType.PASTURE.value, 0) < 1:
+            print("Player " + player.name + " cannot afford to build a settlement.")
+            return False
+        return player.findSettlementBuildCandidates()
+
+    def getUpgradeableSettlementsForCurrentPlayer(self, player:Player=None):
+        '''
+        Function to get all settlements that can be upgraded by the current player
+
+        RETURNS
+        - list: List of node IDs that the current player can upgrade to a city
+        '''
+        if player is None:
+            player = self.players[self.current_turn]
+        if player.resource_cards.get(TerrainType.MOUNTAINS.value, 0) < 3 or player.resource_cards.get(TerrainType.FIELDS.value, 0) < 2:
+            print("Player " + player.name + " cannot afford to upgrade a settlement to a city.")
+            return False
+        return player.findCityUpgradeCandidates()
+    
+
