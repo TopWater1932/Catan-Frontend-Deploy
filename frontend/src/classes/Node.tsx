@@ -1,32 +1,32 @@
-import Structure from './Structure';
+// import Structure from './Structure';
 
 export default class Node {
     // Explicitly define property types
     public idNode: string;
-    public row: number;
-    public occupiedBy: string | null; // Player ID or null
+    public occupiedBy: string | null;
     public isBuildable: boolean;
-    public buildingType: 'settlement' | 'city' | null; // Added 'city' and set default to null
-    public neighborNodes: string[]; // Assuming neighbor nodes are identified by string IDs
+    public buildingType: 'settlement' | 'city' | null;
+    public paths: string[];
+    public portType: string | null;
     public xCoord: number;
     public yCoord: number;
 
     constructor(
         idNode: string,
-        row: number,
         occupiedBy: string | null = null,
         isBuildable: boolean = true,
         buildingType: 'settlement' | 'city' | null = null,
-        neighborNodes: string[] = [],
+        paths: string[] = [],
+        portType: string | null,
         xCoord: number,
         yCoord: number
     ) {
         this.idNode = idNode;
-        this.row = row;
         this.occupiedBy = occupiedBy;
         this.isBuildable = isBuildable;
         this.buildingType = buildingType;
-        this.neighborNodes = neighborNodes;
+        this.paths = paths;
+        this.portType = portType
         this.xCoord = xCoord;
         this.yCoord = yCoord;
     }
@@ -36,16 +36,16 @@ export default class Node {
      * @param playerID - The ID of the player building the settlement.
      * @returns boolean - true if settlement was built, false otherwise.
      */
-    buildSettlement(playerID: string): boolean {
-        if (this.isBuildable) {
-            this.buildingType = 'settlement';
-            // Note: Creating the Structure object here but not storing it anywhere in Node or returning it.
-            new Structure(`${playerID}-${this.idNode}-struc`, this.idNode, this.buildingType);
-            this.occupiedBy = playerID;
-            this.isBuildable = false;
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // buildSettlement(playerID: string): boolean {
+    //     if (this.isBuildable) {
+    //         this.buildingType = 'settlement';
+    //         // Note: Creating the Structure object here but not storing it anywhere in Node or returning it.
+    //         new Structure(`${playerID}-${this.idNode}-struc`, this.idNode, this.buildingType);
+    //         this.occupiedBy = playerID;
+    //         this.isBuildable = false;
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 }

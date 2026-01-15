@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import Konva from 'konva';
 import Tile from '../classes/Tile'
+import Player from  '../classes/Player'
 
 // All setter functions
 export type SetterFunction<T> = Dispatch<SetStateAction<T>>;
@@ -21,7 +22,7 @@ export interface PlayerStateData {
 }
 
 export interface PlayerState {
-    [key: string]: PlayerStateData;
+    [key: string]: Player;
 }
 
 export interface PlayerNameColor {
@@ -34,12 +35,29 @@ export interface TileData {
     [key: string]: any;             // TBC
 }
 
+
 export interface NodeData {
-    [key: string]: any;             // TBC
+    'py/object': 'Node.Node';
+    'py/state': {
+        id: string;
+        occupiedBy: string | null;
+        isBuildable: boolean;
+        building:  'settlement' | 'city' | null;
+        paths: string[];
+        port_type: string | null;
+    }
 }
 
+export type NodeDataArray = (NodeData | null)[]
+
+export interface RawPaths {
+    'py/object': 'Path.Path'
+    'py/state': PathData
+}
 export interface PathData {
-    [key: string]: any;             // TBC
+    id: string;
+    owner: string;
+    connectedNodes: string[];
 }
 
 export interface Port {
@@ -168,11 +186,11 @@ export interface TradeResourceSelectionArgs {
 
 // Board component
 export interface ResourceColors {
-  ORE: string;
-  LUMBER: string;
-  WOOL: string;
-  BRICK: string;
-  GRAIN: string;
+  ore: string;
+  wood: string;
+  sheep: string;
+  brick: string;
+  wheat: string;
   [key: string]: string;
 }
 
@@ -187,6 +205,10 @@ export interface Missions {
     setLongestRoad: SetterFunction<string>;
     largestArmy: string;
     setLargestArmy: SetterFunction<string>;
+}
+
+export interface LegalMoveLocations {
+    [playerID: string] : string[]
 }
 
 export interface WebsocketContextShape {
@@ -205,6 +227,7 @@ export interface WebsocketContextShape {
   // Player identity
   playerID: string;
   playerName: string;
+  playerColor: string;
   setPlayerName: SetterFunction<string>;
 
   // UI flags
@@ -213,11 +236,18 @@ export interface WebsocketContextShape {
   myTurn: boolean;
   setMyTurn: SetterFunction<boolean>;
   setupPhase: boolean;
+  setSetupPhase:  SetterFunction<boolean>;
   moveRobber: boolean;
   setMoveRobber: SetterFunction<boolean>;
   stealCard: boolean;
   setStealCard: SetterFunction<boolean>;
   stealList: string[];
+  pickSettlement: boolean;
+  setPickSettlement: SetterFunction<boolean>;
+  pickRoad: boolean;
+  setPickRoad: SetterFunction<boolean>;
+  pickCity: boolean;
+  setPickCity: SetterFunction<boolean>;
 
   // Game state
   players: PlayerState;
@@ -230,6 +260,10 @@ export interface WebsocketContextShape {
   setPaths: SetterFunction<PathData[]>;
   nodes: NodeData[];
   setNodes: SetterFunction<NodeData[]>;
+  legalNodes: LegalMoveLocations;
+  setLegalNodes: SetterFunction<LegalMoveLocations>
+  legalPaths: LegalMoveLocations;
+  setLegalPaths: SetterFunction<LegalMoveLocations>
 
   // Missions
   missions: Missions

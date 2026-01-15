@@ -15,12 +15,15 @@ class Node:
         nodeState = self.__dict__.copy()
 
         nodeState['paths'] = [path.id for path in  nodeState['paths']]
+        if nodeState['occupiedBy']:
+            nodeState['occupiedBy'] = nodeState['occupiedBy'].id
+
         return nodeState
         
     def updateNeighbors(self):
         for path in self.paths:
             for node in path.connectedNodes:
-                if node != self:
+                if node.id != self.id:
                     node.isBuildable = False
 
     def build(self, player, building):

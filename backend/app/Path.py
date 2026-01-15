@@ -8,6 +8,9 @@ class Path:
         pathState = self.__dict__.copy()
         
         pathState['connectedNodes'] = [node.id for node in pathState['connectedNodes']]
+        if pathState['owner']:
+            pathState['owner'] = pathState['owner'].id
+        
         return pathState
 
     def build(self, player):

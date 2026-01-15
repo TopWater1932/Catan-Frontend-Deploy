@@ -1,7 +1,7 @@
 import { Coordinates } from '../ts-contracts/interfaces';
-import Tile from '../classes/Tile.tsx'
+import Tile from '../classes/Tile'
 
-function initialiseVertexGrid(tilesMasterArray: Tile[], tileRadius: number): Coordinates[] {
+function initialiseNodeGrid(tilesMasterArray: Tile[], tileRadius: number): Coordinates[] {
     let coords: Coordinates[] = [];
     const pi: number = Math.PI;
     const cos30: number = Math.cos(30 * (pi / 180));
@@ -58,4 +58,4 @@ function initialiseVertexGrid(tilesMasterArray: Tile[], tileRadius: number): Coo
     return coords;
 }
 
-export default initialiseVertexGrid;
+export default initialiseNodeGrid;

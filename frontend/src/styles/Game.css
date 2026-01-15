@@ -64,7 +64,6 @@
   flex-direction: row;
   width: 100%;
   justify-content: center;
-  justify-self: center;
   align-self: start;
 }
 

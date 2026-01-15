@@ -172,7 +172,6 @@ async def wsEndpoint(websocket: WebSocket):
                         game.setup()
                         lobby.game = game
                         intialisedPackage = game
-                        print(game.players)
                         await lobby.send_gamestate(intialisedPackage,'all','initialised')
                     else:
                         gameState = lobby.game
@@ -185,23 +184,24 @@ async def wsEndpoint(websocket: WebSocket):
 
                         await lobby.send_gamestate(None,'me','move-robber',me=websocket)
                     else:
-                        game.assign_resources(result)
+                        lobby.game.assign_resources(result)
                         
                         # Send updated player states to all players
-                        await lobby.send_gamestate(game.players,'all','player-state')
+                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
 
                 elif data['actionType'] == 'move-robber':
                     tile_id = data['data']
-                    game.board.move_robber(tile_id)
+                    lobby.game.board.move_robber(tile_id)
 
-                    await lobby.send_gamestate(game.board.tiles,'all','tile-state')
+                    selected_tile = next((tile for tile in lobby.game.board.tiles if tile.id == tile_id), None)
 
-                    selected_tile = next((tile for tile in game.board.tiles if tile.id == tile_id), None)
+                    await lobby.send_gamestate(selected_tile,'all','tile-state')
+
 
                     if selected_tile is None:
                         print("Error: Selected tile not found.")
-
-                    associated_player_ids = selected_tile.findAssociatedPlayers()
+                    currentPlayerTurnID = lobby.game.players[lobby.game.current_turn].id
+                    associated_player_ids = selected_tile.findAssociatedPlayers(currentPlayerTurnID)
 
                     if len(associated_player_ids) > 0:
                         await lobby.send_gamestate(associated_player_ids,'me','steal-from',me=websocket)
@@ -209,13 +209,10 @@ async def wsEndpoint(websocket: WebSocket):
                 elif data['actionType'] == 'steal-from':
                     steal_from_ID = data['data']['from']
                     give_to_ID = data['data']['to']
-                    game.steal(steal_from_ID, give_to_ID)
+                    lobby.game.steal(steal_from_ID, give_to_ID)
 
 
-                    await lobby.send_gamestate(game.players,'all','player-state')
-
-
-                    # Implement logic to steal a card from the target player
+                    await lobby.send_gamestate(lobby.game.players,'all','player-state')
 
                 elif data['actionType'] == 'end-turn':
                     lobby.game.nextTurn()
@@ -230,15 +227,15 @@ async def wsEndpoint(websocket: WebSocket):
                             success = lobby.game.buildSettlement(nodeID, isfree=True)
                         else: 
                             success = lobby.game.setupBuildSettlement(nodeID)
-                        await lobby.send_gamestate(node,'all','node-state')
                         #send back buildable paths for setup phase
-                        await lobby.send(data=node.getPathIDs(),actionType='buildable-paths',recipient='me', me=websocket)
+                        currentTurnWS = lobby.currentPlayerWS()
+                        await lobby.send(data=node.getPathIDs(),to='me',actionCategory='game',actionType='legal-paths', me=currentTurnWS)
                     else:
                         success = lobby.game.buildSettlement(nodeID)
 
                     if success:
-                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn],'me','player-state', me=websocket)
                         await lobby.send_gamestate(node,'all','node-state')
+                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
                     else:
                         #[TODO] handle failed build
                         pass
@@ -247,28 +244,44 @@ async def wsEndpoint(websocket: WebSocket):
                     pathID = data['data']['pathID']
                     path = lobby.game.findPathByID(pathID)
                     success = lobby.game.buildRoad(pathID, isfree=lobby.game.setup_phase)
-                    if lobby.game.setup_phase:
-                        lobby.game.nextSetupTurn()
-                        if lobby.game.setup_phase == False:
-                            #setup phase over
-                            await lobby.send_gamestate(lobby.game,'all','setup-complete')
-                        #check if next player is bot and handle their setup turn
-                        if lobby.game.players[lobby.game.current_turn_index].is_bot:
-                            #[TODO] handle bot setup turn
-                            await lobby.game.handle_bot_setup_turn(lobby)
+
                     if success:
-                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn],'me','player-state', me=websocket)
                         await lobby.send_gamestate(path,'all','path-state')
+                        await lobby.send_gamestate(lobby.game.players,'all','player-state')
                     else:
                         #[TODO] handle failed build
                         pass
+
+                    if lobby.game.setup_phase:
+                        lobby.game.nextSetupTurn()
+                        if lobby.game.setup_phase == False:
+                            #setup phase over. Command causes frontend to go to next turn and bgein requesting inputs for regular player actions.
+                            await lobby.send_gamestate(lobby.game,'all','setup-complete')
+
+                        await lobby.send_gamestate(lobby.game, 'all', 'turn-state')
+                        
+                        #check if next player is bot and handle their setup turn
+                        if lobby.game.players[lobby.game.current_turn].isBot:
+                            #[TODO] handle bot setup turn
+                            continueLoop = True
+
+                            while continueLoop:
+                                continueLoop = await lobby.game.handle_bot_setup_turn()
+                                await lobby.send_gamestate(lobby.game, 'all', 'turn-state')
+
+                            currentTurnWS = lobby.currentPlayerWS()
+                            await lobby.send_gamestate(lobby.game.setupPhaseLegalSettlements(), 'me', 'legal-nodes',me=currentTurnWS)
+                            
+                                
+
         
                 elif data['actionType'] == 'upgrade-settle':
                     nodeID = data['data']['nodeID']
                     node = lobby.game.findNodeByID(nodeID)
                     success = lobby.game.upgradeSettlement(nodeID)
                     if success:
-                        await lobby.send_gamestate(lobby.game.players[lobby.game.current_turn_index], 'me', 'player-state', me=websocket)
+                        currentTurnWS = lobby.currentPlayerWS()
+                        await lobby.send_gamestate(lobby.game.players, 'me', 'player-state', me=currentTurnWS)
                         await lobby.send_gamestate(node, 'all', 'node-state')
                     else:
                         #lobby.broadcast('error', 'Upgrade settlement failed.')
@@ -283,11 +296,21 @@ async def wsEndpoint(websocket: WebSocket):
                     await lobby.send_gamestate(buildable_paths,'me','legal-paths',me=websocket)
 
                 elif data['actionType'] == 'legal-nodes':
-                    buildable_nodes = lobby.game.getBuildablePathsForCurrentPlayer()
-                    #check if player has resources to build any settlements
-                    if buildable_nodes is False:
-                        await lobby.send_gamestate("Lacking resources to build any settlements.",'me','legal-nodes',me=websocket)
-                    await lobby.send_gamestate(buildable_nodes, 'me', 'legal-nodes', me=websocket)
+                    if lobby.game.setup_phase:
+                        buildable_nodes = lobby.game.setupPhaseLegalSettlements()
+                        if buildable_nodes:
+                            await lobby.send_gamestate(buildable_nodes, 'me', 'legal-nodes', me=websocket)
+                        else:
+                            #[TODO] handle failed build
+                            pass
+
+                    else:
+                        buildable_nodes = lobby.game.getBuildableNodesForCurrentPlayer()
+
+                        #check if player has resources to build any settlements
+                        if buildable_nodes is False:
+                            await lobby.send_gamestate("Lacking resources to build any settlements.",'me','legal-nodes',me=websocket)
+                        await lobby.send_gamestate(buildable_nodes, 'me', 'legal-nodes', me=websocket)
                 
                 elif data['actionType'] == 'legal-upgrades':
                     upgradeable_nodes = lobby.game.getUpgradeableSettlementsForCurrentPlayer()

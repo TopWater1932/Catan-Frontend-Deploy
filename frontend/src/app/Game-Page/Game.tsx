@@ -24,7 +24,10 @@ interface GameArgs {
 
 function Game({shouldReconnect, connected}:GameArgs) {
   
-  const { turn, players, missions, displayDice, playerID, lobbyInitialised } = useWebSocketContext();
+  const {
+    turn, players, missions, displayDice, playerID, lobbyInitialised
+    // setupPhase, setPickSettlement, pickRoad, myTurn
+  } = useWebSocketContext();
 
   const pageLocations: string[] = ['west','north','east'];
   const positions: GamePagePositions = {};
@@ -34,10 +37,12 @@ function Game({shouldReconnect, connected}:GameArgs) {
   });
 
   // useEffect(() => {
-  //   if (playerID === turn) {
-  //     setMyTurn(true);
+  //   if (myTurn && setupPhase && !pickRoad) {
+  //     setPickSettlement(true)
   //   }
-  // }, [playerID, turn]);
+
+  //   if (myTurn && !setupPhase)
+  // }, [setupPhase, turn]);
 
 
   if (!lobbyInitialised) {

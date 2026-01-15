@@ -9,7 +9,7 @@ import {
 
 function MainPlayerInfo({id, position}: MainPlayerInfoArgs) {
 
-  const {players,missions,turn,playerID,stealCard,setStealCard,stealList,sendJsonMessage} = useWebSocketContext()
+  const {players,missions,turn,playerID,stealCard,setStealCard,stealList,sendJsonMessage,setMoveRobber} = useWebSocketContext()
 
   const {name,color,activeTurn,resources,devCards,structures,vps} = players[id];
   const {longestRoad,largestArmy} = missions;
@@ -29,6 +29,7 @@ function MainPlayerInfo({id, position}: MainPlayerInfoArgs) {
         }
       });
       setStealCard(false);
+      setMoveRobber(false);
     }
   }
 

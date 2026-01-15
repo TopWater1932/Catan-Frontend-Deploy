@@ -36,7 +36,7 @@ function PipFace({ value, rolling }: PipFaceArgs) {
 
 export default function Dice() {
 
-  const {setMyTurn,sendJsonMessage} = useWebSocketContext()
+  const {setDisplayDice,sendJsonMessage} = useWebSocketContext()
 
   const [open, setOpen] = useState(false);
   const [rolling, setRolling] = useState(false);
@@ -86,7 +86,7 @@ export default function Dice() {
   const close = () => {
     if (rolling) return;
     setOpen(false);
-    setMyTurn(false);
+    setDisplayDice(false);
   };
 
   return (

@@ -13,7 +13,7 @@ import { TradeContext } from '../../context/TradeContext'
 
 function ActionButtons() {
 
-  const {myTurn, setupPhase, displayDice} = useWebSocketContext()
+  const {myTurn, setupPhase, displayDice, moveRobber} = useWebSocketContext()
   
   const [dcModalIsVisible,setDCModalIsVisible] = useState(false)
   const [tradeModalIsVisible,setTradeModalIsVisible] = useState(false)
@@ -29,7 +29,7 @@ function ActionButtons() {
   // const [disableEndTurn,setDisableEndTurn] = useState(false)
 
   useEffect(() => {
-    if (!myTurn || setupPhase || displayDice) {
+    if (!myTurn || setupPhase || displayDice || moveRobber) {
       setDisableActions(true)
     } else {
       setDisableActions(false)
